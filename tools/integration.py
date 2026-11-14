@@ -113,7 +113,7 @@ def run(binary,library):
                 assert isinstance(result,str),('Invalid proof accepted',result)
                 excess=from_hex(CBlock(),original.serialize().hex())
                 excess.vtx[0].vout[0].nValue+=1
-                excess.vtx[0].rehash();excess.hashMerkleRoot=excess.calc_merkle_root()
+                excess.hashMerkleRoot=excess.calc_merkle_root()
                 for nonce in range(100000):
                     excess.nNonce=nonce
                     if int.from_bytes(rx.hash(excess.serialize()[:80]),'little')<=target:break
