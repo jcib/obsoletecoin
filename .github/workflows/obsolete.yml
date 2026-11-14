@@ -68,6 +68,16 @@ jobs:
           cp build-randomx-shared/librandomx.so artifacts/obsoletecoin-linux/
           cp -r tools docs artifacts/obsoletecoin-linux/
           cp README.md COPYING artifacts/obsoletecoin-linux/
+          mkdir -p artifacts/obsoletecoin-linux/licenses
+          cp src/randomx/LICENSE artifacts/obsoletecoin-linux/licenses/RandomX.txt
+          cp src/secp256k1/COPYING artifacts/obsoletecoin-linux/licenses/secp256k1.txt
+          cp src/leveldb/LICENSE artifacts/obsoletecoin-linux/licenses/LevelDB.txt
+          cp src/leveldb/AUTHORS artifacts/obsoletecoin-linux/licenses/LevelDB-authors.txt
+          cp src/crc32c/LICENSE artifacts/obsoletecoin-linux/licenses/CRC32C.txt
+          cp src/crc32c/AUTHORS artifacts/obsoletecoin-linux/licenses/CRC32C-authors.txt
+          cp src/minisketch/LICENSE artifacts/obsoletecoin-linux/licenses/Minisketch.txt
+          cp src/crypto/ctaes/COPYING artifacts/obsoletecoin-linux/licenses/CTAES.txt
+          cp docs/THIRD_PARTY.md artifacts/obsoletecoin-linux/licenses/THIRD_PARTY.md
           tar -czf artifacts/obsoletecoin-linux-experimental.tar.gz -C artifacts obsoletecoin-linux
           sha256sum artifacts/obsoletecoin-linux-experimental.tar.gz > artifacts/SHA256SUMS
       - uses: actions/upload-artifact@v4

@@ -77,8 +77,10 @@ GitHub Actions builds the actual C++ node and wallet, reproduces the experimenta
 genesis proofs, runs inherited unit suites plus Obsolete consensus tests, and
 exercises two real nodes with disposable wallets. Integration covers mining,
 RandomX seed rotation at height 64, signed transfers, invalid proof and excess
-subsidy rejection, competing-chain reorganization, and restart persistence.
-Python tests cover amounts and local RPC authentication. Check the exact commit
+subsidy rejection, competing-chain reorganization, restart persistence, and encrypted-wallet backup
+and restoration.
+Python tests cover exact large balances, wrong-network protection and local RPC
+authentication. Check the exact commit
 in [Actions](https://github.com/jcib/obsoletecoin/actions); unfinished or failed CI
 is not a passing build.
 

@@ -14,7 +14,9 @@ def main():
     p.add_argument('--port',type=int,default=19595)
     p.add_argument('--rpcport',type=int,default=19596)
     p.add_argument('--listen',action='store_true',help='Accept P2P connections; RPC remains loopback only')
-    a=p.parse_args();a.datadir.mkdir(parents=True,exist_ok=True)
+    a=p.parse_args()
+    if not Path(a.binary).is_file():p.error('Node binary missing. Build using docs/BUILD.md, or set --binary to the extracted bitcoind executable.')
+    a.datadir.mkdir(parents=True,exist_ok=True)
     cmd=[str(Path(a.binary).resolve()),'-chain=obsolete-test',f'-datadir={a.datadir.resolve()}',
          '-server=1','-rpcbind=127.0.0.1','-rpcallowip=127.0.0.1',
          f'-port={a.port}',f'-rpcport={a.rpcport}',f'-listen={int(a.listen)}',

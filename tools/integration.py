@@ -59,8 +59,12 @@ def run(binary,library):
             addr=wa.call('getnewaddress','','bech32');other=wb.call('getnewaddress','','bech32')
             assert addr.startswith('tobs1') and other.startswith('tobs1')
             # Actual RandomX mining crosses the initial-seed/genesis-seed boundary at 64.
-            blocks=a.rpc.call('generatetoaddress',102,addr,1000000)
-            assert len(blocks)==102
+            miner=subprocess.run([sys.executable,str(ROOT/'tools/mine.py'),'--address',addr,
+                                  '--cookie',str(a.rpc.cookie),'--rpcport',str(a.rpcport),'--blocks','1'],
+                                 capture_output=True,text=True,timeout=120)
+            assert miner.returncode==0 and 'Found block' in miner.stdout,miner.stderr
+            blocks=a.rpc.call('generatetoaddress',101,addr,1000000)
+            assert len(blocks)==101 and a.rpc.call('getblockcount')==102
             wait(lambda:b.rpc.call('getbestblockhash')==blocks[-1])
             assert wa.call('getbalances')['mine']['trusted']>=5000
             # Exercise the real desktop's send flow against the running wallet.
@@ -125,11 +129,26 @@ def run(binary,library):
             b.stop();b.start();b.rpc.call('loadwallet','test') if 'test' not in b.rpc.call('listwallets') else None
             assert b.rpc.call('getbestblockhash')==tip
             assert wb.call('getbalances')==balance
+            # Protect, back up and actually restore a disposable descriptor wallet.
+            phrase='obsolete-integration-only-not-a-real-secret'
+            wb.call('encryptwallet',phrase)
+            try:wb.call('walletpassphrase','wrong-test-passphrase',60)
+            except RPCError as e:assert e.code==-14
+            else:raise AssertionError('Wrong wallet passphrase accepted')
+            wb.call('walletpassphrase',phrase,60)
+            backup=base/'disposable-wallet-backup.dat'
+            wb.call('backupwallet',str(backup))
+            wb.call('walletlock')
+            assert backup.is_file() and backup.stat().st_size>0
+            b.rpc.call('restorewallet','recovered',str(backup))
+            recovered=b.rpc.for_wallet('recovered')
+            assert recovered.call('getbalances')==balance
+            assert recovered.call('getwalletinfo')['unlocked_until']==0
             print(json.dumps({'result':'passed','height':b.rpc.call('getblockcount'),
-                'checks':['RandomX mining','seed boundary 64','two-node synchronization',
+                'checks':['CLI RandomX mining','seed boundary 64','two-node synchronization',
                           'coinbase maturity','desktop signed transfer','insufficient funds','no duplicate credit',
                           'invalid proof rejected','overpaying coinbase rejected','chainwork reorganization',
-                          'restart and wallet persistence']}))
+                          'restart and wallet persistence','encryption and wrong-passphrase rejection','wallet backup and restore']}))
         except Exception:
             for n in (a,b):
                 f=n.data/'obsolete-testnet/debug.log'

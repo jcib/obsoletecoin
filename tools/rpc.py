@@ -1,6 +1,7 @@
 """Local-only authenticated JSON-RPC. Use an SSH tunnel for a remote node."""
 import base64, http.client, ipaddress, json
 from pathlib import Path
+from decimal import Decimal
 from urllib.parse import quote
 
 class RPCError(RuntimeError):
@@ -30,7 +31,7 @@ class RPC:
             if response.status not in (200,500): raise RPCError(response.status,'RPC request rejected; check node and cookie')
             data=response.read(4*1024*1024+1)
             if len(data)>4*1024*1024: raise RPCError(-1,'RPC response too large')
-            value=json.loads(data)
+            value=json.loads(data,parse_float=Decimal)
             if value.get('error'):
                 error=value['error'];raise RPCError(error['code'],error['message'])
             return value['result']

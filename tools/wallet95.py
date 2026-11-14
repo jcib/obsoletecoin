@@ -55,6 +55,13 @@ class Wallet95:
             self.status.set('DEMO | 95 blocks | 2 peers | No real funds')
             for v in [('Received','12,345.00000000','8'),('Mined (immature)','5,000.00000000','1')]:self.table.insert('',tk.END,values=v)
         else:self.refresh()
+    def wallet_call(self,method,*params):
+        # Guard every operation, including backup/encryption, if a user selects
+        # the wrong local port or a different node restarts on the same port.
+        chain=self.rpc.call('getblockchaininfo')
+        if chain['chain']!='obsolete-test':raise ValueError('Only Obsolete testnet is supported')
+        if method=='getblockchaininfo':return chain
+        return self.rpc.call(method,*params)
     def work(self,job,done):
         if self.demo:messagebox.showinfo('Demo','Preview only. Start without --demo to use a local node.');return
         if self.busy: return
@@ -73,10 +80,10 @@ class Wallet95:
         self.root.after(100,self.drain)
     def refresh(self):
         def job():
-            chain=self.rpc.call('getblockchaininfo')
+            chain=self.wallet_call('getblockchaininfo')
             if chain['chain']!='obsolete-test':raise ValueError('Only Obsolete testnet is supported')
-            peers=self.rpc.call('getconnectioncount')
-            return chain,peers,self.rpc.call('getbalances'),self.rpc.call('listtransactions','*',10)
+            peers=self.wallet_call('getconnectioncount')
+            return chain,peers,self.wallet_call('getbalances'),self.wallet_call('listtransactions','*',10)
         def done(data):
             chain,peers,bal,txs=data;self.snapshot=data;m=bal['mine']
             self.balance.set(f"{Decimal(str(m['trusted'])):,.8f} OBS")
@@ -102,7 +109,7 @@ class Wallet95:
             entry=tk.Entry(win,width=76);entry.pack(padx=10);entry.insert(0,address);entry.configure(state='readonly')
             tk.Button(win,text='Copy address',command=lambda:(win.clipboard_clear(),win.clipboard_append(address))).pack(pady=10)
             self.status.set('Receive address ready')
-        self.work(lambda:self.rpc.call('getnewaddress','', 'bech32'),done)
+        self.work(lambda:self.wallet_call('getnewaddress','', 'bech32'),done)
     def send(self):
         address=simpledialog.askstring('Send OBS','Recipient testnet address:',parent=self.root)
         if not address:return
@@ -113,23 +120,23 @@ class Wallet95:
         if not address.startswith('tobs1'):messagebox.showerror('Wrong address','Use an Obsolete testnet address (tobs1...).');return
         if not messagebox.askyesno('Confirm transfer',f'Send {amount} TEST OBS to\n{address}\n\nA network fee will also be charged. The transfer cannot be cancelled here.'):return
         def job():
-            if self.rpc.call('getblockchaininfo')['chain']!='obsolete-test':raise ValueError('Wrong network')
+            if self.wallet_call('getblockchaininfo')['chain']!='obsolete-test':raise ValueError('Wrong network')
             # Fixed 1 atom/vB fee for experimental testnet; no floating-point amount.
-            return self.rpc.call('sendtoaddress',address,amount,'','',False,True,None,None,False,1)
+            return self.wallet_call('sendtoaddress',address,amount,'','',False,True,None,None,False,1)
         self.work(job,lambda tx:(self.status.set('Transfer submitted: '+tx),messagebox.showinfo('Submitted','Transaction ID:\n'+tx+'\n\nWait for miners to confirm it.')))
     def backup(self):
         path=filedialog.asksaveasfilename(title='Backup local wallet',defaultextension='.dat')
-        if path:self.work(lambda:self.rpc.call('backupwallet',str(Path(path).resolve())),lambda _:self.status.set('Backup saved. Store it privately.'))
+        if path:self.work(lambda:self.wallet_call('backupwallet',str(Path(path).resolve())),lambda _:self.status.set('Backup saved. Store it privately.'))
     def encrypt(self):
         pw=simpledialog.askstring('Encrypt wallet','New passphrase (cannot be recovered):',show='*')
         if not pw:return
         again=simpledialog.askstring('Encrypt wallet','Repeat passphrase:',show='*')
         if again!=pw:messagebox.showerror('Mismatch','Passphrases differ.');return
-        self.work(lambda:self.rpc.call('encryptwallet',pw),lambda _:self.status.set('Wallet encrypted. Make a new backup.'))
+        self.work(lambda:self.wallet_call('encryptwallet',pw),lambda _:self.status.set('Wallet encrypted. Make a new backup.'))
     def unlock(self):
         pw=simpledialog.askstring('Unlock wallet','Passphrase (unlocks for 60 seconds):',show='*')
-        if pw:self.work(lambda:self.rpc.call('walletpassphrase',pw,60),lambda _:self.status.set('Unlocked for 60 seconds'))
-    def lock(self):self.work(lambda:self.rpc.call('walletlock'),lambda _:self.status.set('Wallet locked'))
+        if pw:self.work(lambda:self.wallet_call('walletpassphrase',pw,60),lambda _:self.status.set('Unlocked for 60 seconds'))
+    def lock(self):self.work(lambda:self.wallet_call('walletlock'),lambda _:self.status.set('Wallet locked'))
     def toggle_mine(self):
         if self.demo:return
         if self.miner and self.miner.is_alive():self.mining.set();self.status.set('Stopping miner after current batch...');return
@@ -137,7 +144,7 @@ class Wallet95:
         self.mining.clear()
         def job():
             try:
-                address=self.rpc.call('getnewaddress','mining','bech32')
+                address=self.wallet_call('getnewaddress','mining','bech32')
                 mine(RPC(self.rpc.cookie,self.rpc.port,timeout=120),address,self.mining)
             except Exception as e:self.queue.put((lambda _:None,None,'Mining: '+str(e)))
         self.miner=threading.Thread(target=job,daemon=True);self.miner.start();self.status.set('CPU mining started. Refresh to see rewards.')

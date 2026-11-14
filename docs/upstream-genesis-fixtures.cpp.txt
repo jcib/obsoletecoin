@@ -95,4 +95,3 @@ BOOST_AUTO_TEST_CASE(mine_brisvia_mainnet_genesis, * boost::unit_test::disabled(
     BOOST_TEST_MESSAGE("blockID    = " << genesis.GetHash().GetHex());
     BOOST_TEST_MESSAGE("powHash    = " << powHash.GetHex());
 }
-

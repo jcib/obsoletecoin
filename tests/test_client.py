@@ -23,15 +23,23 @@ class RPCTests(unittest.TestCase):
             def do_POST(self):
                 outer.path=self.path;outer.auth=self.headers['Authorization']
                 request=json.loads(self.rfile.read(int(self.headers['Content-Length'])))
+                outer.last_method=request['method']
+                if request['method']=='precise':
+                    self.send_response(200);self.end_headers()
+                    self.wfile.write(b'{"result":100000000.00000001,"error":null,"id":1}');return
                 if request['method']=='redirect':
                     self.send_response(302);self.send_header('Location','http://example.invalid/');self.end_headers();return
                 self.send_response(200);self.end_headers()
                 response={'result':request['params'],'error':None,'id':1}
+                if request['method']=='getblockchaininfo':response['result']={'chain':'main'}
                 if request['method']=='fail':response={'error':{'code':-6,'message':'Insufficient funds'},'id':1}
                 self.wfile.write(json.dumps(response).encode())
         self.server=HTTPServer(('127.0.0.1',0),Handler);self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start()
         self.rpc=RPC(self.cookie,self.server.server_port,'wallet/with space')
     def tearDown(self):self.server.shutdown();self.server.server_close();self.thread.join();self.temp.cleanup()
+    def test_response_preserves_one_atom_in_large_balance(self):
+        from decimal import Decimal
+        self.assertEqual(self.rpc.call('precise'),Decimal('100000000.00000001'))
     def test_wallet_routing_and_exact_amount(self):
         self.assertEqual(self.rpc.call('send','0.00000001'),['0.00000001'])
         self.assertEqual(self.path,'/wallet/wallet%2Fwith%20space')
@@ -40,6 +48,14 @@ class RPCTests(unittest.TestCase):
     def test_no_authentication_redirect(self):
         with self.assertRaises(RPCError) as cm:self.rpc.call('redirect')
         self.assertEqual(cm.exception.code,302)
+    def test_wrong_network_cannot_encrypt_a_wallet(self):
+        from wallet95 import Wallet95
+        app=Wallet95.__new__(Wallet95);app.rpc=self.rpc
+        # A real HTTP endpoint identifies itself as the wrong chain. The wallet
+        # refuses before submitting encryption (a potentially irreversible step).
+        with self.assertRaisesRegex(ValueError,'Only Obsolete testnet'):
+            app.wallet_call('encryptwallet','not-a-real-passphrase')
+        self.assertEqual(self.last_method,'getblockchaininfo')
     def test_structured_rpc_error(self):
         with self.assertRaises(RPCError) as cm:self.rpc.call('fail')
         self.assertEqual(cm.exception.code,-6)
