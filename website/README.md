@@ -36,3 +36,11 @@ Updated slogan and technical copy, sanitized Dell photo, OBSC labels and new dow
 Layout follows the supplied SiliconValley/1000 reference: blue tiled background, yellow type, cyan/magenta links, four illustrated navigation columns and black tables with yellow borders. Removed the requested sidebar/footer badges and header labels. User-provided floppy-disk-3d.gif is used for disk images and the favicon. GifCities asset sources are documented in ASSETS.md. All assets are local; no archive scripts or visitor trackers.
 
 Validation: 541 HTML pages and 16,186 local references, zero broken links or scripts. Chrome with JavaScript disabled at 1440/390/360 pixels: images loaded, GIF favicon correct, removed text absent, no horizontal overflow; downloads, explorer navigation and FAQ work. Package hashes unchanged.
+
+## Animated title and shared wallet theme
+
+CSS stepped title shimmer/skew, disabled for reduced-motion preference. User icon in the header, supplied Download and Mining GIFs in navigation, GifCities Windows and Tux animations in wallet download cards. GIF provenance in ASSETS.md.
+
+Wallet GUI now uses the same blue background tile, yellow text/borders, black panels and cyan controls. Assets ship in tools/assets for both Linux and Windows-through-WSL. Only wallet UI files were updated in the installed WSL application; no node restart or wallet-data changes. Tk smoke passed on Windows and Debian/WSLg, and history tests passed. Native Windows node/installer remains future work. Both archives verified to preserve their node binaries.
+
+Browser verification: 1440/390/360 pixels, all image sources and favicon load, animation is enabled normally and disabled with reduced motion, navigation/downloads/explorer/FAQ work, zero horizontal overflow. 541 HTML pages, 16,186 local links, zero scripts/broken links.

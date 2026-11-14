@@ -22,18 +22,38 @@ def transaction_state(tx):
     if tx.get('category') == 'immature': return 'Immature reward'
     return 'Confirmed' if confirmations > 0 else 'Pending'
 
-BG='#c0c0c0'; NAVY='#000080'; TEAL='#008080'
+BG='#000033'; NAVY='#000033'; TEAL='#000033'
+YELLOW='#ffff00'; CYAN='#00ffff'; BLACK='#000000'
 class Wallet:
     def __init__(self,root,rpc,demo=False):
         self.root=root;self.rpc=rpc;self.demo=demo;self.queue=queue.Queue();self.busy=False
-        self.mining=threading.Event();self.miner=None;self.snapshot=None;self.history_count=20;self.transactions={} 
-        root.title('Obsolete Coin');root.geometry('900x760');root.minsize(840,700);root.configure(bg=TEAL)
-        root.option_add('*Font',('Tahoma',10));root.option_add('*Background',BG)
-        style=ttk.Style();style.theme_use('clam');style.configure('Treeview',background='white',fieldbackground='white',rowheight=25)
-        shell=tk.Frame(root,bd=3,relief='raised',bg=BG);shell.pack(fill='both',expand=True,padx=24,pady=24)
+        self.mining=threading.Event();self.miner=None;self.snapshot=None;self.history_count=20;self.transactions={}
+        root.title('Obsolete Coin');root.geometry('980x820');root.minsize(940,780);root.configure(bg=TEAL)
+        root.option_add('*Font',('Times New Roman',11));root.option_add('*Background',BG)
+        for key,value in [('*Foreground',YELLOW),('*Button.Background',BLACK),('*Button.Foreground',CYAN),('*activeBackground',BLACK),('*activeForeground','#ffffff'),('*Entry.Background',BLACK),('*Entry.Foreground',CYAN),('*Entry.readonlyBackground',BLACK),('*Entry.insertBackground',CYAN),('*selectBackground','#000080'),('*selectForeground','#ffffff')]:root.option_add(key,value)
+        self.art=[]
+        asset_dir=Path(__file__).resolve().parent/'assets'
+        backdrop=tk.Canvas(root,highlightthickness=0,bg=BG);backdrop.place(x=0,y=0,relwidth=1,relheight=1)
+        try:
+            tile=tk.PhotoImage(file=str(asset_dir/'mazes.png'));self.art.append(tile)
+            def paint(event):
+                backdrop.delete('tile')
+                for x in range(0,event.width,tile.width()):
+                    for y in range(0,event.height,tile.height()):backdrop.create_image(x,y,image=tile,anchor='nw',tags='tile')
+            backdrop.bind('<Configure>',paint)
+        except tk.TclError:pass
+        style=ttk.Style();style.theme_use('clam');style.configure('Treeview',background=BLACK,fieldbackground=BLACK,foreground=YELLOW,rowheight=27,bordercolor=YELLOW,font=('Courier New',10))
+        style.configure('Treeview.Heading',background=BLACK,foreground=CYAN,font=('Times New Roman',11,'bold'))
+        style.map('Treeview',background=[('selected','#000080')],foreground=[('selected','#ffffff')])
+        style.map('Treeview.Heading',background=[('active',NAVY)],foreground=[('active','#ffffff')])
+        shell=tk.Frame(root,bd=1,relief='solid',bg=BG,highlightbackground=YELLOW,highlightthickness=1);shell.pack(fill='both',expand=True,padx=24,pady=24)
         title=tk.Frame(shell,bg=NAVY);title.pack(fill='x',padx=3,pady=3)
-        tk.Label(title,text='  [O]  Obsolete Coin',bg=NAVY,fg='white',font=('Tahoma',12,'bold')).pack(side='left',pady=5)
-        tk.Label(title,text='_  []  X ',bg=NAVY,fg='white').pack(side='right')
+        try:
+            logo=tk.PhotoImage(file=str(asset_dir/'obsolete-coin.gif'))
+            scale=max(1,(max(logo.width(),logo.height())+55)//56);logo=logo.subsample(scale,scale);self.art.append(logo);root.iconphoto(True,logo)
+            tk.Label(title,image=logo,bg=BG).pack(side='left',padx=14,pady=6)
+        except tk.TclError:pass
+        tk.Label(title,text='Obsolete Coin',bg=NAVY,fg=YELLOW,font=('Times New Roman',28,'bold italic')).pack(side='left',pady=8)
         menus=tk.Frame(shell,bd=1,relief='raised');menus.pack(fill='x',padx=3)
         for label,commands in [('File',[('Refresh',self.refresh),('Exit',self.close)]),
                                ('Wallet',[('Open / Create',self.open_wallet),('Receive',self.receive),('Send',self.send),('Backup',self.backup)]),
@@ -43,13 +63,13 @@ class Wallet:
             menu=tk.Menu(button,tearoff=0)
             for title,command in commands:menu.add_command(label=title,command=command)
             button.configure(menu=menu)
-        tk.Label(shell,text='Obsolete Coin',font=('Tahoma',22,'bold'),anchor='w').pack(fill='x',padx=22,pady=(20,4))
-        tk.Label(shell,text='DEMO PREVIEW - no blockchain connection' if demo else 'EXPERIMENTAL TESTNET - test coins have no monetary value',fg='#800000',anchor='w').pack(fill='x',padx=22)
-        panel=tk.Frame(shell,bd=2,relief='sunken',bg='white');panel.pack(fill='x',padx=22,pady=18)
+        tk.Frame(shell,height=3,bg='#ff0000').pack(fill='x',padx=22,pady=(12,10))
+        tk.Label(shell,text='DEMO PREVIEW - no blockchain connection' if demo else 'EXPERIMENTAL TESTNET - test coins have no monetary value',fg=YELLOW,anchor='w').pack(fill='x',padx=22)
+        panel=tk.Frame(shell,bd=1,relief='solid',bg=BLACK,highlightbackground=YELLOW,highlightthickness=1);panel.pack(fill='x',padx=22,pady=18)
         self.balance=tk.StringVar(value='-- OBSC');self.detail=tk.StringVar(value='Waiting for your local node...')
-        tk.Label(panel,text='Available balance',bg='white',anchor='w').pack(fill='x',padx=14,pady=(12,0))
-        tk.Label(panel,textvariable=self.balance,bg='white',font=('Courier New',26,'bold'),anchor='w').pack(fill='x',padx=14)
-        tk.Label(panel,textvariable=self.detail,bg='white',anchor='w').pack(fill='x',padx=14,pady=(0,12))
+        tk.Label(panel,text='Available balance',bg=BLACK,anchor='w').pack(fill='x',padx=14,pady=(12,0))
+        tk.Label(panel,textvariable=self.balance,bg=BLACK,font=('Courier New',26,'bold'),anchor='w').pack(fill='x',padx=14)
+        tk.Label(panel,textvariable=self.detail,bg=BLACK,anchor='w').pack(fill='x',padx=14,pady=(0,12))
         row=tk.Frame(shell);row.pack(fill='x',padx=22)
         for label,command in [('Open / Create',self.open_wallet),('Receive',self.receive),('Send...',self.send),('Backup...',self.backup),('Mine / Stop',self.toggle_mine)]:
             tk.Button(row,text=label,command=command,bd=2,relief='raised',padx=8,pady=5).pack(side='left',padx=(0,6))
@@ -58,7 +78,7 @@ class Wallet:
             tk.Button(row2,text=label,command=command,bd=2).pack(side='left',padx=(0,7))
         tk.Label(shell,text='Recent activity',anchor='w',font=('Tahoma',10,'bold')).pack(fill='x',padx=22,pady=(18,5))
         self.table=ttk.Treeview(shell,columns=('date','type','amount','conf'),show='headings',height=5)
-        for key,name,width in [('date','Date / time (local)',290),('type','Status',150),('amount','Amount (OBSC)',180),('conf','Confirmations',100)]:
+        for key,name,width in [('date','Date / time (local)',340),('type','Status',180),('amount','Amount (OBSC)',180),('conf','Confirmations',100)]:
             self.table.heading(key,text=name);self.table.column(key,width=width)
         self.table.pack(fill='both',expand=True,padx=22)
         self.table.bind('<Double-1>',lambda event:self.transaction_details())

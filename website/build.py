@@ -27,7 +27,7 @@ for name,path in DOWNLOADS:
 
 def write_page(path,title,content,active='home'):
     depth=len(Path(path).parts)-1;r='../'*depth
-    nav=[('downloads','downloads.html','Downloads','floppy-disk-3d.gif'),('explorer','explorer/index.html','Block explorer','terminal.gif'),('coin','coin.html','The coin','computer.gif'),('mining','mining.html','How to mine','construction.gif')]
+    nav=[('downloads','downloads.html','Downloads','download.gif'),('explorer','explorer/index.html','Block explorer','terminal.gif'),('coin','coin.html','The coin','computer.gif'),('mining','mining.html','How to mine','mining.gif')]
     links=''.join(f'<a href="{r}{url}"'+(' aria-current="page"' if key==active else '')+f'><img src="{r}assets/{icon}" alt="" width="80" height="80"><span>{label}</span></a>' for key,url,label,icon in nav)
     doc=f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -36,7 +36,7 @@ def write_page(path,title,content,active='home'):
 <meta property="og:title" content="Obsolete Coin"><meta property="og:description" content="It's tacky, cheap, and slow, but it's also tough and hard-wearing."><meta property="og:url" content="{ORIGIN}/{E(path)}">
 <link rel="icon" href="{r}assets/floppy-disk-3d.gif" type="image/gif"><link rel="stylesheet" href="{r}assets/style.css"></head>
 <body><a class="skip" href="#content">Skip to content</a><div class="site">
-<header class="masthead"><a class="brand" href="{r}index.html"><img src="{r}assets/floppy-disk-3d.gif" alt="" width="80" height="80"><span>Obsolete Coin</span></a>
+<header class="masthead"><a class="brand" href="{r}index.html"><img src="{r}assets/obsolete-coin.gif" alt="" width="80" height="80"><span>Obsolete Coin</span></a>
 <img class="redline" src="{r}assets/roughredline.gif" alt="" width="550" height="20">
 <p class="slogan">It's tacky, cheap, and slow, but it's also tough and hard-wearing.</p>
 <p class="intro">A deliberately slow coin. A thoroughly old-fashioned home.</p><p class="micro">CPU MINED &nbsp; / &nbsp; SLOW BY DESIGN &nbsp; / &nbsp; NO PREMINE</p>
@@ -48,8 +48,8 @@ def write_page(path,title,content,active='home'):
     (OUT/path).write_text(doc,encoding='utf-8')
 
 def download_cards():
-    return """<div class="download-grid"><article class="download"><h3><img src="@ROOT@assets/floppy-disk-3d.gif" alt="">Windows + WSL</h3><p>The testnet wallet, local node and CPU miner. Requires Debian in WSL.</p><a class="button" href="@ROOT@downloads/windows-wsl.zip" download>DOWNLOAD .ZIP &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#windows">Setup instructions</a></div></article>
-<article class="download"><h3><img src="@ROOT@assets/floppy-disk-3d.gif" alt="">Linux</h3><p>The testnet node, command-line tools and retro desktop wallet.</p><a class="button" href="@ROOT@downloads/linux-x64.tar.gz" download>DOWNLOAD .TAR.GZ &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#linux">Setup instructions</a></div></article></div>"""
+    return """<div class="download-grid"><article class="download"><h3><img src="@ROOT@assets/windows.gif" alt="">Windows + WSL</h3><p>The testnet wallet, local node and CPU miner. Requires Debian in WSL.</p><a class="button" href="@ROOT@downloads/windows-wsl.zip" download>DOWNLOAD .ZIP &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#windows">Setup instructions</a></div></article>
+<article class="download"><h3><img src="@ROOT@assets/linux.gif" alt="">Linux</h3><p>The testnet node, command-line tools and retro desktop wallet.</p><a class="button" href="@ROOT@downloads/linux-x64.tar.gz" download>DOWNLOAD .TAR.GZ &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#linux">Setup instructions</a></div></article></div>"""
 
 latest=''.join(f'<li><a href="explorer/blocks/{b["height"]}.html">Block #{b["height"]}</a><span>{len(b["tx"])} tx</span></li>' for b in reversed(BLOCKS[-5:]))
 home=f"""<h1 class="home-title">Obsolete Coin (OBSC)</h1>
