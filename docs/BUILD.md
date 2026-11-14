@@ -39,3 +39,27 @@ Two historical upstream genesis-mining helpers are preserved in
 `docs/upstream-genesis-fixtures.cpp.txt` outside the active suite; they mine a
 different currency. Obsolete genesis is independently mined and checked against
 fixed constants. Official RandomX vectors and remaining inherited suites run.
+
+## Use the experimental Debian 13 archive
+
+Download `obsoletecoin-linux-experimental` from the successful private Actions
+run. The ZIP contains a `.tar.gz` and `SHA256SUMS`; extracting the tar preserves
+executable permissions. On Debian 13 x86-64, install the runtime libraries:
+
+```sh
+sudo apt-get update
+sudo apt-get install --no-install-recommends python3 python3-tk \
+  libevent-2.1-7t64 libevent-core-2.1-7t64 libevent-extra-2.1-7t64 \
+  libevent-pthreads-2.1-7t64 libsqlite3-0
+# Place the two downloaded files in a directory named artifacts:
+sha256sum -c artifacts/SHA256SUMS
+tar -xzf artifacts/obsoletecoin-linux-experimental.tar.gz
+cd obsoletecoin-linux
+python3 tools/node.py
+# Another graphical terminal, from the same directory:
+python3 tools/wallet95.py
+```
+
+The node works without a graphical desktop. Use a separate local node on the
+mining laptop for the wallet. CI repeats the real-node integration on Debian 13
+using this archive; it does not test resource consumption on your actual Dell.
