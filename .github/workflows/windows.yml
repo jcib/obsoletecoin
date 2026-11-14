@@ -52,6 +52,9 @@ jobs:
       - name: Native Windows integration
         shell: pwsh
         run: |
+          $Tk = (python release/prepare-tk.py | ConvertFrom-Json)
+          if ($LASTEXITCODE -ne 0) { throw 'Tcl/Tk smoke failed' }
+          if ($Tk.TCL_LIBRARY) { $env:TCL_LIBRARY = $Tk.TCL_LIBRARY; $env:TK_LIBRARY = $Tk.TK_LIBRARY }
           python -B tools/integration.py --bindir native --library native/librandomx.dll
           if ($LASTEXITCODE -ne 0) { throw 'Native integration failed' }
           python -B tools/adversarial.py --binary native/bitcoind.exe --output native/adversarial.json
