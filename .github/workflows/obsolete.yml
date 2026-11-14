@@ -33,7 +33,7 @@ jobs:
         run: |
           cmake -S src/randomx -B src/randomx/build -DCMAKE_BUILD_TYPE=Release
           cmake --build src/randomx/build --target randomx -j2
-          cmake -S src/randomx -B build-randomx-shared -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S src/randomx -B build-randomx-shared -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,noexecstack
           cmake --build build-randomx-shared --target randomx -j2
       - name: Reproduce experimental genesis
         run: python3 tools/genesis.py --library build-randomx-shared/librandomx.so --verify
@@ -54,6 +54,8 @@ jobs:
         with:
           path: .ccache
           key: obsolete-ccache-${{ runner.os }}-${{ github.sha }}
+      - name: Check ELF stack permissions
+        run: python3 tools/check_hardening.py build/bin/bitcoind build/bin/bitcoin-wallet build-randomx-shared/librandomx.so
       - name: Consensus and inherited unit tests
         run: ctest --test-dir build --output-on-failure -j1
       - name: Integration tests
@@ -86,3 +88,30 @@ jobs:
           path: |
             artifacts/*.tar.gz
             artifacts/SHA256SUMS
+
+  debian13:
+    name: Debian 13 runtime and wallet recovery
+    needs: linux
+    runs-on: ubuntu-24.04
+    container: debian:13
+    timeout-minutes: 15
+    steps:
+      - name: Runtime dependencies
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends git ca-certificates python3 python3-tk xvfb xauth libevent-2.1-7t64 libevent-pthreads-2.1-7t64 libsqlite3-0
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: obsoletecoin-linux-experimental
+          path: artifacts
+      - name: Verify and extract package
+        run: |
+          sha256sum -c artifacts/SHA256SUMS
+          mkdir -p .local/package
+          tar -xzf artifacts/obsoletecoin-linux-experimental.tar.gz -C .local/package
+      - name: Mine, transfer, reorganize and restore on Debian 13
+        run: |
+          xvfb-run -a python3 tools/integration.py --bindir .local/package/obsoletecoin-linux --library .local/package/obsoletecoin-linux/librandomx.so
+          python3 -m unittest discover -s tests -v
+          xvfb-run -a python3 tools/ui_smoke.py

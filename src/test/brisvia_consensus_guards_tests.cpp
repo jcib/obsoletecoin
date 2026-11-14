@@ -70,8 +70,11 @@ BOOST_AUTO_TEST_CASE(obsolete_asert_hashrate_response) {
     normal.SetCompact(scheduled);hard.SetCompact(fast);easy.SetCompact(slow);
     BOOST_CHECK(hard < normal);
     BOOST_CHECK(easy > normal);
-    BOOST_CHECK_EQUAL((normal >> 1).GetCompact(),fast);
+    arith_uint256 half = normal, twice = normal;
+    half >>= 1;
+    twice <<= 1;
+    BOOST_CHECK_EQUAL(half.GetCompact(),fast);
     // Compact encoding may discard low bits: do not assert unencoded precision.
-    BOOST_CHECK_EQUAL((normal << 1).GetCompact(),slow);
+    BOOST_CHECK_EQUAL(twice.GetCompact(),slow);
 }
 BOOST_AUTO_TEST_SUITE_END()

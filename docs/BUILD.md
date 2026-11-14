@@ -11,7 +11,7 @@ sudo apt-get install --no-install-recommends build-essential cmake pkgconf \
 git submodule update --init --recursive
 cmake -S src/randomx -B src/randomx/build -DCMAKE_BUILD_TYPE=Release
 cmake --build src/randomx/build --target randomx -j2
-cmake -S src/randomx -B build-randomx-shared -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S src/randomx -B build-randomx-shared -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,noexecstack
 cmake --build build-randomx-shared --target randomx -j2
 python3 tools/genesis.py --library build-randomx-shared/librandomx.so --verify
 cmake -B build -DBUILD_TESTS=ON -DBUILD_GUI=OFF -DBUILD_BENCH=OFF \

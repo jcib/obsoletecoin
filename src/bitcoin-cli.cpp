@@ -436,7 +436,9 @@ private:
         case ChainType::REGTEST:
             return " regtest";
         case ChainType::BRISVIA_TESTNET:
-            return " brisvia-test";
+            return " obsolete-test";
+        case ChainType::BRISVIA_MAIN:
+            return " obsolete";
         case ChainType::MAIN:
             return "";
         }
