@@ -98,8 +98,10 @@ def run(binary,library):
             try:a.rpc.call('sendrawtransaction',raw)
             except RPCError:pass
             assert Decimal(str(wb.call('getbalances')['mine']['trusted']))==Decimal('12.34')
-            # Two invalid variants of the most recent block, against its existing parent.
-            original=from_hex(CBlock(),a.rpc.call('getblock',tip,0))
+            # A candidate extending the active tip must be connected, so its
+            # subsidy is checked immediately (an equal-work side block can defer it).
+            proposal=a.rpc.call('generateblock',addr,[],False)
+            original=from_hex(CBlock(),proposal['hex'])
             seed=bytes.fromhex(a.rpc.call('getblockhash',0))[::-1]
             target=(original.nBits & 0x007fffff) << (8*((original.nBits>>24)-3))
             with RandomX(library,seed) as rx:

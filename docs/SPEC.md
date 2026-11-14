@@ -21,6 +21,11 @@ Issuance follows height, not wall time. No miners means no new blocks. A hash-ra
 burst can accelerate blocks before difficulty catches up. There is no guaranteed
 111-year deadline. At a steady target interval, a halving takes about 2.85 years.
 
+The inherited header timestamp is an unsigned 32-bit Unix time and reaches its
+limit in 2106. The theoretical 111-year subsidy schedule extends beyond that
+date: a reviewed consensus upgrade would be needed beforehand. This prototype
+does not promise an unchanged century-long protocol.
+
 ## Work, validation and timing
 
 - RandomX output is a 256-bit little-endian integer <= compact target.

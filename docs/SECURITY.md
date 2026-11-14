@@ -23,6 +23,8 @@ independent fork/RandomX-header-sync review, adversarial network and DoS testing
 hash-rate/difficulty simulations, initial-difficulty calibration, a launch/genesis
 decision, recovery exercises, reproducible release builds and independent miners.
 These are outstanding work, not guarantees supplied by the initial CI.
+A future timestamp-format upgrade is also required before the inherited 32-bit
+header time reaches its limit in 2106; see SPEC.md.
 
 Do not merely remove the guard and reuse private-testnet distribution. The easy
 initial target is for tests; it is unsuitable as a fair-launch claim. Per-block
