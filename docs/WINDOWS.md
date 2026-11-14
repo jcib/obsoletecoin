@@ -37,3 +37,16 @@ without securely backing up the wallet first. v0.1 blocks/balances are incompati
 
 For another server address, run PowerShell from the extracted folder:
 `powershell -NoProfile -File tools/start-windows.ps1 -Server 192.168.1.X:19777`.
+
+## If the launcher says Debian is missing
+
+Having WSL installed is not enough: `wsl --list --verbose` must list a Debian
+installation. If the list is empty, install Debian using step 1 above. If WSL
+reports access denied or a service error, resolve that WSL error first; the
+launcher displays the original diagnostic instead of assuming Debian is missing.
+
+To verify setup with a bounded mining session, run from PowerShell in the
+extracted folder:
+`powershell -NoProfile -File tools/start-windows.ps1 -Blocks 1`.
+This mines one real test block into the local wallet, then stops the local node.
+The normal `Start-Mining.cmd` launcher continues until you press Ctrl-C.
