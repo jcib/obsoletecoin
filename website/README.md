@@ -30,3 +30,9 @@ Captured 14 November 2026 at 10:55:30 UTC, blocks 0 through 264. Link validation
 ## OBSC update verification
 
 Updated slogan and technical copy, sanitized Dell photo, OBSC labels and new download packages verified in Chrome at 1440, 390 and 360 pixels with JavaScript disabled. All 541 pages and local references validated. Wallet date/state tests and Tk smoke passed; a simulated RPC GUI exercise verified 20 then 40 rows and transaction details. Read-only WSL checks validated dates on 21 actual transactions and gettransaction details. Updated wallet UI installed in the existing WSL tools directory without restarting mining or changing wallet data. Reopen the wallet to load the new interface. Mainnet remains blocked; see docs/MAINNET-READINESS.md.
+
+## GeoCities reference redesign
+
+Layout follows the supplied SiliconValley/1000 reference: blue tiled background, yellow type, cyan/magenta links, four illustrated navigation columns and black tables with yellow borders. Removed the requested sidebar/footer badges and header labels. User-provided floppy-disk-3d.gif is used for disk images and the favicon. GifCities asset sources are documented in ASSETS.md. All assets are local; no archive scripts or visitor trackers.
+
+Validation: 541 HTML pages and 16,186 local references, zero broken links or scripts. Chrome with JavaScript disabled at 1440/390/360 pixels: images loaded, GIF favicon correct, removed text absent, no horizontal overflow; downloads, explorer navigation and FAQ work. Package hashes unchanged.

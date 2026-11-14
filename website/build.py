@@ -27,39 +27,38 @@ for name,path in DOWNLOADS:
 
 def write_page(path,title,content,active='home'):
     depth=len(Path(path).parts)-1;r='../'*depth
-    nav=[('home','index.html','Home'),('downloads','downloads.html','Downloads'),('explorer','explorer/index.html','Block explorer'),('coin','coin.html','The coin'),('mining','mining.html','How to mine'),('faq','faq.html','Questions & answers')]
-    links=''.join(f'<a href="{r}{url}"'+(' class="current" aria-current="page"' if key==active else '')+f'>{label}</a>' for key,url,label in nav)
+    nav=[('downloads','downloads.html','Downloads','floppy-disk-3d.gif'),('explorer','explorer/index.html','Block explorer','terminal.gif'),('coin','coin.html','The coin','computer.gif'),('mining','mining.html','How to mine','construction.gif')]
+    links=''.join(f'<a href="{r}{url}"'+(' aria-current="page"' if key==active else '')+f'><img src="{r}assets/{icon}" alt="" width="80" height="80"><span>{label}</span></a>' for key,url,label,icon in nav)
     doc=f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{E(title)} | Obsolete Coin</title><meta name="description" content="It's tacky, cheap, and slow, but it's also tough and hard-wearing. Obsolete Coin: a deliberately slow, CPU-mined experimental cryptocurrency. Testnet downloads and a real HTML blockchain archive.">
-<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#080d37">
-<meta property="og:title" content="Obsolete Coin - It's tacky, cheap, and slow, but it's also tough and hard-wearing."><meta property="og:description" content="CPU mining, testnet downloads and blockchain data."><meta property="og:url" content="{ORIGIN}/{E(path)}">
-<link rel="icon" href="{r}assets/floppy.svg" type="image/svg+xml"><link rel="stylesheet" href="{r}assets/style.css"></head>
-<body><a class="skip" href="#content">Skip to content</a><div class="site"><div class="topline"><span>THE OBSOLETE COIN HOMEPAGE</span><span>HTML / CSS</span></div>
-<div class="frame"><div class="titlebar"><a href="{r}index.html">&#9632; Obsolete Coin &mdash; {E(title)}</a><span class="chrome" aria-hidden="true">_ &#9633; &times;</span></div>
-<div class="notice">EXPERIMENTAL TESTNET v0.2 &nbsp; &bull; &nbsp; Test coins have no monetary value. <a href="{r}faq.html#mainnet">Mainnet is not live.</a></div>
-<div class="layout"><aside class="sidebar"><div class="section-label">YOU ARE HERE</div><nav class="nav" aria-label="Main navigation">{links}<a href="{GITHUB}">GitHub &#8599;</a></nav>
-
-<div class="sidebar-box"><div class="tiny">BLOCKS IN THIS ARCHIVE</div><div class="counter">{len(BLOCKS):06d}</div><div class="tiny dim">Real blocks. Static snapshot.</div></div>
-<div class="sidebar-box"><span class="badge yellow">HTML INSIDE</span><span class="badge pink">CPU POWERED</span><span class="badge">TESTNET ONLY</span><p class="tiny dim"></p></div></aside>
-<main class="content" id="content">{content.replace('@ROOT@',r)}</main></div>
-<footer class="footer"><div class="footer-links"><a href="{r}index.html">Home</a><a href="{r}downloads.html">Downloads</a><a href="{r}explorer/index.html">Explorer</a><a href="{r}roadmap.html">Road to mainnet</a><a href="{GITHUB}">Source on GitHub</a></div>
-<p class="slogan-small">It's tacky, cheap, and slow, but it's also tough and hard-wearing.</p><div class="footer-badges"><span class="badge">NO JAVASCRIPT</span><span class="badge pink">WALLET BACKUPS</span><span class="badge yellow">TESTNET</span></div>
-<div class="tiny">Obsolete Coin &middot; Experimental software &middot; Page archive: {E(CAPTURE)}<br></div></footer></div></div></body></html>"""
+<title>{E(title)} | Obsolete Coin</title><meta name="description" content="Obsolete Coin (OBSC). CPU mining, testnet downloads and blockchain data.">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#000033">
+<meta property="og:title" content="Obsolete Coin"><meta property="og:description" content="It's tacky, cheap, and slow, but it's also tough and hard-wearing."><meta property="og:url" content="{ORIGIN}/{E(path)}">
+<link rel="icon" href="{r}assets/floppy-disk-3d.gif" type="image/gif"><link rel="stylesheet" href="{r}assets/style.css"></head>
+<body><a class="skip" href="#content">Skip to content</a><div class="site">
+<header class="masthead"><a class="brand" href="{r}index.html"><img src="{r}assets/floppy-disk-3d.gif" alt="" width="80" height="80"><span>Obsolete Coin</span></a>
+<img class="redline" src="{r}assets/roughredline.gif" alt="" width="550" height="20">
+<p class="slogan">It's tacky, cheap, and slow, but it's also tough and hard-wearing.</p>
+<p class="intro">A deliberately slow coin. A thoroughly old-fashioned home.</p><p class="micro">CPU MINED &nbsp; / &nbsp; SLOW BY DESIGN &nbsp; / &nbsp; NO PREMINE</p>
+<p class="notice">Experimental testnet v0.2 &mdash; <a href="{r}faq.html#mainnet">Mainnet is not live.</a><br>Test coins have no monetary value.</p></header>
+<nav class="nav" aria-label="Main navigation">{links}</nav>
+<div class="link-table"><a href="{r}index.html">Home</a><a href="{r}faq.html">Questions &amp; answers</a><a href="{GITHUB}">GitHub</a><a href="{r}roadmap.html">Mainnet status</a></div>
+<main class="content" id="content">{content.replace('@ROOT@',r)}</main>
+<footer class="footer"><img class="redline" src="{r}assets/roughredline.gif" alt="" width="550" height="20"><div class="footer-links"><a href="{r}index.html">Home</a> | <a href="{r}downloads.html">Downloads</a> | <a href="{r}explorer/index.html">Explorer</a> | <a href="{r}roadmap.html">Mainnet status</a> | <a href="{GITHUB}">GitHub</a></div><p>Page archive: {E(CAPTURE)}</p></footer></div></body></html>"""
     (OUT/path).write_text(doc,encoding='utf-8')
 
 def download_cards():
-    return """<div class="download-grid"><article class="download"><h3><img src="@ROOT@assets/floppy.svg" alt="">Windows + WSL</h3><p>The testnet wallet, local node and CPU miner. Requires Debian in WSL.</p><a class="button" href="@ROOT@downloads/windows-wsl.zip" download>DOWNLOAD .ZIP &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#windows">Setup instructions</a></div></article>
-<article class="download"><h3><img src="@ROOT@assets/floppy.svg" alt="">Linux</h3><p>The testnet node, command-line tools and retro desktop wallet.</p><a class="button" href="@ROOT@downloads/linux-x64.tar.gz" download>DOWNLOAD .TAR.GZ &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#linux">Setup instructions</a></div></article></div>"""
+    return """<div class="download-grid"><article class="download"><h3><img src="@ROOT@assets/floppy-disk-3d.gif" alt="">Windows + WSL</h3><p>The testnet wallet, local node and CPU miner. Requires Debian in WSL.</p><a class="button" href="@ROOT@downloads/windows-wsl.zip" download>DOWNLOAD .ZIP &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#windows">Setup instructions</a></div></article>
+<article class="download"><h3><img src="@ROOT@assets/floppy-disk-3d.gif" alt="">Linux</h3><p>The testnet node, command-line tools and retro desktop wallet.</p><a class="button" href="@ROOT@downloads/linux-x64.tar.gz" download>DOWNLOAD .TAR.GZ &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#linux">Setup instructions</a></div></article></div>"""
 
 latest=''.join(f'<li><a href="explorer/blocks/{b["height"]}.html">Block #{b["height"]}</a><span>{len(b["tx"])} tx</span></li>' for b in reversed(BLOCKS[-5:]))
-home=f"""<section class="hero"><div class="hero-line"><img class="floppy" src="assets/floppy.svg" alt="A pixel-art floppy disk"><h1>OBSOLETE<br>COIN</h1></div><p class="slogan">It's tacky, cheap, and slow, but it's also tough and hard-wearing.</p><p class="intro">A deliberately slow coin. A thoroughly old-fashioned home.</p><p class="micro">CPU MINED &nbsp; / &nbsp; SLOW BY DESIGN &nbsp; / &nbsp; NO PREMINE</p></section>
-<h2 class="section-head">Downloads <small>[ TESTNET DOWNLOADS ]</small></h2>{download_cards()}
-<div class="under-construction"><strong>Native Windows wallet: under construction.</strong> No WSL-free .exe yet. It is a requirement before mainnet. <a href="roadmap.html">See what is next &raquo;</a></div>
-<div class="stats"><div><strong>1 BILLION</strong><span>MAXIMUM OBSC</span></div><div><strong>15 MIN</strong><span>TARGET BLOCK TIME</span></div><div><strong>CPU</strong><span>RANDOMX MINING</span></div></div>
-<div class="home-columns"><section class="small-window"><div class="window-title">&#9632; THE NOTICE BOARD</div><div class="window-body"><p class="news-date">EXPERIMENTAL RELEASE / v0.2</p><p><strong>The testnet is running.</strong> CPU mining and wallet transfers are available.</p><p>Early blocks can arrive quickly. The 15-minute interval is a target, not a fixed delay.</p><a href="coin.html">Technical specifications &raquo;</a></div></section>
-<section class="small-window"><div class="window-title">&#9632; RECENT BLOCKS</div><div class="window-body"><ul class="block-mini">{latest}</ul><p class="tiny dim" style="">Captured {E(CAPTURE)}. This is an archive, not a live feed.</p><a href="explorer/index.html">Open the block explorer &raquo;</a></div></section></div>
-<section class="paper"><h2>First node: Dell Micro 7040 (2016)</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 used as the first Obsolete Coin testnet node"><p>Experimental testnet node. CPU mining runs on a separate computer.</p><p><a href="{GITHUB}">Source code on GitHub</a> (private during testing).</p></section>"""
+home=f"""<h1 class="home-title">Obsolete Coin (OBSC)</h1>
+<section class="home-downloads"><h2>Testnet downloads</h2>{download_cards()}</section>
+<div class="under-construction"><img src="assets/construction.gif" alt="" width="64" height="64"><p><strong>Native Windows wallet: under construction.</strong><br>The current Windows package requires WSL. <a href="roadmap.html">Mainnet requirements</a></p></div>
+<table class="home-facts"><tbody><tr><th>Maximum issuance</th><th>Target block interval</th><th>Mining</th></tr><tr><td>1,000,000,000 OBSC</td><td>15 minutes</td><td>RandomX / CPU</td></tr></tbody></table>
+<section class="node-section"><h2>First node: Dell Micro 7040 (2016)</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 used as the first Obsolete Coin testnet node"><p>Experimental testnet node. CPU mining runs on a separate computer.</p></section>
+<section class="block-section"><h2>Recent blocks</h2><ul class="block-mini">{latest}</ul><p>Captured {E(CAPTURE)}. This is an archive, not a live feed.</p><p><a href="explorer/index.html">Open the block explorer</a></p></section>
+<p class="network-note">The 15-minute interval is a target, not a fixed delay. Initial testnet difficulty is intentionally easy.<br><a href="coin.html">Technical specifications</a> | <a href="{GITHUB}">Source code</a> (private during testing).</p>"""
 write_page('index.html','Home',home)
 
 checks=''.join(f'<p><strong>{E(k)}</strong><br><code class="hash">{v}</code></p>' for k,v in CHECKSUMS.items())
