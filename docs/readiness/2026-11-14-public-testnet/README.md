@@ -27,3 +27,16 @@ handshake. The same probe succeeded on the LAN. The first GitHub rehearsal,
 unpublished draft release; that attempt did not test the network.
 No independent full synchronization or anonymous-download check has passed yet.
 Repository, draft release and website remain private pending explicit owner approval.
+
+## Read-only arrival diagnosis
+
+A 90-second observation on the Dell network interface counted only TCP SYN headers
+for destination port 19777, without recording payloads or external source addresses.
+It saw one deliberately generated LAN control SYN and zero public SYNs. The live
+public nftables allowance existed and remained at zero packets. The website cloud
+probe and GitHub run 43650429584 both failed to connect during this investigation.
+This localizes the observed failure before delivery to the Dell; the router/NAT,
+router firewall or provider path still needs inspection. No firewall reload,
+service restart or configuration change was made during this diagnosis.
+The owner confirmed the intended NAT fields and WAN IP, but the actual router
+configuration has not been visually inspected. See network-diagnostic.json.

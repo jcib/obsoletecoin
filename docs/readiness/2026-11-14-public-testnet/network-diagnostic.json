@@ -1,0 +1,178 @@
+[
+  {
+    "phase": "listening",
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 11,
+    "public_syn": 0,
+    "lan_syn": 0,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 21,
+    "public_syn": 0,
+    "lan_syn": 0,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 31,
+    "public_syn": 0,
+    "lan_syn": 0,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 41,
+    "public_syn": 0,
+    "lan_syn": 0,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 51,
+    "public_syn": 0,
+    "lan_syn": 0,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 63,
+    "public_syn": 0,
+    "lan_syn": 0,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 73,
+    "public_syn": 0,
+    "lan_syn": 1,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "sample",
+    "elapsed": 86,
+    "public_syn": 0,
+    "lan_syn": 1,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "complete",
+    "public_syn": 0,
+    "lan_syn": 1,
+    "public_rules": [
+      {
+        "table": "heimweh",
+        "chain": "input",
+        "counter": [
+          {
+            "packets": 0,
+            "bytes": 0
+          }
+        ]
+      }
+    ]
+  }
+]
