@@ -48,3 +48,5 @@ wallet.dat
 .env*
 node_modules/
 artifacts/
+
+.wrangler/

@@ -1,10 +1,48 @@
+# Obsolete Coin website and live testnet explorer
+
+The current publication uses a small Worker to serve the existing plain HTML/CSS
+site and an HTML iframe that refreshes every 15 seconds without reloading audio.
+No browser JavaScript, wallet RPC forwarding or wallet-key collection is used.
+
+`website/live/publisher.py` runs as the dedicated node account on the Dell. It reads
+only public blockchain/network/mempool RPCs over loopback, verifies the v0.2 genesis,
+rejects incomplete synchronization and checks the tip again after constructing its
+view. A cached canonical window of at most 1024 blocks is replaced on reorganizations.
+The window shrinks if needed to stay below 3.5 MB. Large single blocks beyond that
+limit stop the feed explicitly; data becomes stale, rather than falsely current.
+
+Only allowlisted block/transaction fields leave the server. The publisher signs each
+request with an HMAC secret stored in a protected server configuration and the Sites
+runtime secret store. Requests expire after two minutes. R2 conditional writes reject
+replayed/older observations and concurrent overwrites. The server-rendered explorer
+marks observations older than 60 seconds stale, even if the last block itself is old.
+Address output history is not a spendable balance; unconfirmed transaction details
+and blocks outside current coverage are not indexed.
+
+Assets/downloads are R2 objects locked to SHA-256 hashes and sizes compiled into the
+Worker. The ingestion credential cannot replace a download with different bytes.
+MP3 byte ranges are supported. Credentials never enter generated HTML or Git.
+
+Build: `python website/build.py --snapshot .local/site/snapshot.json --output .local/public-static --live`,
+then `python website/live/build_worker.py --static .local/public-static --site .local/site`.
+The Site checkout has `build.mjs` to rebuild its exact Worker source. Package/publish
+through the Sites helper, then seed exact hash-checked assets before opening access.
+Do not run the one-time Dell installer against an already configured node.
+
+Checks cover allowlisting, wrong network, stale data, exact amounts, HMAC expiration,
+route binding, replay rejection, R2 conditional writes, canonical tip rollback and
+immutable asset uploads. Chrome with JavaScript disabled at 1440/390/360 validates
+navigation, iframe refresh, uninterrupted audio, mobile layout and download hashes.
+
+## Earlier static publications (historical evidence)
+
 # Obsolete Coin website
 
 A portable English-language GeoCities-inspired site: plain HTML, local CSS and SVG, no JavaScript, external fonts, analytics or runtime framework.
 
 Slogan: **It's tacky, cheap, and slow.**
 
-Private website: https://obsoletecoin.pages.dev
+Website: https://obsoletecoin.pages.dev
 
 Includes downloads, network specifications, mining instructions, FAQ, a mainnet readiness checklist, GitHub links, and a static explorer generated from real public testnet block data. An unsigned native Windows test installer is now available; mainnet remains blocked.
 

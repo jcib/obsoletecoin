@@ -1,0 +1,23 @@
+name: Testnet bug report
+description: Report a reproducible problem in Obsolete Coin testnet.
+title: "[testnet] "
+body:
+  - type: markdown
+    attributes:
+      value: "Never attach wallet files, private keys, passphrases or RPC cookies. Redact logs. Test coins have no monetary value."
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and package version
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps, expected result and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: chain
+    attributes:
+      label: Block height, block hash and redacted error text

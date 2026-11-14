@@ -1,0 +1,23 @@
+[
+  {
+    "width": 1440,
+    "javascript": false,
+    "navigation": true,
+    "live_refresh": "verified",
+    "audio_survives": "verified"
+  },
+  {
+    "width": 390,
+    "javascript": false,
+    "navigation": true,
+    "live_refresh": "covered at desktop",
+    "audio_survives": "covered at desktop"
+  },
+  {
+    "width": 360,
+    "javascript": false,
+    "navigation": true,
+    "live_refresh": "covered at desktop",
+    "audio_survives": "covered at desktop"
+  }
+]
