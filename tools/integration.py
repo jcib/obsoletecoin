@@ -1,5 +1,5 @@
 """Real two-node integration on disposable local Obsolete testnet data directories."""
-import argparse, json, socket, subprocess, tempfile, time, sys
+import argparse, json, socket, subprocess, tempfile, time, sys, os
 from pathlib import Path
 from decimal import Decimal
 from rpc import RPC, RPCError
@@ -120,6 +120,21 @@ def run(binary,library):
                 else:raise AssertionError('Could not mine overpay test block')
                 result=a.rpc.call('submitblock',excess.serialize().hex())
                 assert result=='bad-cb-amount',result
+                # Solve each malformed header with valid work so contextual checks,
+                # rather than an invalid proof, reject timestamps and difficulty.
+                for kind,expected in [('past','time-too-old'),('future','time-too-new'),('difficulty','bad-randomx-pow')]:
+                    candidate=from_hex(CBlock(),original.serialize().hex())
+                    if kind=='past':candidate.nTime=a.rpc.call('getblockchaininfo')['mediantime']
+                    elif kind=='future':candidate.nTime=int(time.time())+3*3600
+                    else:candidate.nBits-=1
+                    candidate_target=(candidate.nBits & 0x007fffff) << (8*((candidate.nBits>>24)-3))
+                    for nonce in range(100000):
+                        candidate.nNonce=nonce
+                        if int.from_bytes(rx.hash(candidate.serialize()[:80]),'little')<=candidate_target:break
+                    else:raise AssertionError('Could not solve malformed header fixture')
+                    # RandomX contextual validation reports wrong nBits as bad-randomx-pow.
+                    rejection=a.rpc.call('submitblock',candidate.serialize().hex())
+                    assert rejection==expected,(kind,rejection)
             # Real competing branches: disconnect, mine a longer competing fork, reconnect.
             b.rpc.call('setnetworkactive',False)
             wait(lambda:a.rpc.call('getconnectioncount')==0)
@@ -155,7 +170,7 @@ def run(binary,library):
             print(json.dumps({'result':'passed','height':b.rpc.call('getblockcount'),
                 'checks':['CLI RandomX mining','laptop launcher mining against peer','seed boundary 64','two-node synchronization',
                           'coinbase maturity','desktop signed transfer','insufficient funds','no duplicate credit',
-                          'invalid proof rejected','overpaying coinbase rejected','chainwork reorganization',
+                          'invalid proof rejected','overpaying coinbase rejected','past/future timestamps and wrong difficulty rejected','chainwork reorganization',
                           'restart and wallet persistence','encryption and wrong-passphrase rejection','wallet backup and restore']}))
         except Exception:
             for n in (a,b):
@@ -165,4 +180,4 @@ def run(binary,library):
         finally:b.stop();a.stop()
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--bindir',type=Path,required=True);p.add_argument('--library',type=Path,required=True);args=p.parse_args()
-    run((args.bindir/'bitcoind').resolve(),args.library.resolve())
+    run((args.bindir/('bitcoind.exe' if os.name=='nt' else 'bitcoind')).resolve(),args.library.resolve())

@@ -45,6 +45,21 @@ jobs:
           for exe in native/*.exe native/*.dll; do ldd "$exe"; done > native/dependencies.txt
           for dll in $(cat native/dependencies.txt | awk '/ucrt64.*dll/{print $3}' | sort -u); do cp "$dll" native/; done
           pacman -Q > native/toolchain.txt
+          cp -r /ucrt64/share/licenses native/licenses
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.10'
+      - name: Native Windows integration
+        shell: pwsh
+        run: |
+          python -B tools/integration.py --bindir native --library native/librandomx.dll
+          if ($LASTEXITCODE -ne 0) { throw 'Native integration failed' }
+          python -B tools/adversarial.py --binary native/bitcoind.exe --output native/adversarial.json
+          if ($LASTEXITCODE -ne 0) { throw 'Adversarial regression failed' }
+          python -B -m unittest discover -s tools -p 'test_wallet*.py' -v
+          if ($LASTEXITCODE -ne 0) { throw 'Wallet regression failed' }
+          python -B -m unittest discover -s tests -v
+          if ($LASTEXITCODE -ne 0) { throw 'Client regression failed' }
       - uses: actions/upload-artifact@v4
         with:
           name: obsoletecoin-windows-node

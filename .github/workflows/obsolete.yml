@@ -63,6 +63,16 @@ jobs:
           xvfb-run -a python3 tools/integration.py --bindir build/bin --library build-randomx-shared/librandomx.so
           python3 -m unittest discover -s tests -v
           xvfb-run -a python3 tools/ui_smoke.py
+          python3 -m unittest discover -s tools -p 'test_wallet*.py' -v
+          mkdir -p .local/readiness
+          python3 tools/adversarial.py --binary build/bin/bitcoind --output .local/readiness/adversarial.json
+          python3 tools/difficulty_simulation.py --output .local/readiness/difficulty.json
+          sudo unshare --mount --fork sh release/test-disk-full.sh "$PWD/build/bin/bitcoind" "$PWD/.local/readiness/disk-full.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: readiness-linux
+          path: .local/readiness/
       - name: Package experimental Linux build
         run: |
           mkdir -p artifacts/obsoletecoin-linux

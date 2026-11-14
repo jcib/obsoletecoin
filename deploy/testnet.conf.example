@@ -1,0 +1,16 @@
+# Candidate PUBLIC TESTNET only; supply real peer addresses before deployment.
+server=1
+listen=1
+discover=0
+dnsseed=0
+fixedseeds=0
+maxconnections=32
+dbcache=128
+prune=1000
+disablewallet=1
+[obsolete-test]
+port=19777
+rpcport=19778
+rpcbind=127.0.0.1
+rpcallowip=127.0.0.1
+# addnode=OPERATOR_SUPPLIED_HOST:19777

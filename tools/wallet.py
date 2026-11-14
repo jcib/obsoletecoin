@@ -57,6 +57,7 @@ class Wallet:
         menus=tk.Frame(shell,bd=1,relief='raised');menus.pack(fill='x',padx=3)
         for label,commands in [('File',[('Refresh',self.refresh),('Exit',self.close)]),
                                ('Wallet',[('Open / Create',self.open_wallet),('Receive',self.receive),('Send',self.send),('Backup',self.backup)]),
+                               ('Network',[('Connect peer...',self.connect_peer)]),
                                ('Mining',[('Start / Stop',self.toggle_mine)]),
                                ('Help',[('About',lambda:messagebox.showinfo('Obsolete Coin','Experimental testnet v0.2\nTest coins have no value. Blocks target 15 minutes.\nA dominant miner can reorganize this network.'))])]:
             button=tk.Menubutton(menus,text=label,relief='flat');button.pack(side='left')
@@ -185,12 +186,20 @@ class Wallet:
         try:amount=parse_amount(amount)
         except ValueError as e:messagebox.showerror('Invalid amount',str(e));return
         if not address.startswith('tobs1'):messagebox.showerror('Wrong address','Use an Obsolete testnet address (tobs1...).');return
-        if not messagebox.askyesno('Confirm transfer',f'Send {amount} TEST OBSC to\n{address}\n\nA network fee will also be charged. The transfer cannot be cancelled here.'):return
-        def job():
-            if self.wallet_call('getblockchaininfo')['chain']!='obsolete-test':raise ValueError('Wrong network')
-            # Fixed 1 atom/vB fee for experimental testnet; no floating-point amount.
-            return self.wallet_call('sendtoaddress',address,amount,'','',False,True,None,None,False,1)
-        self.work(job,lambda tx:(self.status.set('Transfer submitted: '+tx),messagebox.showinfo('Submitted','Transaction ID:\n'+tx+'\n\nWait for miners to confirm it.')))
+        def prepare():
+            if not self.wallet_call('validateaddress',address)['isvalid']:raise ValueError('Invalid testnet address')
+            return self.wallet_call('walletcreatefundedpsbt',[],[{address:amount}],0,{'fee_rate':1,'replaceable':True},True)
+        def confirm(funded):
+            fee=Decimal(str(funded['fee']));total=Decimal(amount)+fee
+            if not messagebox.askyesno('Confirm transfer',f'Send {amount} TEST OBSC to\n{address}\n\nNetwork fee: {fee:.8f} OBSC\nTotal debit: {total:.8f} OBSC\n\nBroadcast this transaction?'):return
+            def broadcast():
+                signed=self.wallet_call('walletprocesspsbt',funded['psbt'])
+                if not signed['complete']:raise ValueError('Transaction signing incomplete; unlock the wallet if needed')
+                final=self.wallet_call('finalizepsbt',signed['psbt'])
+                if not final['complete']:raise ValueError('Transaction finalization incomplete')
+                return self.wallet_call('sendrawtransaction',final['hex'])
+            self.work(broadcast,lambda tx:(self.status.set('Transfer submitted: '+tx),messagebox.showinfo('Submitted','Transaction ID:\n'+tx+'\n\nWait for miners to confirm it.')))
+        self.work(prepare,confirm)
     def backup(self):
         path=filedialog.asksaveasfilename(title='Backup local wallet',defaultextension='.dat')
         if path:self.work(lambda:self.wallet_call('backupwallet',str(Path(path).resolve())),lambda _:self.status.set('Backup saved. Store it privately.'))
@@ -204,6 +213,17 @@ class Wallet:
         pw=simpledialog.askstring('Unlock wallet','Passphrase (unlocks for 60 seconds):',show='*')
         if pw:self.work(lambda:self.wallet_call('walletpassphrase',pw,60),lambda _:self.status.set('Unlocked for 60 seconds'))
     def lock(self):self.work(lambda:self.wallet_call('walletlock'),lambda _:self.status.set('Wallet locked'))
+    def connect_peer(self):
+        peer=simpledialog.askstring('Connect testnet peer','Peer hostname or IPv4 address and port (host:19777):',parent=self.root)
+        if not peer:return
+        import re
+        if not re.fullmatch(r'[A-Za-z0-9.-]+:[0-9]{1,5}',peer) or not 1<=int(peer.rsplit(':',1)[1])<=65535:
+            messagebox.showerror('Invalid peer','Use host:port, supplied by a testnet operator.');return
+        def connected(_):
+            save=getattr(self,'peer_added',None)
+            if save:save(peer)
+            self.status.set(('Peer saved: ' if save else 'Peer configured for this session: ')+peer)
+        self.work(lambda:self.wallet_call('addnode',peer,'add'),connected)
     def toggle_mine(self):
         if self.demo:return
         if self.miner and self.miner.is_alive():self.mining.set();self.status.set('Stopping miner after current batch...');return
@@ -211,6 +231,7 @@ class Wallet:
         self.mining.clear()
         def job():
             try:
+                if self.wallet_call('getblockchaininfo')['initialblockdownload'] or self.wallet_call('getconnectioncount')<1:raise ValueError('Connect a testnet peer and finish synchronization before mining')
                 address=self.wallet_call('getnewaddress','mining','bech32')
                 mine(RPC(self.rpc.cookie,self.rpc.port,timeout=120),address,self.mining)
             except Exception as e:self.queue.put((lambda _:None,None,'Mining: '+str(e)))
