@@ -1,0 +1,11 @@
+{
+  "run": "https://github.com/jcib/obsoletecoin/actions/runs/43652013461",
+  "artifact_sha256": "5b7bb194901783b3e8792f38fc34fbdf5a361853666e84918e3de58ecbff1038",
+  "fresh_sync": true,
+  "height": 305,
+  "hash": "a1d86c9894652a5b8d4c46ab2ddbf139f5cae7adcc022fb3a2887154515c1e93",
+  "genesis_verified": true,
+  "wallet_disabled": true,
+  "external_peer": "83.45.159.127:19777",
+  "checked_at": 1794697949
+}

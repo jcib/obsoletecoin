@@ -2,7 +2,7 @@
 import argparse,datetime,hashlib,html,json,shutil
 from decimal import Decimal
 from pathlib import Path
-P=argparse.ArgumentParser();P.add_argument('--snapshot',type=Path,required=True);P.add_argument('--output',type=Path,required=True);P.add_argument('--live',action='store_true');a=P.parse_args()
+P=argparse.ArgumentParser();P.add_argument('--snapshot',type=Path,required=True);P.add_argument('--output',type=Path,required=True);P.add_argument('--live',action='store_true');P.add_argument('--public-web-only',action='store_true');a=P.parse_args()
 ROOT=Path(__file__).resolve().parents[1];OUT=a.output.resolve();OUT.mkdir(parents=True,exist_ok=True)
 S=json.loads(a.snapshot.read_text(encoding='utf-8'));BLOCKS=S['blocks'];BY_HEIGHT={b['height']:b for b in BLOCKS}
 TX={t['txid']:(b,t) for b in BLOCKS for t in b['tx']};ADDR={}
@@ -19,6 +19,7 @@ GITHUB='https://github.com/jcib/obsoletecoin'
 for folder in ('assets','downloads','explorer/blocks','explorer/transactions','explorer/addresses'):(OUT/folder).mkdir(parents=True,exist_ok=True)
 for f in (ROOT/'website/assets').iterdir():shutil.copyfile(f,OUT/'assets'/f.name)
 DOWNLOADS=[('source.tar.gz',ROOT/'.local/release/ObsoleteCoin-Review-Source.tar.gz'),('windows-wsl.zip',ROOT/'.local/release/ObsoleteCoin-Windows-WSL.zip'),('linux-x64.tar.gz',ROOT/'.local/release/ObsoleteCoin-Linux-Testnet.tar.gz'),('windows-native-testnet.exe',ROOT/'.local/release/ObsoleteCoin-Testnet-Setup.exe')]
+if a.public_web_only:DOWNLOADS=[(name,path) for name,path in DOWNLOADS if name!='source.tar.gz']
 CHECKSUMS={}
 for name,path in DOWNLOADS:
     data=path.read_bytes();CHECKSUMS[name]=hashlib.sha256(data).hexdigest();(OUT/'downloads'/name).write_bytes(data)
@@ -52,6 +53,16 @@ def write_page(path,title,content,active='home'):
         from urllib.parse import urljoin
         doc=re.sub(r'(href|src)="([^"]+)"',lambda m:m[1]+'="'+urljoin('/'+path,m[2])+'"',doc)
         doc=doc.replace('<p>Page archive: '+E(CAPTURE)+'</p>', '<p>Experimental testnet. No monetary value. Chain resets are possible.</p>')
+    if a.public_web_only:
+        import re
+        doc=doc.replace('>GitHub</a>','>GitHub (private)</a>').replace('>Source code</a>','>GitHub (private)</a>')
+        doc=doc.replace('>jcib/obsoletecoin</a>','>jcib/obsoletecoin (private)</a>')
+        doc=doc.replace('The public GitHub repository includes the source, build instructions, test evidence and issue tracker. GitHub may require an account to report an issue.','The GitHub repository is private during testing. Wallet downloads and this explorer are public. Report reproducible problems in the forum thread where this testnet was announced.')
+        doc=re.sub(r'<a href="https://github.com/jcib/obsoletecoin/issues/new/choose">GitHub Issues</a> or the announcement thread', 'the announcement thread',doc)
+        doc=re.sub(r'<a href="(?:/)?downloads/source.tar.gz">Download the review source</a>[^<]*', '',doc)
+        doc=doc.replace('https://github.com/jcib/obsoletecoin/blob/main/docs/WINDOWS-NATIVE.md','/join.html')
+        doc=doc.replace('https://github.com/jcib/obsoletecoin/blob/main/docs/WINDOWS.md','/join.html')
+        doc=re.sub(r'<a href="https://github.com/jcib/obsoletecoin/blob/main/docs/[^"]+">.*?</a>', 'The source repository and detailed review documents remain private during testing.',doc)
     (OUT/path).write_text(doc,encoding='utf-8')
 
 def download_cards():

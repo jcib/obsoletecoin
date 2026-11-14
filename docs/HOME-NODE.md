@@ -7,12 +7,12 @@ The node permits up to 32 connections and targets at most 1024 MiB upload per da
 RPC remains loopback-only and the server wallet remains disabled. Existing CPU
 and memory limits remain. The unrelated trading service retained its process.
 
-The live explorer received two fresh observations 15 seconds apart at height 305.
-At that check there were zero peers. A local P2P handshake verified the expected
-genesis. An external probe did NOT connect: public reachability is still pending.
-Router NAT was reported configured by the operator; it has not yet passed an
-external end-to-end check. Website/repository access remains private pending an
-explicit owner decision. Do not announce the network as publicly reachable yet.
+After correcting the router NAT Internet interface, an external Cloudflare P2P
+handshake verified the genesis. A fresh Debian node on GitHub Actions independently
+synchronized from height 0 to 305 through 83.45.159.127:19777, with headers matching,
+IBD finished and the server wallet disabled. Evidence: docs/readiness/2026-11-15-public-testnet/.
+The owner authorized public website and wallet downloads only; GitHub remains private.
+The explorer receives observations every 15 seconds; block production requires miners.
 
 Current peer and data freshness are shown on the join page once access is granted.
 Node service: `obsoletecoin-testnet.service`; exporter: `obsoletecoin-explorer.service`.

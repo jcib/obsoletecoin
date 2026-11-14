@@ -23,8 +23,8 @@ Assets/downloads are R2 objects locked to SHA-256 hashes and sizes compiled into
 Worker. The ingestion credential cannot replace a download with different bytes.
 MP3 byte ranges are supported. Credentials never enter generated HTML or Git.
 
-Build: `python website/build.py --snapshot .local/site/snapshot.json --output .local/public-static --live`,
-then `python website/live/build_worker.py --static .local/public-static --site .local/site`.
+Build: `python website/build.py --snapshot .local/site/snapshot.json --output .local/public-static-web-only --live --public-web-only`,
+then `python website/live/build_worker.py --static .local/public-static-web-only --site .local/site`.
 The Site checkout has `build.mjs` to rebuild its exact Worker source. Package/publish
 through the Sites helper, then seed exact hash-checked assets before opening access.
 Do not run the one-time Dell installer against an already configured node.
@@ -33,6 +33,9 @@ Checks cover allowlisting, wrong network, stale data, exact amounts, HMAC expira
 route binding, replay rejection, R2 conditional writes, canonical tip rollback and
 immutable asset uploads. Chrome with JavaScript disabled at 1440/390/360 validates
 navigation, iframe refresh, uninterrupted audio, mobile layout and download hashes.
+
+The public-web-only build excludes the full source archive and labels GitHub private.
+The owner authorized website and binary downloads only on 2026-11-15.
 
 ## Earlier static publications (historical evidence)
 

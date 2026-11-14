@@ -37,7 +37,8 @@ rewards and lost keys reduce circulating supply.
 - [Website and downloads](https://obsoletecoin.pages.dev/)
 - [Join guide and current first-node address](https://obsoletecoin.pages.dev/join.html)
 - [Live explorer](https://obsoletecoin.pages.dev/explorer/index.html)
-- [Release candidate](https://github.com/jcib/obsoletecoin/releases/tag/v0.3.0-testnet-rc1)
+- [Testnet wallets and connection instructions](https://obsoletecoin.pages.dev/join.html)
+- GitHub source and draft release remain private during testing.
 - [Report a reproducible problem](https://github.com/jcib/obsoletecoin/issues/new/choose)
 
 The first node is a Dell Micro 7040 (2016). Its residential IP can change: use the

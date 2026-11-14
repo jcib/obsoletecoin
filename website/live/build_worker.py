@@ -7,6 +7,7 @@ pages={};assets={}
 for path in src.rglob('*'):
  if not path.is_file():continue
  name='/'+path.relative_to(src).as_posix()
+ if name=='/downloads/source.tar.gz':continue
  if path.suffix in ('.html','.css','.txt') and not name.startswith('/downloads/'):
   pages[name]=path.read_text(encoding='utf-8')
  elif name.startswith(('/assets/','/downloads/')):

@@ -1,0 +1,70 @@
+{
+  "anonymous": true,
+  "checked_at": 1794698636,
+  "height": 305,
+  "fresh": true,
+  "observed": 1794698601996,
+  "checks": [
+    {
+      "path": "/",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/join.html",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/explorer/index.html",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/downloads/source.tar.gz",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "path": "/api/feed",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/probe",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/snapshot",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/downloads/SHA256SUMS.txt",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/downloads/windows-wsl.zip",
+      "method": "GET",
+      "status": 200,
+      "sha256": "2715adde7882bfd0b5bfe2cb9a1b66792072c1df5f4a1a787901e81165c413e7",
+      "bytes": 11078763
+    },
+    {
+      "path": "/downloads/linux-x64.tar.gz",
+      "method": "GET",
+      "status": 200,
+      "sha256": "e502798fabe872cfb06941de72b36a53815cb797aefcec117ec13fe55990855b",
+      "bytes": 11112813
+    },
+    {
+      "path": "/downloads/windows-native-testnet.exe",
+      "method": "GET",
+      "status": 200,
+      "sha256": "bb609242e745d812c0bdcab44f07602507e0e974252ff9aeab7f9916f9748a25",
+      "bytes": 23711726
+    }
+  ]
+}

@@ -17,7 +17,7 @@ wallet restarts and encrypted backups. Independent full-node operators are welco
 Website and downloads: https://obsoletecoin.pages.dev/
 Connection instructions and current peer: https://obsoletecoin.pages.dev/join.html
 Explorer: https://obsoletecoin.pages.dev/explorer/index.html
-Source and issue tracker: https://github.com/jcib/obsoletecoin
+The source repository remains private during testing. Please report problems in this announcement thread.
 
 This is TESTNET, not mainnet. Test coins have no monetary value, the chain can be
 reset, and balances will not become mainnet coins. Initial test difficulty is easy,
@@ -34,5 +34,6 @@ Please report OS, package version, reproduction steps, block height and redacted
 Never share wallet files, keys, passphrases or RPC credentials.
 
 ---
-Operator note: post only after anonymous downloads and an external P2P genesis
-handshake succeed. This document is a draft for the owner to post; it was not sent to a forum.
+Operator note: anonymous website/download checks, external P2P genesis handshake,
+and fresh synchronization to height 305 passed on 2026-11-15 (Madrid).
+This document is ready for the owner to post; it was not sent to a forum.
