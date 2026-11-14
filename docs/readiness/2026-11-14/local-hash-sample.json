@@ -1,0 +1,25 @@
+{
+  "mode": "native Windows RandomX light VM, one thread",
+  "samples": [
+    {
+      "hashes": 100,
+      "seconds": 1.659414800000377,
+      "hashes_per_second": 60.26220809888961
+    },
+    {
+      "hashes": 100,
+      "seconds": 1.6512698999722488,
+      "hashes_per_second": 60.55945185077291
+    },
+    {
+      "hashes": 100,
+      "seconds": 1.6560024000355043,
+      "hashes_per_second": 60.386385912155696
+    }
+  ],
+  "limits": [
+    "Local desktop sample under existing workload; not controlled network capacity",
+    "No full-memory optimized miner benchmark",
+    "Do not select mainnet initial difficulty from this single-machine sample"
+  ]
+}

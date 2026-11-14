@@ -1,0 +1,14 @@
+{
+  "site_url": "https://obsoletecoin.pages.dev",
+  "site_source_commit": "8dfc82814fcf75e6a2762b6f7f82631f84109a0c",
+  "site_deployment": "appgdep_6af859c1b4148191b3d7240f5a149e96",
+  "site_status": "succeeded",
+  "site_access": "owner-private",
+  "github_draft": "https://github.com/jcib/obsoletecoin/releases/tag/untagged-19aa8acb2c7e9e0ec215",
+  "release_assets_verified": 9,
+  "installer_sha256": "bb609242e745d812c0bdcab44f07602507e0e974252ff9aeab7f9916f9748a25",
+  "native_node_commit": "46beda64f6b88419238c13a03c4a81679a94a80a",
+  "native_gui_commit": "6e81482a625602e3bedab7af16fc5e0ff291b1a4",
+  "source_archive_commit": "ae3ff83fc19eb76ebf943e5aeb79ef086ec5866c",
+  "mainnet_enabled": false
+}

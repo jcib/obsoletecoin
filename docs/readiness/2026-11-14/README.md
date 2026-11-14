@@ -13,3 +13,7 @@ All tests use disposable data and loopback peers. No production Dell services, l
 - windows-hardening.json: ASLR/NX/high-entropy VA and absence of writable executable PE sections. Runtime/JIT behavior is outside this check.
 
 The installer and portable package remain unsigned. Mainnet remains disabled. See ../../MAINNET-READINESS.md for unclosed launch gates.
+
+Final expanded Windows CI passed: https://github.com/jcib/obsoletecoin/actions/runs/43595282953 (core suites, native integration, adversarial traversal and client/wallet tests). Latest Linux/Debian CI also passed: https://github.com/jcib/obsoletecoin/actions/runs/43596956721 .
+
+local-hash-sample.json records a brief one-thread native light-mode RandomX sample (about 60 hashes/s on this desktop under its existing workload). It is not a network capacity estimate or a selected launch difficulty.

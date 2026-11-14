@@ -19,5 +19,26 @@
     "html_url": "https://github.com/jcib/obsoletecoin/actions/runs/43595282891",
     "conclusion": "success",
     "updated_at": "2026-11-14T12:37:32Z"
+  },
+  {
+    "id": 43595282953,
+    "head_sha": "6e81482a625602e3bedab7af16fc5e0ff291b1a4",
+    "html_url": "https://github.com/jcib/obsoletecoin/actions/runs/43595282953",
+    "conclusion": "success",
+    "updated_at": "2026-11-14T13:11:49Z"
+  },
+  {
+    "id": 43596104311,
+    "head_sha": "4d7a2ed6b4d202a115d0e9b060e564856de3dcee",
+    "html_url": "https://github.com/jcib/obsoletecoin/actions/runs/43596104311",
+    "conclusion": "success",
+    "updated_at": "2026-11-14T12:48:16Z"
+  },
+  {
+    "id": 43596956721,
+    "head_sha": "ae3ff83fc19eb76ebf943e5aeb79ef086ec5866c",
+    "html_url": "https://github.com/jcib/obsoletecoin/actions/runs/43596956721",
+    "conclusion": "success",
+    "updated_at": "2026-11-14T12:58:50Z"
   }
 ]
