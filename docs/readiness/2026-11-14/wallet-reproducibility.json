@@ -1,0 +1,8 @@
+{
+  "same_machine": true,
+  "runtime": "CPython 3.14.10 / Tcl Tk 9.0.4",
+  "files": 952,
+  "identical": true,
+  "differences": [],
+  "limits": "Two clean GUI builds in one environment; not independent full-node reproducibility"
+}

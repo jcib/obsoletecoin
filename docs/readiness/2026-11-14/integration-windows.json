@@ -1,0 +1,21 @@
+{
+  "result": "passed",
+  "height": 106,
+  "checks": [
+    "CLI RandomX mining",
+    "laptop launcher mining against peer",
+    "seed boundary 64",
+    "two-node synchronization",
+    "coinbase maturity",
+    "desktop signed transfer",
+    "insufficient funds",
+    "no duplicate credit",
+    "invalid proof rejected",
+    "overpaying coinbase rejected",
+    "past/future timestamps and wrong difficulty rejected",
+    "chainwork reorganization",
+    "restart and wallet persistence",
+    "encryption and wrong-passphrase rejection",
+    "wallet backup and restore"
+  ]
+}

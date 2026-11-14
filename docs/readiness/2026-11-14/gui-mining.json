@@ -1,0 +1,9 @@
+{
+  "result": "passed",
+  "checks": [
+    "GUI starts real native CPU mining",
+    "GUI stop joins mining worker",
+    "GUI refuses mining without peers"
+  ],
+  "scope": "disposable local nodes, same GUI sources as frozen package"
+}

@@ -1,0 +1,8 @@
+{
+  "result": "passed",
+  "checks": [
+    "connected synced node reports ok",
+    "loss of peers reports degraded and nonzero exit"
+  ],
+  "scope": "read-only local RPC on disposable nodes"
+}

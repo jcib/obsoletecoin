@@ -1,0 +1,8 @@
+{
+  "result": "passed",
+  "fixture": "private tmpfs <=800 MiB",
+  "enospc": true,
+  "persisted_height": 2,
+  "recovered_height": 3,
+  "limits": "Tests recovery after space restored; not physical disk corruption or power-loss durability"
+}

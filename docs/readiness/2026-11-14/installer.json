@@ -1,0 +1,13 @@
+{
+  "result": "passed",
+  "checks": [
+    "installation",
+    "installed frozen GUI + node + RandomX mining",
+    "reinstallation opens same wallet",
+    "uninstall preserves real disposable wallet bytes",
+    "reinstall after uninstall opens preserved wallet"
+  ],
+  "platform": 26300,
+  "scope": "disposable local paths; no existing user wallet touched",
+  "signed": false
+}

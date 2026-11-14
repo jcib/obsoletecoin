@@ -2,7 +2,9 @@ name: Obsolete Coin experimental
 on:
   push:
     branches: [main]
+    paths-ignore: ['**/*.md', 'docs/readiness/**']
   pull_request:
+    paths-ignore: ['**/*.md', 'docs/readiness/**']
   workflow_dispatch:
 permissions:
   contents: read
