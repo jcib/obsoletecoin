@@ -1,0 +1,51 @@
+name: Native Windows candidate
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['src/**', 'tools/**', 'release/**', '.github/workflows/windows.yml', 'CMakeLists.txt']
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-boost
+            mingw-w64-ucrt-x86_64-libevent
+            mingw-w64-ucrt-x86_64-sqlite3
+      - name: Configure and build native node
+        shell: msys2 {0}
+        run: |
+          cmake -S src/randomx -B rx-static -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build rx-static -j2
+          cmake -S src/randomx -B rx-shared -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+          cmake --build rx-shared -j2
+          cmake -S . -B build-win -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -DBUILD_GUI=OFF -DBUILD_BENCH=OFF -DBUILD_FUZZ_BINARY=OFF -DENABLE_IPC=OFF -DBRISVIA_RANDOMX_LIB="$PWD/rx-static/librandomx.a"
+          cmake --build build-win -j2
+          ctest --test-dir build-win --output-on-failure -j1
+      - name: Collect native runtime
+        shell: msys2 {0}
+        run: |
+          mkdir -p native
+          cp build-win/bin/bitcoind.exe build-win/bin/bitcoin-cli.exe build-win/bin/bitcoin-wallet.exe native/
+          cp rx-shared/*randomx.dll native/
+          for exe in native/*.exe native/*.dll; do ldd "$exe"; done > native/dependencies.txt
+          for dll in $(cat native/dependencies.txt | awk '/ucrt64.*dll/{print $3}' | sort -u); do cp "$dll" native/; done
+          pacman -Q > native/toolchain.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obsoletecoin-windows-node
+          path: native/
