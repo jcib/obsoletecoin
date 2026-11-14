@@ -43,7 +43,7 @@ def default_data_dir():
 def parse_amount(text):
     from decimal import Decimal, InvalidOperation
     try: value=Decimal(text)
-    except InvalidOperation: raise ValueError('Enter a valid OBS amount') from None
+    except InvalidOperation: raise ValueError('Enter a valid OBSC amount') from None
     if not value.is_finite() or value<=0 or value>1000000000 or value.as_tuple().exponent < -8:
         raise ValueError('Use a positive amount with at most 8 decimals')
     return format(value,'f')

@@ -1,4 +1,4 @@
-# Mine test OBS from Windows
+# Mine test OBSC from Windows
 
 Use Windows with WSL2 and Debian. The home node is reached over your home LAN;
 your wallet keys and CPU mining stay on the laptop. No home SSH or RPC password

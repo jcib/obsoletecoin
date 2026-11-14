@@ -52,7 +52,7 @@ def main():
             known=[x['name'] for x in rpc.call('listwalletdir')['wallets']]
             rpc.call('loadwallet' if wallet in known else 'createwallet',wallet)
         wrpc=rpc.for_wallet(wallet);address=wrpc.call('getnewaddress','laptop mining','bech32')
-        print('Mining TEST OBS into your LOCAL wallet: '+address,flush=True)
+        print('Mining TEST OBSC into your LOCAL wallet: '+address,flush=True)
         print('One CPU thread. Rewards mature after 100 blocks. Ctrl-C stops mining.',flush=True)
         mine(rpc,address,max_blocks=a.blocks)
         print('Mining session complete.',flush=True)

@@ -13,7 +13,7 @@ app=Wallet(root,RPC(Path('unused-demo-cookie')),demo=True)
 errors=[]
 root.report_callback_exception=lambda *error:errors.append(error)
 root.update()
-assert app.balance.get()=='12,345.00000000 OBS'
+assert app.balance.get()=='12,345.00000000 OBSC'
 assert len(app.table.get_children())==2
 assert 'DEMO' in app.status.get()
 assert root.winfo_width()>=740

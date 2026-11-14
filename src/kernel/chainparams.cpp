@@ -715,7 +715,7 @@ public:
     }
 };
 
-/** Obsolete Coin experimental testnet (900 s; 5,000 OBS; 100,000-block halvings). */
+/** Obsolete Coin experimental testnet (900 s; 5,000 OBSC; 100,000-block halvings). */
 class CBrisviaTestNetParams : public CChainParams {
 public:
     CBrisviaTestNetParams() {

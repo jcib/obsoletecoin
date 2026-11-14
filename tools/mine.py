@@ -32,7 +32,7 @@ def main():
     p.add_argument('--blocks',type=int,default=None)
     a=p.parse_args()
     if a.blocks is not None and a.blocks<1:p.error('--blocks must be positive')
-    print('Mining TEST OBS on this computer. Ctrl-C to stop. No guaranteed block time.',flush=True)
+    print('Mining TEST OBSC on this computer. Ctrl-C to stop. No guaranteed block time.',flush=True)
     try: mine(RPC(a.cookie,a.rpcport,timeout=120),a.address,max_blocks=a.blocks)
     except KeyboardInterrupt: print('\nMining stopped. A submitted batch may finish shortly.')
 if __name__=='__main__':main()

@@ -6,15 +6,15 @@ and trivial initial difficulty are not a fair public launch.
 
 ## Monetary consensus
 
-Amounts use signed 64-bit integers: 100,000,000 atoms per OBS. `MAX_MONEY` is
+Amounts use signed 64-bit integers: 100,000,000 atoms per OBSC. `MAX_MONEY` is
 100,000,000,000,000,000 atoms. This range check supplements UTXO conservation and
 per-block coinbase validation; the cap is not merely a transfer or UI limit.
 
 For heights 1..3,900,000, basic subsidy is
 `500000000000 >> floor((height - 1) / 100000)` atoms. Genesis pays nothing.
 Only at height 3,900,000, add 1,300,000 atoms for accumulated rounding loss.
-The last reward is 1,300,001 atoms (0.01300001 OBS); subsequent subsidy is zero.
-The authorized sum is exactly 1 billion OBS. Unclaimed subsidy is not recovered
+The last reward is 1,300,001 atoms (0.01300001 OBSC); subsequent subsidy is zero.
+The authorized sum is exactly 1 billion OBSC. Unclaimed subsidy is not recovered
 later. Fees transfer existing coins, and mining can continue after subsidy ends.
 
 Issuance follows height, not wall time. No miners means no new blocks. A hash-rate

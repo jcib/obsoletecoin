@@ -2,7 +2,7 @@
 
 A portable English-language GeoCities-inspired site: plain HTML, local CSS and SVG, no JavaScript, external fonts, analytics or runtime framework.
 
-Slogan: **Old things last a lifetime.**
+Slogan: **It's tacky, cheap, and slow, but it's also tough and hard-wearing.**
 
 Private website: https://obsoletecoin.pages.dev
 
@@ -26,3 +26,7 @@ Every page displays its capture date. This is a static blockchain archive, not a
 ## Verification of the first version
 
 Captured 14 November 2026 at 10:55:30 UTC, blocks 0 through 264. Link validation: 541 HTML pages, 11,857 local references, no broken links and no scripts. Chrome checked with JavaScript disabled at 1440, 390 and 360 pixels; no horizontal overflow. Downloaded both packages through the UI and verified their hashes. Followed explorer links through block, transaction and address pages, and exercised native HTML FAQ disclosure controls.
+
+## OBSC update verification
+
+Updated slogan and technical copy, sanitized Dell photo, OBSC labels and new download packages verified in Chrome at 1440, 390 and 360 pixels with JavaScript disabled. All 541 pages and local references validated. Wallet date/state tests and Tk smoke passed; a simulated RPC GUI exercise verified 20 then 40 rows and transaction details. Read-only WSL checks validated dates on 21 actual transactions and gettransaction details. Updated wallet UI installed in the existing WSL tools directory without restarting mining or changing wallet data. Reopen the wallet to load the new interface. Mainnet remains blocked; see docs/MAINNET-READINESS.md.

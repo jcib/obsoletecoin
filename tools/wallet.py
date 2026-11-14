@@ -1,4 +1,5 @@
 """Obsolete Coin: local desktop wallet backed by Core descriptor wallets."""
+import datetime
 import argparse, queue, threading, tkinter as tk
 from tkinter import ttk, messagebox, simpledialog, filedialog
 from pathlib import Path
@@ -6,11 +7,26 @@ from decimal import Decimal
 from rpc import RPC, RPCError, default_data_dir, parse_amount
 from mine import mine
 
+def transaction_time(tx, field=None):
+    value = tx.get(field) if field else tx.get('time', tx.get('timereceived'))
+    try:
+        if value is None: return 'Unavailable'
+        return datetime.datetime.fromtimestamp(value, datetime.timezone.utc).astimezone().strftime('%Y-%m-%d %H:%M:%S %Z (%z)')
+    except (ValueError, TypeError, OSError, OverflowError): return 'Unavailable'
+
+def transaction_state(tx):
+    confirmations = tx.get('confirmations', 0)
+    if tx.get('category') == 'orphan': return 'Orphaned reward'
+    if confirmations < 0 or tx.get('walletconflicts'): return 'Conflicted'
+    if tx.get('abandoned'): return 'Abandoned'
+    if tx.get('category') == 'immature': return 'Immature reward'
+    return 'Confirmed' if confirmations > 0 else 'Pending'
+
 BG='#c0c0c0'; NAVY='#000080'; TEAL='#008080'
 class Wallet:
     def __init__(self,root,rpc,demo=False):
         self.root=root;self.rpc=rpc;self.demo=demo;self.queue=queue.Queue();self.busy=False
-        self.mining=threading.Event();self.miner=None;self.snapshot=None
+        self.mining=threading.Event();self.miner=None;self.snapshot=None;self.history_count=20;self.transactions={} 
         root.title('Obsolete Coin');root.geometry('900x760');root.minsize(840,700);root.configure(bg=TEAL)
         root.option_add('*Font',('Tahoma',10));root.option_add('*Background',BG)
         style=ttk.Style();style.theme_use('clam');style.configure('Treeview',background='white',fieldbackground='white',rowheight=25)
@@ -30,7 +46,7 @@ class Wallet:
         tk.Label(shell,text='Obsolete Coin',font=('Tahoma',22,'bold'),anchor='w').pack(fill='x',padx=22,pady=(20,4))
         tk.Label(shell,text='DEMO PREVIEW - no blockchain connection' if demo else 'EXPERIMENTAL TESTNET - test coins have no monetary value',fg='#800000',anchor='w').pack(fill='x',padx=22)
         panel=tk.Frame(shell,bd=2,relief='sunken',bg='white');panel.pack(fill='x',padx=22,pady=18)
-        self.balance=tk.StringVar(value='-- OBS');self.detail=tk.StringVar(value='Waiting for your local node...')
+        self.balance=tk.StringVar(value='-- OBSC');self.detail=tk.StringVar(value='Waiting for your local node...')
         tk.Label(panel,text='Available balance',bg='white',anchor='w').pack(fill='x',padx=14,pady=(12,0))
         tk.Label(panel,textvariable=self.balance,bg='white',font=('Courier New',26,'bold'),anchor='w').pack(fill='x',padx=14)
         tk.Label(panel,textvariable=self.detail,bg='white',anchor='w').pack(fill='x',padx=14,pady=(0,12))
@@ -41,19 +57,24 @@ class Wallet:
         for label,command in [('Encrypt...',self.encrypt),('Unlock...',self.unlock),('Lock',self.lock),('Refresh',self.refresh)]:
             tk.Button(row2,text=label,command=command,bd=2).pack(side='left',padx=(0,7))
         tk.Label(shell,text='Recent activity',anchor='w',font=('Tahoma',10,'bold')).pack(fill='x',padx=22,pady=(18,5))
-        self.table=ttk.Treeview(shell,columns=('type','amount','conf'),show='headings',height=5)
-        for key,name,width in [('type','Type',160),('amount','Amount (OBS)',220),('conf','Confirmations',150)]:
+        self.table=ttk.Treeview(shell,columns=('date','type','amount','conf'),show='headings',height=5)
+        for key,name,width in [('date','Date / time (local)',290),('type','Status',150),('amount','Amount (OBSC)',180),('conf','Confirmations',100)]:
             self.table.heading(key,text=name);self.table.column(key,width=width)
         self.table.pack(fill='both',expand=True,padx=22)
+        self.table.bind('<Double-1>',lambda event:self.transaction_details())
+        history_buttons=tk.Frame(shell);history_buttons.pack(fill='x',padx=22,pady=4)
+        tk.Button(history_buttons,text='Transaction details',command=self.transaction_details).pack(side='left')
+        self.more_button=tk.Button(history_buttons,text='Load 20 more',command=self.more_history)
+        self.more_button.pack(side='left',padx=8)
         tk.Label(shell,text='Target block time: 15 minutes. Actual waits vary. Confirmations are not a security guarantee.',anchor='w',wraplength=760).pack(fill='x',padx=22,pady=12)
         self.status=tk.StringVar(value='Starting...')
         statusbar=tk.Label(shell,textvariable=self.status,anchor='w',bd=2,relief='sunken')
         statusbar.pack(side='bottom',fill='x',padx=3,pady=3,before=self.table)
         root.protocol('WM_DELETE_WINDOW',self.close);root.after(100,self.drain)
         if demo:
-            self.balance.set('12,345.00000000 OBS');self.detail.set('Immature: 5,000.00000000 OBS | Pending: 0.00000000 OBS')
+            self.balance.set('12,345.00000000 OBSC');self.detail.set('Immature: 5,000.00000000 OBSC | Pending: 0.00000000 OBSC')
             self.status.set('DEMO | 120 blocks | 2 peers | No real funds')
-            for v in [('Received','12,345.00000000','8'),('Mined (immature)','5,000.00000000','1')]:self.table.insert('',tk.END,values=v)
+            for v in [('Received','12,345.00000000','8'),('Mined (immature)','5,000.00000000','1')]:self.table.insert('',tk.END,values=('2026-11-14 10:00:00 UTC (+0000)',)+v)
         else:self.refresh()
     def wallet_call(self,method,*params):
         # Guard every operation, including backup/encryption, if a user selects
@@ -83,15 +104,41 @@ class Wallet:
             chain=self.wallet_call('getblockchaininfo')
             if chain['chain']!='obsolete-test':raise ValueError('Only Obsolete testnet is supported')
             peers=self.wallet_call('getconnectioncount')
-            return chain,peers,self.wallet_call('getbalances'),self.wallet_call('listtransactions','*',10)
+            return chain,peers,self.wallet_call('getbalances'),self.wallet_call('listtransactions','*',self.history_count+1)
         def done(data):
             chain,peers,bal,txs=data;self.snapshot=data;m=bal['mine']
-            self.balance.set(f"{Decimal(str(m['trusted'])):,.8f} OBS")
-            self.detail.set(f"Immature: {m['immature']:.8f} OBS | Pending: {m['untrusted_pending']:.8f} OBS")
+            self.balance.set(f"{Decimal(str(m['trusted'])):,.8f} OBSC")
+            self.detail.set(f"Immature: {m['immature']:.8f} OBSC | Pending: {m['untrusted_pending']:.8f} OBSC")
             self.status.set(f"TESTNET | {chain['blocks']} blocks | {peers} peers | Wallet: {self.rpc.wallet}")
             for item in self.table.get_children():self.table.delete(item)
-            for tx in reversed(txs):self.table.insert('',tk.END,values=(tx['category'],f"{tx['amount']:.8f}",tx.get('confirmations',0)))
+            self.transactions={}
+            self.more_button.configure(state='normal' if len(txs)>self.history_count else 'disabled')
+            for tx in reversed(txs[-self.history_count:]):
+                item=self.table.insert('',tk.END,values=(transaction_time(tx),transaction_state(tx),f"{tx['amount']:.8f}",tx.get('confirmations',0)))
+                self.transactions[item]=tx
         self.work(job,done)
+    def more_history(self):
+        if self.busy:return
+        self.history_count+=20
+        self.refresh()
+    def transaction_details(self):
+        selection=self.table.selection()
+        if not selection or selection[0] not in self.transactions:return
+        tx=dict(self.transactions[selection[0]])
+        def done(detail):
+            merged={**tx,**detail}
+            win=tk.Toplevel(self.root);win.title('Transaction details');win.geometry('760x440')
+            fields=[('Transaction ID',merged.get('txid','Unavailable')),('Address',tx.get('address','Unavailable')),
+                    ('Amount (OBSC)',str(tx.get('amount','Unavailable'))),('Fee (OBSC)',str(abs(Decimal(str(merged['fee'])))) if 'fee' in merged else 'Not applicable'),
+                    ('Status',transaction_state(merged)),('Confirmations',str(merged.get('confirmations',0))),
+                    ('Date / time (local)',transaction_time(merged)),('Block date / time',transaction_time(merged,'blocktime'))]
+            for label,value in fields:
+                row=tk.Frame(win);row.pack(fill='x',padx=12,pady=5)
+                tk.Label(row,text=label,width=22,anchor='w').pack(side='left')
+                entry=tk.Entry(row);entry.pack(side='left',fill='x',expand=True);entry.insert(0,value);entry.configure(state='readonly')
+            def copy_id():win.clipboard_clear();win.clipboard_append(merged.get('txid',''))
+            tk.Button(win,text='Copy transaction ID',command=copy_id).pack(pady=8)
+        self.work(lambda:self.wallet_call('gettransaction',tx['txid']),done)
     def open_wallet(self):
         def job():
             base=RPC(self.rpc.cookie,self.rpc.port)
@@ -111,14 +158,14 @@ class Wallet:
             self.status.set('Receive address ready')
         self.work(lambda:self.wallet_call('getnewaddress','', 'bech32'),done)
     def send(self):
-        address=simpledialog.askstring('Send OBS','Recipient testnet address:',parent=self.root)
+        address=simpledialog.askstring('Send OBSC','Recipient testnet address:',parent=self.root)
         if not address:return
-        amount=simpledialog.askstring('Send OBS','Amount in OBS:',parent=self.root)
+        amount=simpledialog.askstring('Send OBSC','Amount in OBSC:',parent=self.root)
         if amount is None:return
         try:amount=parse_amount(amount)
         except ValueError as e:messagebox.showerror('Invalid amount',str(e));return
         if not address.startswith('tobs1'):messagebox.showerror('Wrong address','Use an Obsolete testnet address (tobs1...).');return
-        if not messagebox.askyesno('Confirm transfer',f'Send {amount} TEST OBS to\n{address}\n\nA network fee will also be charged. The transfer cannot be cancelled here.'):return
+        if not messagebox.askyesno('Confirm transfer',f'Send {amount} TEST OBSC to\n{address}\n\nA network fee will also be charged. The transfer cannot be cancelled here.'):return
         def job():
             if self.wallet_call('getblockchaininfo')['chain']!='obsolete-test':raise ValueError('Wrong network')
             # Fixed 1 atom/vB fee for experimental testnet; no floating-point amount.
@@ -140,7 +187,7 @@ class Wallet:
     def toggle_mine(self):
         if self.demo:return
         if self.miner and self.miner.is_alive():self.mining.set();self.status.set('Stopping miner after current batch...');return
-        if not messagebox.askyesno('CPU mining','Use this computer to mine TEST OBS?\n\nThe node must run on this computer. One CPU thread and about 256 MiB of memory will be used.'):return
+        if not messagebox.askyesno('CPU mining','Use this computer to mine TEST OBSC?\n\nThe node must run on this computer. One CPU thread and about 256 MiB of memory will be used.'):return
         self.mining.clear()
         def job():
             try:

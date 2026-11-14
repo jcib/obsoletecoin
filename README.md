@@ -1,7 +1,7 @@
 # Obsolete Coin
 
 A deliberately slow, CPU-mined memecoin with a retro desktop wallet.
-Ticker: **OBS** (working symbol; no exchange listing or uniqueness claim).
+Ticker: **OBSC** (working symbol; no exchange listing or uniqueness claim).
 
 **Experimental v0.2 testnet. Mainnet is disabled. Test coins have no monetary value.**
 This is a working-source prototype, not audited production currency software.
@@ -16,9 +16,9 @@ Old experimental balances and blocks do not carry over.
 | Mining | RandomX proof of work, CPU |
 | Target block interval | 900 seconds / 15 minutes; actual waits vary |
 | Difficulty | ASERT, every block, 6-hour half-life |
-| Maximum authorized issuance | 1,000,000,000 OBS |
+| Maximum authorized issuance | 1,000,000,000 OBSC |
 | Precision | 8 decimals; integer accounting |
-| Initial reward | 5,000 OBS |
+| Initial reward | 5,000 OBSC |
 | Halving | Every 100,000 blocks, counted from block 1 |
 | Genesis reward / premine | 0 / none |
 | End of subsidy | Block 3,900,000; fees thereafter |
@@ -28,7 +28,7 @@ Old experimental balances and blocks do not carry over.
 
 At target, halvings are about 2.85 years apart and the last subsidy about 111 years
 after block 1. Difficulty follows hash power, not miner count; it cannot guarantee
-a calendar schedule. A one-off 0.01300000 OBS rounding remainder at the last
+a calendar schedule. A one-off 0.01300000 OBSC rounding remainder at the last
 rewarded block makes the authorized schedule sum exactly to the cap. Unclaimed
 rewards and lost keys reduce circulating supply.
 
