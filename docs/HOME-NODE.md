@@ -1,4 +1,25 @@
-# Home testnet node
+# Home testnet node ? public preparation
+
+The public preparation was applied after local administrator authentication:
+TCP 19777 is allowed by the Dell firewall, the node retains full block history
+(pruning disabled), and the explorer publisher starts automatically with systemd.
+The node permits up to 32 connections and targets at most 1024 MiB upload per day.
+RPC remains loopback-only and the server wallet remains disabled. Existing CPU
+and memory limits remain. The unrelated trading service retained its process.
+
+The live explorer received two fresh observations 15 seconds apart at height 305.
+At that check there were zero peers. A local P2P handshake verified the expected
+genesis. An external probe did NOT connect: public reachability is still pending.
+Router NAT was reported configured by the operator; it has not yet passed an
+external end-to-end check. Website/repository access remains private pending an
+explicit owner decision. Do not announce the network as publicly reachable yet.
+
+Current peer and data freshness are shown on the join page once access is granted.
+Node service: `obsoletecoin-testnet.service`; exporter: `obsoletecoin-explorer.service`.
+Do not run the one-time installation scripts again against these existing services.
+
+## Initial LAN installation (historical)
+
 
 The v0.2 node was installed and verified on the home Debian 13 server on
 2026-11-14. Its LAN endpoint is **192.0.2.36:19777**.

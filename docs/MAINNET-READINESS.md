@@ -27,7 +27,7 @@ Machine-readable results: [readiness/2026-11-14](readiness/2026-11-14). Reproduc
 | P0 | Release authenticity/reproducibility | Working unsigned Windows installer; local GUI repeat match | Owner signing certificate, signed manifests, independent matching full builds, dependency review and every claimed Windows version tested. |
 | P1 | Wallet fee/recovery | Implemented and tested | Retest each exact release and future upgrade; explicit encryption/private backups remain necessary. |
 | P1 | Operations | Runbook, templates and read-only probe | Independently deployed monitoring/alerts, clocks, disk limits, power recovery and incident response. |
-| P1 | Explorer | Dated static snapshot | Keep capture date explicit. Automated refresh must never expose wallet RPC. |
+| P1 | Explorer | Authenticated automatic feed from the Dell; HTML refresh every 15 seconds, stale marker after 60 seconds | Maintain freshness, bounded canonical coverage and recovery tests; never expose wallet RPC. |
 | P2 | Timestamp horizon | uint32 limit in 2106 | Reviewed future upgrade; no unchanged century-long protocol claim. |
 
 ## Observed limits

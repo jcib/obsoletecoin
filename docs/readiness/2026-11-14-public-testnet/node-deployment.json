@@ -1,0 +1,19 @@
+{
+  "public_p2p_firewall": true,
+  "port": 19777,
+  "rpc_loopback": true,
+  "wallet_disabled": true,
+  "full_history": true,
+  "height": 305,
+  "node": {
+    "MainPID": "257843",
+    "NRestarts": "0",
+    "ActiveState": "active"
+  },
+  "publisher": {
+    "MainPID": "257948",
+    "NRestarts": "0",
+    "ActiveState": "active"
+  },
+  "unrelated_bot_unchanged": true
+}

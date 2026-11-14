@@ -1,0 +1,24 @@
+[
+  {
+    "available": true,
+    "fresh": true,
+    "observed": 1794696396952,
+    "height": 305,
+    "tip": "a1d86c9894652a5b8d4c46ab2ddbf139f5cae7adcc022fb3a2887154515c1e93",
+    "first": 0,
+    "connections": 0,
+    "mempool": 0,
+    "peer": "83.45.159.127:19777"
+  },
+  {
+    "available": true,
+    "fresh": true,
+    "observed": 1794696411952,
+    "height": 305,
+    "tip": "a1d86c9894652a5b8d4c46ab2ddbf139f5cae7adcc022fb3a2887154515c1e93",
+    "first": 0,
+    "connections": 0,
+    "mempool": 0,
+    "peer": "83.45.159.127:19777"
+  }
+]
