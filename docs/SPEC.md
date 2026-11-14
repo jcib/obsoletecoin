@@ -1,4 +1,4 @@
-# Experimental protocol v0.1
+# Experimental protocol v0.2
 
 The executable network is `obsolete-test`. `obsolete` is a disabled experimental
 candidate, not a public-mainnet launch commitment. Private testnet distribution
@@ -46,13 +46,13 @@ does not promise an unchanged century-long protocol.
 
 | Network | Selection | Magic | P2P / RPC | SegWit prefix |
 | --- | --- | --- | --- | --- |
-| Test | `obsolete-test` | `4f425431` | 19595 / 19596 | `tobs1` |
-| Disabled candidate | `obsolete` | `4f425331` | 9595 / 9596 | `obs1` |
+| Test | `obsolete-test` | `4f425432` | 19777 / 19778 | `tobs1` |
+| Disabled candidate | `obsolete` | `4f425332` | 9777 / 9778 | `obs1` |
 
-Subdirectories: `obsolete-testnet`, `obsolete-mainnet`. Neither new chain has DNS
+Subdirectories: `obsolete-testnet-v2`, `obsolete-mainnet-v2`. Neither new chain has DNS
 seeds, fixed peers, assumed-valid blocks or inherited minimum chainwork. Peers
 must be explicitly configured. Test genesis block ID:
-`f8314c387c3a6ee5039157da963a8a1cfbaaebc0a764a19202a68c9460e186df`.
+`9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98`.
 Constants and proofs are pinned in `genesis.json` and
 `src/consensus/obsolete_genesis.h`; reproduce with `tools/genesis.py --verify`.
 

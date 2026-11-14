@@ -69,7 +69,7 @@ jobs:
           cp build/bin/bitcoind build/bin/bitcoin-cli build/bin/bitcoin-wallet artifacts/obsoletecoin-linux/
           cp build-randomx-shared/librandomx.so artifacts/obsoletecoin-linux/
           cp -r tools docs artifacts/obsoletecoin-linux/
-          cp README.md COPYING artifacts/obsoletecoin-linux/
+          cp README.md COPYING Start-Mining.cmd Start-Wallet.cmd artifacts/obsoletecoin-linux/
           mkdir -p artifacts/obsoletecoin-linux/licenses
           cp src/randomx/LICENSE artifacts/obsoletecoin-linux/licenses/RandomX.txt
           cp src/secp256k1/COPYING artifacts/obsoletecoin-linux/licenses/secp256k1.txt

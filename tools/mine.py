@@ -27,8 +27,8 @@ def mine(rpc,address,stop=None,max_blocks=None,maxtries=256):
 def main():
     p=argparse.ArgumentParser(description='Obsolete Coin reference CPU miner (local node required)')
     p.add_argument('--address',required=True)
-    p.add_argument('--cookie',type=Path,default=default_data_dir()/'obsolete-testnet/.cookie')
-    p.add_argument('--rpcport',type=int,default=19596)
+    p.add_argument('--cookie',type=Path,default=default_data_dir()/'obsolete-testnet-v2/.cookie')
+    p.add_argument('--rpcport',type=int,default=19778)
     p.add_argument('--blocks',type=int,default=None)
     a=p.parse_args()
     if a.blocks is not None and a.blocks<1:p.error('--blocks must be positive')

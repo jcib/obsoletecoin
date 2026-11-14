@@ -1,7 +1,7 @@
 """Render and check the real Tk desktop (xvfb-run on headless Linux)."""
 import argparse, tkinter as tk
 from pathlib import Path
-from wallet95 import Wallet95
+from wallet import Wallet
 from rpc import RPC
 p=argparse.ArgumentParser();p.add_argument('--screenshot',type=Path);args=p.parse_args()
 import sys
@@ -9,7 +9,7 @@ if sys.platform=='win32':
     import ctypes
     ctypes.windll.user32.SetProcessDPIAware()
 root=tk.Tk();root.geometry('900x650+20+20')
-app=Wallet95(root,RPC(Path('unused-demo-cookie')),demo=True)
+app=Wallet(root,RPC(Path('unused-demo-cookie')),demo=True)
 errors=[]
 root.report_callback_exception=lambda *error:errors.append(error)
 root.update()

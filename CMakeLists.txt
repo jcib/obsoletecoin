@@ -102,7 +102,7 @@ option(BUILD_BITCOIN_BIN "Build bitcoin executable." ON)
 option(BUILD_DAEMON "Build bitcoind executable." ON)
 option(BUILD_GUI "Build bitcoin-qt executable." OFF)
 if(BUILD_GUI)
-  message(FATAL_ERROR "Use tools/wallet95.py. The inherited Bitcoin Qt interface is not supported by Obsolete v0.1.")
+  message(FATAL_ERROR "Use tools/wallet.py. The inherited Bitcoin Qt interface is not supported by Obsolete v0.2.")
 endif()
 option(BUILD_CLI "Build bitcoin-cli executable." ON)
 

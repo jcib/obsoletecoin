@@ -49,8 +49,8 @@ class RPCTests(unittest.TestCase):
         with self.assertRaises(RPCError) as cm:self.rpc.call('redirect')
         self.assertEqual(cm.exception.code,302)
     def test_wrong_network_cannot_encrypt_a_wallet(self):
-        from wallet95 import Wallet95
-        app=Wallet95.__new__(Wallet95);app.rpc=self.rpc
+        from wallet import Wallet
+        app=Wallet.__new__(Wallet);app.rpc=self.rpc
         # A real HTTP endpoint identifies itself as the wrong chain. The wallet
         # refuses before submitting encryption (a potentially irreversible step).
         with self.assertRaisesRegex(ValueError,'Only Obsolete testnet'):

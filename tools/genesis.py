@@ -8,9 +8,9 @@ BITS = 0x207fffff
 TARGET = 0x7fffff << (8 * (0x20 - 3))
 def sha(data): return hashlib.sha256(hashlib.sha256(data).digest()).digest()
 def genesis_parts(label):
-    phrase = ('Obsolete Coin '+label.lower()+': Please wait. It is still 1995.').encode()
-    seed = hashlib.sha256(('Obsolete Coin RandomX '+label.lower()+' v0.1').encode()).digest()
-    anchor = bytes([0x95 if label == 'TEST' else 0x96])*32
+    phrase = ('Obsolete Coin '+label.lower()+': A new beginning.').encode()
+    seed = hashlib.sha256(('Obsolete Coin RandomX '+label.lower()+' v0.2').encode()).digest()
+    anchor = bytes([0x54 if label == 'TEST' else 0x4d])*32
     script = bytes.fromhex('04ffff001d0104') + bytes([len(phrase)]) + phrase
     tx = (struct.pack('<I',1)+b'\x01'+bytes(32)+bytes.fromhex('ffffffff')+
           bytes([len(script)])+script+bytes.fromhex('ffffffff')+b'\x01'+bytes(8)+

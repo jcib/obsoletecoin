@@ -1,4 +1,4 @@
-"""Obsolete Coin 95: local desktop wallet backed by Core descriptor wallets."""
+"""Obsolete Coin: local desktop wallet backed by Core descriptor wallets."""
 import argparse, queue, threading, tkinter as tk
 from tkinter import ttk, messagebox, simpledialog, filedialog
 from pathlib import Path
@@ -7,27 +7,27 @@ from rpc import RPC, RPCError, default_data_dir, parse_amount
 from mine import mine
 
 BG='#c0c0c0'; NAVY='#000080'; TEAL='#008080'
-class Wallet95:
+class Wallet:
     def __init__(self,root,rpc,demo=False):
         self.root=root;self.rpc=rpc;self.demo=demo;self.queue=queue.Queue();self.busy=False
         self.mining=threading.Event();self.miner=None;self.snapshot=None
-        root.title('Obsolete Coin 95');root.geometry('900x760');root.minsize(840,700);root.configure(bg=TEAL)
+        root.title('Obsolete Coin');root.geometry('900x760');root.minsize(840,700);root.configure(bg=TEAL)
         root.option_add('*Font',('Tahoma',10));root.option_add('*Background',BG)
         style=ttk.Style();style.theme_use('clam');style.configure('Treeview',background='white',fieldbackground='white',rowheight=25)
         shell=tk.Frame(root,bd=3,relief='raised',bg=BG);shell.pack(fill='both',expand=True,padx=24,pady=24)
         title=tk.Frame(shell,bg=NAVY);title.pack(fill='x',padx=3,pady=3)
-        tk.Label(title,text='  [O]  Obsolete Coin 95',bg=NAVY,fg='white',font=('Tahoma',12,'bold')).pack(side='left',pady=5)
+        tk.Label(title,text='  [O]  Obsolete Coin',bg=NAVY,fg='white',font=('Tahoma',12,'bold')).pack(side='left',pady=5)
         tk.Label(title,text='_  []  X ',bg=NAVY,fg='white').pack(side='right')
         menus=tk.Frame(shell,bd=1,relief='raised');menus.pack(fill='x',padx=3)
         for label,commands in [('File',[('Refresh',self.refresh),('Exit',self.close)]),
                                ('Wallet',[('Open / Create',self.open_wallet),('Receive',self.receive),('Send',self.send),('Backup',self.backup)]),
                                ('Mining',[('Start / Stop',self.toggle_mine)]),
-                               ('Help',[('About',lambda:messagebox.showinfo('Obsolete Coin 95','Experimental testnet v0.1\nPlease wait. It is still 1995.\n\nTest coins have no value. Blocks target 15 minutes.\nA dominant miner can reorganize this network.'))])]:
+                               ('Help',[('About',lambda:messagebox.showinfo('Obsolete Coin','Experimental testnet v0.2\nTest coins have no value. Blocks target 15 minutes.\nA dominant miner can reorganize this network.'))])]:
             button=tk.Menubutton(menus,text=label,relief='flat');button.pack(side='left')
             menu=tk.Menu(button,tearoff=0)
             for title,command in commands:menu.add_command(label=title,command=command)
             button.configure(menu=menu)
-        tk.Label(shell,text='Please wait. It is still 1995.',font=('Tahoma',22,'bold'),anchor='w').pack(fill='x',padx=22,pady=(20,4))
+        tk.Label(shell,text='Obsolete Coin',font=('Tahoma',22,'bold'),anchor='w').pack(fill='x',padx=22,pady=(20,4))
         tk.Label(shell,text='DEMO PREVIEW - no blockchain connection' if demo else 'EXPERIMENTAL TESTNET - test coins have no monetary value',fg='#800000',anchor='w').pack(fill='x',padx=22)
         panel=tk.Frame(shell,bd=2,relief='sunken',bg='white');panel.pack(fill='x',padx=22,pady=18)
         self.balance=tk.StringVar(value='-- OBS');self.detail=tk.StringVar(value='Waiting for your local node...')
@@ -52,7 +52,7 @@ class Wallet95:
         root.protocol('WM_DELETE_WINDOW',self.close);root.after(100,self.drain)
         if demo:
             self.balance.set('12,345.00000000 OBS');self.detail.set('Immature: 5,000.00000000 OBS | Pending: 0.00000000 OBS')
-            self.status.set('DEMO | 95 blocks | 2 peers | No real funds')
+            self.status.set('DEMO | 120 blocks | 2 peers | No real funds')
             for v in [('Received','12,345.00000000','8'),('Mined (immature)','5,000.00000000','1')]:self.table.insert('',tk.END,values=v)
         else:self.refresh()
     def wallet_call(self,method,*params):
@@ -152,6 +152,6 @@ class Wallet95:
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--demo',action='store_true');p.add_argument('--wallet',default='obsolete')
-    p.add_argument('--cookie',type=Path,default=default_data_dir()/'obsolete-testnet/.cookie');p.add_argument('--rpcport',type=int,default=19596)
-    a=p.parse_args();root=tk.Tk();Wallet95(root,RPC(a.cookie,a.rpcport,a.wallet),a.demo);root.mainloop()
+    p.add_argument('--cookie',type=Path,default=default_data_dir()/'obsolete-testnet-v2/.cookie');p.add_argument('--rpcport',type=int,default=19778)
+    a=p.parse_args();root=tk.Tk();Wallet(root,RPC(a.cookie,a.rpcport,a.wallet),a.demo);root.mainloop()
 if __name__=='__main__':main()

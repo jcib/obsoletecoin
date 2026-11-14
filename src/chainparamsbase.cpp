@@ -51,9 +51,9 @@ std::unique_ptr<CBaseChainParams> CreateBaseChainParams(const ChainType chain)
     case ChainType::REGTEST:
         return std::make_unique<CBaseChainParams>("regtest", 18443);
     case ChainType::BRISVIA_TESTNET:
-        return std::make_unique<CBaseChainParams>("obsolete-testnet", 19596); // own datadir and RPC (isolates from Bitcoin)
+        return std::make_unique<CBaseChainParams>("obsolete-testnet-v2", 19778); // own datadir and RPC (isolates from Bitcoin)
     case ChainType::BRISVIA_MAIN:
-        return std::make_unique<CBaseChainParams>("obsolete-mainnet", 9596); // own datadir and RPC (localhost); avoids Litecoin's 9332
+        return std::make_unique<CBaseChainParams>("obsolete-mainnet-v2", 9778); // own datadir and RPC (localhost); avoids Litecoin's 9332
     }
     assert(false);
 }

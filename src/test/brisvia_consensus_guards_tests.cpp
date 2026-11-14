@@ -51,8 +51,8 @@ BOOST_AUTO_TEST_CASE(obsolete_network_and_genesis) {
     BOOST_CHECK(test->MessageStart()!=main->MessageStart());
     BOOST_CHECK_EQUAL(test->Bech32HRP(),"tobs");
     BOOST_CHECK_EQUAL(main->Bech32HRP(),"obs");
-    BOOST_CHECK_EQUAL(test->GetDefaultPort(),19595);
-    BOOST_CHECK_EQUAL(main->GetDefaultPort(),9595);
+    BOOST_CHECK_EQUAL(test->GetDefaultPort(),19777);
+    BOOST_CHECK_EQUAL(main->GetDefaultPort(),9777);
 }
 BOOST_AUTO_TEST_CASE(obsolete_asert_hashrate_response) {
     auto c = CChainParams::BrisviaTestNet()->GetConsensus();

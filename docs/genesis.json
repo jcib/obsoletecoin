@@ -1,18 +1,18 @@
 {
   "TEST": {
-    "phrase": "Obsolete Coin test: Please wait. It is still 1995.",
-    "seed": "01a552d3ef13ff4cb929467f093bc6fef20393064bcd27f50259d1e4a01965cf",
-    "nonce": 1,
-    "merkle": "ef88089afb9ffe9bee1db47c606e6ad526970f6417e43c5bffb0ab384648f12a",
-    "hash": "f8314c387c3a6ee5039157da963a8a1cfbaaebc0a764a19202a68c9460e186df",
-    "randomx_hash": "2a3898c642db0f8c878defcadd4d78164fa2929c2386d003dd36048ce46f2b63"
+    "phrase": "Obsolete Coin test: A new beginning.",
+    "seed": "3e50aa22e9d8fd7a89c93596cae39bfa6b86e0b2e45a997393f51a3ca84393e6",
+    "nonce": 2,
+    "merkle": "b38882d6af68a402b1a665b9b4ba542b7c13750120b1401705181027329c57f3",
+    "hash": "9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98",
+    "randomx_hash": "218d354121cfe12542f35ccd98649da9b0a2b6923cbbbceeb50ae992c4862731"
   },
   "MAIN": {
-    "phrase": "Obsolete Coin main: Please wait. It is still 1995.",
-    "seed": "44f70db0902c4ba1ec36be72b460c4f41b17fc2e6072e61ebf50e0636d36ddc4",
+    "phrase": "Obsolete Coin main: A new beginning.",
+    "seed": "8073fa65b79bd602da35c7e950f78273a1b742f6bc6ed7c2842e054327f78c42",
     "nonce": 0,
-    "merkle": "e582d8cc3931cb90ed508dd4fbc533bcc23d77d36fe2d5f1f1c1f7cb7c9ed127",
-    "hash": "05c6acaa2fb25702286843b1954a4420d93b10d7cee5937219a317be5f29430b",
-    "randomx_hash": "42999f14155c7f6046f52910800e271a0270627cb66a85026f1bcc6d47b30c4d"
+    "merkle": "b202e155d7e727bda52e5e6f04bf6a5d750da0d9204f72f00daa679ef3b53a5f",
+    "hash": "4525a456b4b753cd8fee9052d3f33df3dd8b3f31296714d58c7bce03c14ed216",
+    "randomx_hash": "687eeb713f7a53a413a5aacf553db990455fe6693856b09fb7d9dca79c722ab0"
   }
 }

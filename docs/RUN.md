@@ -7,13 +7,13 @@ also consume resources. Measure on the Dell before permanent installation.
 
 The node runs in the foreground; Ctrl-C shuts it down. No systemd service, firewall
 rule, router forwarding, SSH change or trading-bot restart is automatic. Begin
-with LAN-only peers and limit P2P 19595 to participating machines. RPC is local,
-cookie-authenticated, on 19596; never expose it publicly.
+with LAN-only peers and limit P2P 19777 to participating machines. RPC is local,
+cookie-authenticated, on 19778; never expose it publicly.
 
 ```sh
 python3 tools/node.py --listen                  # home server
-python3 tools/node.py --peer 192.168.1.X:19595    # laptop; YOUR server IP
-python3 tools/wallet95.py                       # local wallet
+python3 tools/node.py --peer 192.168.1.X:19777    # laptop; YOUR server IP
+python3 tools/wallet.py                       # local wallet
 ```
 
 Each machine has its own node and local cookie. Mining on the laptop uses its CPU;

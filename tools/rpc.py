@@ -10,7 +10,7 @@ class RPCError(RuntimeError):
         super().__init__(message)
 
 class RPC:
-    def __init__(self, cookie, port=19596, wallet=None, timeout=30):
+    def __init__(self, cookie, port=19778, wallet=None, timeout=30):
         self.cookie=Path(cookie)
         self.port=int(port)
         if not 1 <= self.port <= 65535: raise ValueError('Invalid RPC port')

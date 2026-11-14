@@ -770,15 +770,15 @@ public:
         pchMessageStart[0] = 0x4f;
         pchMessageStart[1] = 0x42;
         pchMessageStart[2] = 0x54;
-        pchMessageStart[3] = 0x31;
-        nDefaultPort = 19595;
+        pchMessageStart[3] = 0x32;
+        nDefaultPort = 19777;
         nPruneAfterHeight = 1000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
 
 
-        unsigned char anchor[32]; std::memset(anchor, 0x95, sizeof(anchor));
+        unsigned char anchor[32]; std::memset(anchor, 0x54, sizeof(anchor));
         const uint32_t genesisTime = OBSOLETE_GENESIS_TIME, genesisNonce = OBSOLETE_TEST_NONCE, genesisBits = OBSOLETE_GENESIS_BITS;
         genesis = CreateBrisviaGenesisBlock(OBSOLETE_TEST_PHRASE, anchor,
                                             genesisTime, genesisNonce, genesisBits, 1);
@@ -862,15 +862,15 @@ public:
         pchMessageStart[0] = 0x4f;
         pchMessageStart[1] = 0x42;
         pchMessageStart[2] = 0x53;
-        pchMessageStart[3] = 0x31;
-        nDefaultPort = 9595;
+        pchMessageStart[3] = 0x32;
+        nDefaultPort = 9777;
         nPruneAfterHeight = 100000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
 
 
-        unsigned char anchor[32]; std::memset(anchor, 0x96, sizeof(anchor));
+        unsigned char anchor[32]; std::memset(anchor, 0x4d, sizeof(anchor));
         const uint32_t genesisTime = OBSOLETE_GENESIS_TIME, genesisNonce = OBSOLETE_MAIN_NONCE, genesisBits = OBSOLETE_GENESIS_BITS;
         genesis = CreateBrisviaGenesisBlock(OBSOLETE_MAIN_PHRASE, anchor,
                                             genesisTime, genesisNonce, genesisBits, 1);

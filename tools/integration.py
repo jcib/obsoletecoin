@@ -23,7 +23,7 @@ def wait(fn,timeout=90):
 class Node:
     def __init__(self,binary,data,peer=None):
         self.binary=binary;self.data=data;self.peer=peer;self.port=free_port();self.rpcport=free_port()
-        self.rpc=RPC(data/'obsolete-testnet/.cookie',self.rpcport,timeout=120);self.proc=None
+        self.rpc=RPC(data/'obsolete-testnet-v2/.cookie',self.rpcport,timeout=120);self.proc=None
     def start(self):
         self.data.mkdir(exist_ok=True)
         cmd=[str(self.binary),'-chain=obsolete-test',f'-datadir={self.data}',
@@ -70,18 +70,18 @@ def run(binary,library):
             # Exercise the real desktop's send flow against the running wallet.
             import tkinter as tk
             from unittest.mock import patch
-            from wallet95 import Wallet95
+            from wallet import Wallet
             desktop=tk.Tk();desktop.withdraw()
-            app=Wallet95(desktop,wa)
+            app=Wallet(desktop,wa)
             def idle():
                 desktop.update()
                 return not app.busy
             wait(idle)
             assert app.snapshot is not None,app.status.get()
             try:
-                with patch('wallet95.simpledialog.askstring',side_effect=[other,'12.34000000']), \
-                     patch('wallet95.messagebox.askyesno',return_value=True), \
-                     patch('wallet95.messagebox.showinfo'):
+                with patch('wallet.simpledialog.askstring',side_effect=[other,'12.34000000']), \
+                     patch('wallet.messagebox.askyesno',return_value=True), \
+                     patch('wallet.messagebox.showinfo'):
                     app.send();wait(idle)
                     assert app.status.get().startswith('Transfer submitted: '),app.status.get()
                     txid=app.status.get().split(': ',1)[1]
@@ -146,14 +146,20 @@ def run(binary,library):
             recovered=b.rpc.for_wallet('recovered')
             assert recovered.call('getbalances')==balance
             assert recovered.call('getwalletinfo')['unlocked_until']==0
+            # Run the packaged laptop entry point against a real home-style peer.
+            laptop=subprocess.run([sys.executable,str(ROOT/'tools/laptop.py'),
+                '--server','127.0.0.1:'+str(b.port),'--datadir',str(base/'laptop'),
+                '--port',str(free_port()),'--rpcport',str(free_port()),
+                '--binary',str(binary),'--blocks','1'],capture_output=True,text=True,timeout=180)
+            assert laptop.returncode==0 and 'Found block' in laptop.stdout,(laptop.stdout,laptop.stderr)
             print(json.dumps({'result':'passed','height':b.rpc.call('getblockcount'),
-                'checks':['CLI RandomX mining','seed boundary 64','two-node synchronization',
+                'checks':['CLI RandomX mining','laptop launcher mining against peer','seed boundary 64','two-node synchronization',
                           'coinbase maturity','desktop signed transfer','insufficient funds','no duplicate credit',
                           'invalid proof rejected','overpaying coinbase rejected','chainwork reorganization',
                           'restart and wallet persistence','encryption and wrong-passphrase rejection','wallet backup and restore']}))
         except Exception:
             for n in (a,b):
-                f=n.data/'obsolete-testnet/debug.log'
+                f=n.data/'obsolete-testnet-v2/debug.log'
                 if f.exists():print('\n'.join(f.read_text(errors='replace').splitlines()[-35:]))
             raise
         finally:b.stop();a.stop()
