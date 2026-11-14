@@ -12,10 +12,10 @@ concurrency:
 jobs:
   linux:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
-      CCACHE_MAXSIZE: 750M
+      CCACHE_MAXSIZE: 2G
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,8 +23,8 @@ jobs:
       - name: Dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends build-essential cmake pkgconf python3 python3-tk xvfb ccache libevent-dev libboost-dev libsqlite3-dev
-      - uses: actions/cache@v4
+          sudo apt-get install -y --no-install-recommends build-essential cmake pkgconf python3 python3-tk xvfb xauth ccache libevent-dev libboost-dev libsqlite3-dev
+      - uses: actions/cache/restore@v4
         with:
           path: .ccache
           key: obsolete-ccache-${{ runner.os }}-${{ github.sha }}
@@ -36,7 +36,7 @@ jobs:
           cmake -S src/randomx -B build-randomx-shared -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build-randomx-shared --target randomx -j2
       - name: Reproduce experimental genesis
-        run: python3 tools/genesis.py --library build-randomx-shared/librandomx.so
+        run: python3 tools/genesis.py --library build-randomx-shared/librandomx.so --verify
       - name: Save genesis evidence
         uses: actions/upload-artifact@v4
         with:
@@ -47,13 +47,20 @@ jobs:
       - name: Configure
         run: cmake -B build -DBUILD_TESTS=ON -DBUILD_GUI=OFF -DBUILD_BENCH=OFF -DBUILD_FUZZ_BINARY=OFF -DENABLE_IPC=OFF -DCMAKE_BUILD_TYPE=Release
       - name: Build node, wallet and unit tests
-        run: cmake --build build --target bitcoind bitcoin-cli bitcoin-wallet test_bitcoin -j2
+        run: cmake --build build -j2
+      - name: Save compiler cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .ccache
+          key: obsolete-ccache-${{ runner.os }}-${{ github.sha }}
       - name: Consensus and inherited unit tests
         run: ctest --test-dir build --output-on-failure -j1
       - name: Integration tests
         run: |
-          if test -f tools/integration.py; then python3 tools/integration.py --bindir build/bin --library build-randomx-shared/librandomx.so; fi
-          if test -d tests; then python3 -m unittest discover -s tests -v; fi
+          xvfb-run -a python3 tools/integration.py --bindir build/bin --library build-randomx-shared/librandomx.so
+          python3 -m unittest discover -s tests -v
+          xvfb-run -a python3 tools/ui_smoke.py
       - name: Package experimental Linux build
         run: |
           mkdir -p artifacts/obsoletecoin-linux

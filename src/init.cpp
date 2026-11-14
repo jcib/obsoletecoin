@@ -913,9 +913,6 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     // specified in default section of config file, but not overridden
     // on the command line or in this chain's section of the config file.
     ChainType chain = args.GetChainType();
-    if (chain != ChainType::BRISVIA_TESTNET && chain != ChainType::REGTEST) {
-        return InitError(Untranslated("Obsolete Coin is experimental. Start with -chain=obsolete-test. Mainnet is not released."));
-    }
     if (chain == ChainType::SIGNET) {
         LogInfo("Signet derived magic (message start): %s", HexStr(chainparams.MessageStart()));
     }

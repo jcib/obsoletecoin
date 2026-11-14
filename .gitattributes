@@ -1,1 +1,4 @@
 src/clientversion.cpp export-subst
+
+# The upstream snapshot includes CRLF source files.
+* whitespace=cr-at-eol

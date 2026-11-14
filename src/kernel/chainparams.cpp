@@ -715,13 +715,7 @@ public:
     }
 };
 
-/**
- * Brisvia CANONICAL testnet (ChainType::BRISVIA_TESTNET): own test network with an identity fully separate from
- * Bitcoin (own magic, port, datadir, RPC and prefix). PoW RandomX + Brisvia emission (50 BRVA per block,
- * halving every 1,000,000 blocks, no tail, max supply 100,000,000 BRVA) + ASERT
- * active. Genesis with a real launch date and calibrated initial difficulty.
- * Selected with -chain=brisvia-test.
- */
+/** Obsolete Coin experimental testnet (900 s; 5,000 OBS; 100,000-block halvings). */
 class CBrisviaTestNetParams : public CChainParams {
 public:
     CBrisviaTestNetParams() {
@@ -729,13 +723,13 @@ public:
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
 
-        
+
         consensus.nSubsidyHalvingInterval = 100000;
         consensus.nBrisviaInitialSubsidy = 5000 * COIN;
-        consensus.nBrisviaTailSubsidy = 0; 
+        consensus.nBrisviaTailSubsidy = 0;
         consensus.fBrisviaSubsidy = true;
 
-        
+
         consensus.script_flag_exceptions.clear();
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
@@ -745,15 +739,15 @@ public:
         consensus.SegwitHeight = 0;
         consensus.MinBIP9WarningHeight = 0;
 
-        
+
         consensus.fPowRandomX = true;
-        consensus.powLimit = uint256{"7fffff0000000000000000000000000000000000000000000000000000000000"}; 
+        consensus.powLimit = uint256{"7fffff0000000000000000000000000000000000000000000000000000000000"};
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60;
         consensus.nPowTargetSpacing = 900;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.enforce_BIP94 = false;
-        consensus.fPowNoRetargeting = false;   
-        consensus.nASERTHalfLife = 21600;      
+        consensus.fPowNoRetargeting = false;
+        consensus.nASERTHalfLife = 21600;
         consensus.brisviaInitialSeed = uint256{OBSOLETE_TEST_SEED};
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -772,18 +766,18 @@ public:
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
 
-        
-        pchMessageStart[0] = 0x4f; 
-        pchMessageStart[1] = 0x42; 
-        pchMessageStart[2] = 0x54; 
-        pchMessageStart[3] = 0x31; 
+
+        pchMessageStart[0] = 0x4f;
+        pchMessageStart[1] = 0x42;
+        pchMessageStart[2] = 0x54;
+        pchMessageStart[3] = 0x31;
         nDefaultPort = 19595;
         nPruneAfterHeight = 1000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
-        
-        
+
+
         unsigned char anchor[32]; std::memset(anchor, 0x95, sizeof(anchor));
         const uint32_t genesisTime = OBSOLETE_GENESIS_TIME, genesisNonce = OBSOLETE_TEST_NONCE, genesisBits = OBSOLETE_GENESIS_BITS;
         genesis = CreateBrisviaGenesisBlock(OBSOLETE_TEST_PHRASE, anchor,
@@ -794,7 +788,7 @@ public:
         assert(consensus.hashGenesisBlock == uint256{OBSOLETE_TEST_HASH});
         assert(genesis.hashMerkleRoot == uint256{OBSOLETE_TEST_MERKLE});
 
-        vFixedSeeds.clear(); 
+        vFixedSeeds.clear();
         vSeeds.clear();
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
@@ -803,7 +797,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
-        bech32_hrp = "tobs"; 
+        bech32_hrp = "tobs";
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
@@ -812,12 +806,7 @@ public:
     }
 };
 
-/**
- * Brisvia MAINNET (ChainType::BRISVIA_MAIN): the MAIN Brisvia network (real money). Fully own network identity,
- * separate from Bitcoin and from the Brisvia testnet (magic BRV1, port 9342, own datadir/RPC and
- * own bech32 "obs" prefix). PoW RandomX + finite Bitcoin-style emission (50 BRVA/block, halving every
- * 1,000,000 blocks, no tail, 100M cap) + ASERT. Selected with -chain=brisvia.
- */
+/** Obsolete Coin reserved candidate. Startup is disabled pending a separate public launch. */
 class CBrisviaMainParams : public CChainParams {
 public:
     CBrisviaMainParams() {
@@ -825,13 +814,13 @@ public:
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
 
-        
+
         consensus.nSubsidyHalvingInterval = 100000;
         consensus.nBrisviaInitialSubsidy = 5000 * COIN;
         consensus.nBrisviaTailSubsidy = 0;
         consensus.fBrisviaSubsidy = true;
 
-        
+
         consensus.script_flag_exceptions.clear();
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
@@ -841,15 +830,15 @@ public:
         consensus.SegwitHeight = 0;
         consensus.MinBIP9WarningHeight = 0;
 
-        
+
         consensus.fPowRandomX = true;
-        consensus.powLimit = uint256{"7fffff0000000000000000000000000000000000000000000000000000000000"}; 
+        consensus.powLimit = uint256{"7fffff0000000000000000000000000000000000000000000000000000000000"};
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60;
         consensus.nPowTargetSpacing = 900;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.enforce_BIP94 = false;
-        consensus.fPowNoRetargeting = false;   
-        consensus.nASERTHalfLife = 21600;      
+        consensus.fPowNoRetargeting = false;
+        consensus.nASERTHalfLife = 21600;
         consensus.brisviaInitialSeed = uint256{OBSOLETE_MAIN_SEED};
 
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -865,23 +854,23 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].threshold = 108;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].period = 144;
 
-        
+
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
 
-        
-        pchMessageStart[0] = 0x4f; 
-        pchMessageStart[1] = 0x42; 
-        pchMessageStart[2] = 0x53; 
-        pchMessageStart[3] = 0x31; 
+
+        pchMessageStart[0] = 0x4f;
+        pchMessageStart[1] = 0x42;
+        pchMessageStart[2] = 0x53;
+        pchMessageStart[3] = 0x31;
         nDefaultPort = 9595;
         nPruneAfterHeight = 100000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
-        
-        
-        unsigned char anchor[32]; std::memset(anchor, 0x96, sizeof(anchor)); 
+
+
+        unsigned char anchor[32]; std::memset(anchor, 0x96, sizeof(anchor));
         const uint32_t genesisTime = OBSOLETE_GENESIS_TIME, genesisNonce = OBSOLETE_MAIN_NONCE, genesisBits = OBSOLETE_GENESIS_BITS;
         genesis = CreateBrisviaGenesisBlock(OBSOLETE_MAIN_PHRASE, anchor,
                                             genesisTime, genesisNonce, genesisBits, 1);
@@ -891,18 +880,18 @@ public:
         assert(consensus.hashGenesisBlock == uint256{OBSOLETE_MAIN_HASH});
         assert(genesis.hashMerkleRoot == uint256{OBSOLETE_MAIN_MERKLE});
 
-        
-        vFixedSeeds.clear(); 
-        vSeeds.clear();  
 
-        
+        vFixedSeeds.clear();
+        vSeeds.clear();
+
+
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,63);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,125);
         base58Prefixes[SECRET_KEY]     = std::vector<unsigned char>(1,191);
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
-        bech32_hrp = "obs"; 
+        bech32_hrp = "obs";
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;

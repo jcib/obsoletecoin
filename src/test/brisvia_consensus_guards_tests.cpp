@@ -1,5 +1,6 @@
 // Obsolete Coin consensus specification tests. MIT; see COPYING.
 #include <chainparamsbase.h>
+#include <arith_uint256.h>
 #include <consensus/amount.h>
 #include <consensus/brisvia_emission.h>
 #include <consensus/obsolete_genesis.h>
@@ -52,5 +53,25 @@ BOOST_AUTO_TEST_CASE(obsolete_network_and_genesis) {
     BOOST_CHECK_EQUAL(main->Bech32HRP(),"obs");
     BOOST_CHECK_EQUAL(test->GetDefaultPort(),19595);
     BOOST_CHECK_EQUAL(main->GetDefaultPort(),9595);
+}
+BOOST_AUTO_TEST_CASE(obsolete_asert_hashrate_response) {
+    auto c = CChainParams::BrisviaTestNet()->GetConsensus();
+    // Use a target below the floor so both directions can be observed.
+    const uint32_t bits = 0x1e0fffff;
+    const int64_t start = 1794614400;
+    c.asertAnchorParams = Consensus::Params::ASERTAnchor{0,bits,start-900};
+    CBlockHeader candidate;
+    candidate.nTime = start+101*900;
+    const auto scheduled = GetNextASERTWorkRequiredFromValues(100,start+100*900,&candidate,c);
+    const auto fast = GetNextASERTWorkRequiredFromValues(100,start+100*900-21600,&candidate,c);
+    const auto slow = GetNextASERTWorkRequiredFromValues(100,start+100*900+21600,&candidate,c);
+    BOOST_CHECK_EQUAL(scheduled,bits);
+    arith_uint256 normal,hard,easy;
+    normal.SetCompact(scheduled);hard.SetCompact(fast);easy.SetCompact(slow);
+    BOOST_CHECK(hard < normal);
+    BOOST_CHECK(easy > normal);
+    BOOST_CHECK((normal >> 1) == hard);
+    // Compact encoding may discard low bits: do not assert unencoded precision.
+    BOOST_CHECK_EQUAL((normal << 1).GetCompact(),slow);
 }
 BOOST_AUTO_TEST_SUITE_END()

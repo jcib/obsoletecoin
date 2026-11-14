@@ -148,9 +148,10 @@ static bool GenerateBlock(ChainstateManager& chainman, CBlock&& block, uint64_t&
         uint256 brisvia_seed;
         {
             LOCK(cs_main);
-            const CBlockIndex* tip = chainman.ActiveChain().Tip();
-            const int nHeight = (tip ? tip->nHeight : -1) + 1;
-            brisvia_seed = BrisviaGetSeedHash(tip, nHeight, chainman.GetConsensus());
+            const CBlockIndex* parent = chainman.m_blockman.LookupBlockIndex(block.hashPrevBlock);
+            if (!parent) throw JSONRPCError(RPC_INTERNAL_ERROR, "Mining template parent is unavailable");
+            const int nHeight = parent->nHeight + 1;
+            brisvia_seed = BrisviaGetSeedHash(parent, nHeight, chainman.GetConsensus());
         }
         while (max_tries > 0 && block.nNonce < std::numeric_limits<uint32_t>::max()
                && CheckRandomXHeaderWithResolvedContext(block, block.nBits, brisvia_seed, chainman.GetConsensus()) != PoWCheckResult::VALID

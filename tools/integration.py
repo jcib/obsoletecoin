@@ -1,0 +1,141 @@
+"""Real two-node integration on disposable local Obsolete testnet data directories."""
+import argparse, json, socket, subprocess, tempfile, time, sys
+from pathlib import Path
+from decimal import Decimal
+from rpc import RPC, RPCError
+from rx import RandomX
+ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'test/functional'))
+from test_framework.messages import CBlock, from_hex
+
+def free_port():
+    with socket.socket() as sock:
+        sock.bind(('127.0.0.1',0));return sock.getsockname()[1]
+def wait(fn,timeout=90):
+    end=time.monotonic()+timeout;last=None
+    while time.monotonic()<end:
+        try:
+            value=fn()
+            if value:return value
+        except (OSError,RPCError) as e:last=e
+        time.sleep(.2)
+    raise AssertionError('Timed out: '+str(last))
+class Node:
+    def __init__(self,binary,data,peer=None):
+        self.binary=binary;self.data=data;self.peer=peer;self.port=free_port();self.rpcport=free_port()
+        self.rpc=RPC(data/'obsolete-testnet/.cookie',self.rpcport,timeout=120);self.proc=None
+    def start(self):
+        self.data.mkdir(exist_ok=True)
+        cmd=[str(self.binary),'-chain=obsolete-test',f'-datadir={self.data}',
+             f'-port={self.port}',f'-rpcport={self.rpcport}','-rpcbind=127.0.0.1','-rpcallowip=127.0.0.1',
+             '-bind=127.0.0.1','-listen=1','-dnsseed=0','-fixedseeds=0','-discover=0',
+             '-server=1','-dbcache=64','-fallbackfee=0.00001000','-maxtipage=315360000','-printtoconsole=0']
+        if self.peer:cmd+=['-connect=127.0.0.1:'+str(self.peer)]
+        self.log=(self.data/'process.log').open('a')
+        self.proc=subprocess.Popen(cmd,stdout=self.log,stderr=subprocess.STDOUT)
+        def ready():
+            if self.proc.poll() is not None:raise AssertionError((self.data/'process.log').read_text())
+            return self.rpc.call('getblockchaininfo')['chain']=='obsolete-test'
+        wait(ready)
+    def stop(self):
+        if self.proc and self.proc.poll() is None:
+            try:self.rpc.call('stop')
+            except (OSError,RPCError):pass
+            try:self.proc.wait(timeout=30)
+            except subprocess.TimeoutExpired:self.proc.kill();self.proc.wait()
+        if getattr(self,'log',None):self.log.close()
+
+def run(binary,library):
+    with tempfile.TemporaryDirectory(prefix='obsolete-integration-') as temp:
+        base=Path(temp);a=Node(binary,base/'a');b=Node(binary,base/'b',a.port)
+        guard_dir=base/'launch-guard';guard_dir.mkdir()
+        for chain in ('obsolete','main'):
+            rejected=subprocess.run([str(binary),'-chain='+chain,'-datadir='+str(guard_dir),'-listen=0'],capture_output=True,text=True,timeout=20)
+            assert rejected.returncode!=0 and 'Mainnet is not released' in rejected.stderr, rejected.stderr
+        try:
+            a.start();b.start();wait(lambda:a.rpc.call('getconnectioncount')>0)
+            for n in (a,b):n.rpc.call('createwallet','test')
+            wa=a.rpc.for_wallet('test');wb=b.rpc.for_wallet('test')
+            addr=wa.call('getnewaddress','','bech32');other=wb.call('getnewaddress','','bech32')
+            assert addr.startswith('tobs1') and other.startswith('tobs1')
+            # Actual RandomX mining crosses the initial-seed/genesis-seed boundary at 64.
+            blocks=a.rpc.call('generatetoaddress',102,addr,1000000)
+            assert len(blocks)==102
+            wait(lambda:b.rpc.call('getbestblockhash')==blocks[-1])
+            assert wa.call('getbalances')['mine']['trusted']>=5000
+            # Exercise the real desktop's send flow against the running wallet.
+            import tkinter as tk
+            from unittest.mock import patch
+            from wallet95 import Wallet95
+            desktop=tk.Tk();desktop.withdraw()
+            app=Wallet95(desktop,wa)
+            def idle():
+                desktop.update()
+                return not app.busy
+            wait(idle)
+            assert app.snapshot is not None,app.status.get()
+            try:
+                with patch('wallet95.simpledialog.askstring',side_effect=[other,'12.34000000']), \
+                     patch('wallet95.messagebox.askyesno',return_value=True), \
+                     patch('wallet95.messagebox.showinfo'):
+                    app.send();wait(idle)
+                    assert app.status.get().startswith('Transfer submitted: '),app.status.get()
+                    txid=app.status.get().split(': ',1)[1]
+            finally: desktop.destroy()
+            wait(lambda:txid in b.rpc.call('getrawmempool'))
+            tip=a.rpc.call('generatetoaddress',1,addr,100000)[0]
+            wait(lambda:b.rpc.call('getbestblockhash')==tip)
+            assert Decimal(str(wb.call('getbalances')['mine']['trusted']))==Decimal('12.34')
+            try:wa.call('sendtoaddress',other,'1000000000','','',False,True,None,None,False,1)
+            except RPCError as e:assert e.code==-6
+            else:raise AssertionError('Insufficient balance accepted')
+            # Re-submit the same spend: cannot credit the recipient twice.
+            raw=wa.call('gettransaction',txid)['hex']
+            try:a.rpc.call('sendrawtransaction',raw)
+            except RPCError:pass
+            assert Decimal(str(wb.call('getbalances')['mine']['trusted']))==Decimal('12.34')
+            # Two invalid variants of the most recent block, against its existing parent.
+            original=from_hex(CBlock(),a.rpc.call('getblock',tip,0))
+            seed=bytes.fromhex(a.rpc.call('getblockhash',0))[::-1]
+            target=(original.nBits & 0x007fffff) << (8*((original.nBits>>24)-3))
+            with RandomX(library,seed) as rx:
+                bad=from_hex(CBlock(),original.serialize().hex())
+                for nonce in range(10000):
+                    bad.nNonce=nonce
+                    if int.from_bytes(rx.hash(bad.serialize()[:80]),'little')>target:break
+                result=a.rpc.call('submitblock',bad.serialize().hex())
+                assert isinstance(result,str),('Invalid proof accepted',result)
+                excess=from_hex(CBlock(),original.serialize().hex())
+                excess.vtx[0].vout[0].nValue+=1
+                excess.vtx[0].rehash();excess.hashMerkleRoot=excess.calc_merkle_root()
+                for nonce in range(100000):
+                    excess.nNonce=nonce
+                    if int.from_bytes(rx.hash(excess.serialize()[:80]),'little')<=target:break
+                else:raise AssertionError('Could not mine overpay test block')
+                result=a.rpc.call('submitblock',excess.serialize().hex())
+                assert result=='bad-cb-amount',result
+            # Real competing branches: disconnect, mine a longer competing fork, reconnect.
+            b.rpc.call('setnetworkactive',False)
+            wait(lambda:a.rpc.call('getconnectioncount')==0)
+            a.rpc.call('generatetoaddress',1,addr,100000)
+            fork=b.rpc.call('generatetoaddress',3,other,100000)
+            b.rpc.call('setnetworkactive',True)
+            wait(lambda:a.rpc.call('getbestblockhash')==fork[-1])
+            balance=wb.call('getbalances');tip=b.rpc.call('getbestblockhash')
+            b.stop();b.start();b.rpc.call('loadwallet','test') if 'test' not in b.rpc.call('listwallets') else None
+            assert b.rpc.call('getbestblockhash')==tip
+            assert wb.call('getbalances')==balance
+            print(json.dumps({'result':'passed','height':b.rpc.call('getblockcount'),
+                'checks':['RandomX mining','seed boundary 64','two-node synchronization',
+                          'coinbase maturity','desktop signed transfer','insufficient funds','no duplicate credit',
+                          'invalid proof rejected','overpaying coinbase rejected','chainwork reorganization',
+                          'restart and wallet persistence']}))
+        except Exception:
+            for n in (a,b):
+                f=n.data/'obsolete-testnet/debug.log'
+                if f.exists():print('\n'.join(f.read_text(errors='replace').splitlines()[-35:]))
+            raise
+        finally:b.stop();a.stop()
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--bindir',type=Path,required=True);p.add_argument('--library',type=Path,required=True);args=p.parse_args()
+    run((args.bindir/'bitcoind').resolve(),args.library.resolve())

@@ -162,6 +162,8 @@ std::list<SectionInfo> ArgsManager::GetUnrecognizedSections() const
         ChainTypeToString(ChainType::TESTNET),
         ChainTypeToString(ChainType::TESTNET4),
         ChainTypeToString(ChainType::MAIN),
+        ChainTypeToString(ChainType::BRISVIA_TESTNET),
+        ChainTypeToString(ChainType::BRISVIA_MAIN),
     };
 
     LOCK(cs_args);
