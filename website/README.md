@@ -2,15 +2,15 @@
 
 A portable English-language GeoCities-inspired site: plain HTML, local CSS and SVG, no JavaScript, external fonts, analytics or runtime framework.
 
-Slogan: **It's tacky, cheap, and slow, but it's also tough and hard-wearing.**
+Slogan: **It's tacky, cheap, and slow.**
 
 Private website: https://obsoletecoin.pages.dev
 
-Includes downloads, network specifications, mining instructions, FAQ, a mainnet readiness checklist, GitHub links, and a static explorer generated from real public testnet block data. Native Windows without WSL remains planned, not available.
+Includes downloads, network specifications, mining instructions, FAQ, a mainnet readiness checklist, GitHub links, and a static explorer generated from real public testnet block data. An unsigned native Windows test installer is now available; mainnet remains blocked.
 
 ## Build
 
-Run from the repository root with Python 3.10 or newer. Downloads currently use the verified test packages at `../ObsoleteCoin-Windows-WSL.zip` and `.local/artifact/obsoletecoin-linux-experimental.tar.gz`.
+Run from the repository root with Python 3.10 or newer. Downloads use `../ObsoleteCoin-Windows-WSL.zip`, `.local/release/ObsoleteCoin-Linux-Testnet.tar.gz` and `.local/release/ObsoleteCoin-Testnet-Setup.exe`, verified against their release provenance.
 
 1. On the Linux/WSL account running the local testnet node: `python3 -B website/export_snapshot.py --output .local/site/snapshot.json`. The exporter reads the local RPC cookie for authentication and calls public blockchain RPCs only. The cookie and wallet data are never exported. It captures at most 1024 recent blocks and checks chain continuity.
 2. `python -B website/build.py --snapshot .local/site/snapshot.json --output .local/site/dist`
@@ -39,8 +39,14 @@ Validation: 541 HTML pages and 16,186 local references, zero broken links or scr
 
 ## Animated title and shared wallet theme
 
-CSS stepped title shimmer/skew, disabled for reduced-motion preference. User icon in the header, supplied Download and Mining GIFs in navigation, GifCities Windows and Tux animations in wallet download cards. GIF provenance in ASSETS.md.
+CSS stepped horizontal stretch/contraction, disabled for reduced-motion preference. User icon in the header, supplied Download and Mining GIFs in navigation, GifCities Windows and Tux animations in wallet download cards. GIF provenance in ASSETS.md.
 
-Wallet GUI now uses the same blue background tile, yellow text/borders, black panels and cyan controls. Assets ship in tools/assets for both Linux and Windows-through-WSL. Only wallet UI files were updated in the installed WSL application; no node restart or wallet-data changes. Tk smoke passed on Windows and Debian/WSLg, and history tests passed. Native Windows node/installer remains future work. Both archives verified to preserve their node binaries.
+Wallet GUI now uses the same blue background tile, yellow text/borders, black panels and cyan controls. Assets ship in tools/assets for both Linux and Windows-through-WSL. Only wallet UI files were updated in the installed WSL application; no node restart or wallet-data changes. Tk smoke passed on Windows and Debian/WSLg, and history tests passed. The later native test candidate is documented in docs/WINDOWS-NATIVE.md. Both archives verified to preserve their node binaries.
 
 Browser verification: 1440/390/360 pixels, all image sources and favicon load, animation is enabled normally and disabled with reduced motion, navigation/downloads/explorer/FAQ work, zero horizontal overflow. 541 HTML pages, 16,186 local links, zero scripts/broken links.
+
+## Native candidate and music update
+
+Short slogan and Slow life, slow money appear across all generated pages. Horizontal stretch/contraction respects reduced motion. Native HTML audio controls request autoplay of the supplied music.mp3, with Memories OST by P l a y s t a s i s credited in the footer alongside the GeoCities inspiration link. Browsers may require pressing Play. No scripts or trackers. Downloads now include the tested unsigned native Windows installer; WSL remains an alternative. Linux uses the updated tested artifact.
+
+Current verification: 541 pages, 17,270 local references, zero broken links and zero scripts. Chrome at 1440/390/360 pixels verifies audio decoding/playback, new slogans, title stretch keyframes, reduced motion, credits, navigation and download hashes. Native installer SHA256: bb609242e745d812c0bdcab44f07602507e0e974252ff9aeab7f9916f9748a25.

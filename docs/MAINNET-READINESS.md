@@ -10,7 +10,7 @@
 - Actual ENOSPC in a private 700 MiB Linux tmpfs: persisted height 2 recovered and mining resumed to height 3 after freeing space. No real node disk was filled.
 - Native x64 wallet/node needs neither WSL nor installed Python. Runtime: CPython 3.14.10 and Tcl/Tk 9.0.4. Retro UI, dates/details, exact fee/total before signing, saved testnet peers and a peer/sync check before GUI mining.
 - Frozen executable starts its own disposable node and mines real test blocks. The unsigned installer passes installation, GUI/mining, reinstallation, uninstall preserving wallet bytes, and reinstall/open of that same wallet on Windows 11 build 26300. No existing wallet or active miner was used.
-- Two clean GUI builds on the same machine match all 952 files. This does not establish independent reproducibility of the node or complete release.
+- Two clean GUI builds on the same machine match all 952 files. Two installer compilations with identical inputs also match byte for byte. This does not establish independent reproducibility of the node or complete release.
 - Prepared build/install/signing scripts, dependency hash lock, license notices, manifests, source exporter for review, health JSON probe, service/config templates and launch/recovery runbook.
 
 Machine-readable results: [readiness/2026-11-14](readiness/2026-11-14). Reproduction: [release/README.md](../release/README.md). Native user instructions: [WINDOWS-NATIVE.md](WINDOWS-NATIVE.md). Review scope: [INDEPENDENT-REVIEW.md](INDEPENDENT-REVIEW.md).

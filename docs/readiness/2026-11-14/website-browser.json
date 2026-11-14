@@ -1,0 +1,36 @@
+[
+  {
+    "file": "windows-native-testnet.exe",
+    "bytes": 23711726,
+    "sha256": "bb609242e745d812c0bdcab44f07602507e0e974252ff9aeab7f9916f9748a25"
+  },
+  {
+    "file": "linux-x64.tar.gz",
+    "bytes": 11112813,
+    "sha256": "e502798fabe872cfb06941de72b36a53815cb797aefcec117ec13fe55990855b"
+  },
+  {
+    "viewport": 1440,
+    "jsDisabled": true,
+    "navigation": "passed",
+    "explorer": "passed",
+    "faq": "passed",
+    "overflow": false
+  },
+  {
+    "viewport": 390,
+    "jsDisabled": true,
+    "navigation": "passed",
+    "explorer": "passed",
+    "faq": "passed",
+    "overflow": false
+  },
+  {
+    "viewport": 360,
+    "jsDisabled": true,
+    "navigation": "passed",
+    "explorer": "passed",
+    "faq": "passed",
+    "overflow": false
+  }
+]

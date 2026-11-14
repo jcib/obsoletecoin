@@ -1,0 +1,9 @@
+{
+  "same_machine": true,
+  "same_input_timestamps": true,
+  "compiler": "Inno Setup 7.1.1",
+  "original_sha256": "bb609242e745d812c0bdcab44f07602507e0e974252ff9aeab7f9916f9748a25",
+  "repeat_sha256": "bb609242e745d812c0bdcab44f07602507e0e974252ff9aeab7f9916f9748a25",
+  "limits": "Same compiler and identical already-built inputs; not an independent source rebuild",
+  "identical": true
+}
