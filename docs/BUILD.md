@@ -35,6 +35,7 @@ Windows node/miner: use WSL2 and Linux instructions. WSLg displays the Tk wallet
 Native Windows preview: `python tools/wallet95.py --demo`. No native Windows node
 package, macOS validation or ARM validation is provided in v0.1.
 
-Two expensive historical upstream genesis-mining fixtures are disabled; those
-constants are not Obsolete's consensus. Obsolete genesis is independently mined
-and checked against fixed constants, and remaining inherited unit suites run.
+Two historical upstream genesis-mining helpers are preserved in
+`docs/upstream-genesis-fixtures.cpp.txt` outside the active suite; they mine a
+different currency. Obsolete genesis is independently mined and checked against
+fixed constants. Official RandomX vectors and remaining inherited suites run.

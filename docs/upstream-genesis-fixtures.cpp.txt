@@ -1,0 +1,98 @@
+// Historical upstream helpers, retained for provenance; not Obsolete consensus.
+// Mines the CANONICAL GENESIS of the Brisvia testnet (ChainType::BRISVIA_TESTNET). Unlike the rehearsal, it uses:
+//  - real launch nTime (prevents ASERT from starting "behind" and leaving difficulty at the floor).
+//  - CALIBRATED nBits (harder than powLimit) as the ASERT anchor, to avoid a block storm at the start.
+// Fixes validated (2026-07-07). Prints the values to freeze in chainparams.
+BOOST_AUTO_TEST_CASE(mine_brisvia_testnet_genesis, * boost::unit_test::disabled())
+{
+    const char* pszTimestamp = "Brisvia testnet genesis - rx/brva-v1";
+    uint256 seed; std::memset(seed.begin(), 0x54, 32);  // initial testnet RandomX seed
+    const uint32_t nBits = 0x1e7fffff;                  // target ~2^239 (~131k hashes/block): realistic initial difficulty for a small testnet
+    const uint32_t nTime = 1783382400;                  // 2026-07-07 00:00:00 UTC (launch date)
+
+    Consensus::Params params{};
+    params.fPowRandomX = true;
+    { arith_uint256 t; t.SetCompact(nBits); params.powLimit = ArithToUint256(t); } // powLimit >= genesis target so it can be mined
+
+    unsigned char anchor[32]; std::memset(anchor, 0xB2, sizeof(anchor));
+    CBlock genesis = CreateBrisviaGenesisBlock(pszTimestamp, anchor, nTime, /*nNonce=*/0, nBits, /*nVersion=*/1);
+
+    uint256 powHash;
+    bool mined = false;
+    for (uint32_t nNonce = 0; nNonce < (1u << 23); ++nNonce) { // wide margin (~64x the expectation) for target ~2^239
+        genesis.nNonce = nNonce;
+        if (CheckRandomXHeaderWithResolvedContext(genesis, nBits, seed, params, &powHash) == PoWCheckResult::VALID) {
+            mined = true;
+            break;
+        }
+    }
+    BOOST_REQUIRE(mined);
+
+    arith_uint256 target; target.SetCompact(nBits);
+    BOOST_CHECK(UintToArith256(powHash) <= target);
+
+    // FROZEN values of the canonical genesis (regression).
+    BOOST_CHECK_EQUAL(genesis.nNonce, 25314u);
+    BOOST_CHECK_EQUAL(genesis.GetHash().GetHex(),
+                      "c5a8d09048ea1957010a555490d9f3ea8b30d30f7432b1d84e5e068c666712d1");
+    BOOST_CHECK_EQUAL(genesis.hashMerkleRoot.GetHex(),
+                      "2568cf9e1033415283e52c8ef0f548958edf434f428496df25085a637033004b");
+
+    BOOST_TEST_MESSAGE("=== CANONICAL GENESIS testnet Brisvia (values for chainparams) ===");
+    BOOST_TEST_MESSAGE("nTime      = " << genesis.nTime);
+    BOOST_TEST_MESSAGE("nBits      = 0x1e7fffff");
+    BOOST_TEST_MESSAGE("nNonce     = " << genesis.nNonce);
+    BOOST_TEST_MESSAGE("merkleRoot = " << genesis.hashMerkleRoot.GetHex());
+    BOOST_TEST_MESSAGE("blockID    = " << genesis.GetHash().GetHex());
+    BOOST_TEST_MESSAGE("powHash    = " << powHash.GetHex());
+}
+
+// Mines the CANONICAL GENESIS of the Brisvia MAINNET (ChainType::BRISVIA_MAIN). Same mechanics as the testnet:
+//  - real mainnet launch nTime (1 Aug 2026 12:00 ART = 15:00 UTC = Unix 1785596400).
+//  - genesis phrase in English (fair launch, no premine).
+//  - mainnet's own anchor 0xB3 (testnet uses 0xB2) + initial nBits 0x1e0fffff (ASERT anchor).
+// Prints the values to freeze in CBrisviaMainParams.
+BOOST_AUTO_TEST_CASE(mine_brisvia_mainnet_genesis, * boost::unit_test::disabled())
+{
+    const char* pszTimestamp = "No privilege at genesis: an open network, mined and sustained by the people.";
+    uint256 seed; std::memset(seed.begin(), 0x54, 32);  // initial RandomX seed (same as testnet)
+    const uint32_t nBits = 0x1e0fffff;
+    const uint32_t nTime = 1785596400;                  // 2026-08-01 15:00:00 UTC (1 Aug 12:00 ART)
+
+    Consensus::Params params{};
+    params.fPowRandomX = true;
+    { arith_uint256 t; t.SetCompact(nBits); params.powLimit = ArithToUint256(t); }
+
+    unsigned char anchor[32]; std::memset(anchor, 0xB3, sizeof(anchor)); // mainnet's own anchor
+    CBlock genesis = CreateBrisviaGenesisBlock(pszTimestamp, anchor, nTime, /*nNonce=*/0, nBits, /*nVersion=*/1);
+
+    uint256 powHash;
+    bool mined = false;
+    for (uint32_t nNonce = 0; nNonce < (1u << 23); ++nNonce) {
+        genesis.nNonce = nNonce;
+        if (CheckRandomXHeaderWithResolvedContext(genesis, nBits, seed, params, &powHash) == PoWCheckResult::VALID) {
+            mined = true;
+            break;
+        }
+    }
+    BOOST_REQUIRE(mined);
+
+    arith_uint256 target; target.SetCompact(nBits);
+    BOOST_CHECK(UintToArith256(powHash) <= target);
+
+    // FROZEN values of the mainnet canonical genesis (regression).
+    BOOST_CHECK_EQUAL(genesis.nNonce, 79118u);
+    BOOST_CHECK_EQUAL(genesis.GetHash().GetHex(),
+                      "aa6bc268339aa9f4f2e39ae33aca7b7e48e395033d08d37c08f828890af7baf7");
+    BOOST_CHECK_EQUAL(genesis.hashMerkleRoot.GetHex(),
+                      "c17012d733986f74e43d3a2852646e44c5d3fc9f0b45d165ac8998d96b6eb98d");
+
+    BOOST_TEST_MESSAGE("=== CANONICAL GENESIS mainnet Brisvia (values for chainparams) ===");
+    BOOST_TEST_MESSAGE("nTime      = " << genesis.nTime);
+    BOOST_TEST_MESSAGE("nBits      = 0x1e0fffff");
+    BOOST_TEST_MESSAGE("nNonce     = " << genesis.nNonce);
+    BOOST_TEST_MESSAGE("merkleRoot = " << genesis.hashMerkleRoot.GetHex());
+    BOOST_TEST_MESSAGE("blockID    = " << genesis.GetHash().GetHex());
+    BOOST_TEST_MESSAGE("powHash    = " << powHash.GetHex());
+}
+
