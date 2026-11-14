@@ -1,0 +1,50 @@
+# Patterns that are specific to a text editor, IDE, operating system, or user
+# environment are not added here. They should be added to your local gitignore
+# file instead:
+# https://docs.github.com/en/get-started/git-basics/ignoring-files#configuring-ignored-files-for-all-repositories-on-your-computer
+
+# Build subdirectories.
+/*build*
+!/build-aux
+!/build_msvc
+
+*.pyc
+
+# Only ignore unexpected patches
+*.patch
+!contrib/guix/patches/*.patch
+!depends/patches/**/*.patch
+
+/CMakeUserPresets.json
+
+# Previous releases
+/releases
+
+# cargo default target dir
+target/
+
+/guix-build-*
+
+/ci/scratch/
+
+# Secrets and credentials (never commit these)
+*.key
+*.pem
+.env
+*.cookie
+
+# Obsolete private runtime / tooling
+.local/
+.runtime/
+.private/
+__pycache__/
+*.pyc
+*.cookie
+wallets/
+wallet.dat
+*.sqlite
+*.sqlite-*
+*.agekey
+.env*
+node_modules/
+artifacts/

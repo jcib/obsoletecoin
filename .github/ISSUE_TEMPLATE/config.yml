@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Brisvia Security Policy
+    url: https://github.com/brisvia/brisvia/blob/main/SECURITY.md
+    about: How to report a security vulnerability privately
+  - name: Brisvia Website
+    url: https://brisvia.com
+    about: Project homepage, downloads and documentation
