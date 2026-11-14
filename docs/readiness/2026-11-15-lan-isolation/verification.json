@@ -1,0 +1,95 @@
+{
+  "phase": "complete",
+  "applied": true,
+  "uid": 987,
+  "tests": [
+    {
+      "blocked": "127.0.0.1",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "10.23.0.2",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "172.16.0.2",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "192.168.50.2",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "169.254.1.2",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "100.64.0.2",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "::1",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "fd00::2",
+      "reject_counter_increased": true
+    },
+    {
+      "blocked": "2001:db8::2",
+      "reject_counter_increased": true
+    },
+    {
+      "allowed": "93.184.216.34:18080"
+    },
+    {
+      "allowed": "127.0.0.1:19778"
+    },
+    {
+      "preexisting_outbound_private_connection": "blocked"
+    },
+    {
+      "other_uid": "unaffected"
+    },
+    {
+      "incoming_lan_peer_reply": "allowed"
+    }
+  ],
+  "live_blocks": [
+    {
+      "destination": "192.168.1.1:80",
+      "blocked": true,
+      "reject_counter_increased": true
+    },
+    {
+      "destination": "192.0.2.36:22",
+      "blocked": true,
+      "reject_counter_increased": true
+    },
+    {
+      "destination": "127.0.0.1:22",
+      "blocked": true,
+      "reject_counter_increased": true
+    },
+    {
+      "destination": "::1:22",
+      "blocked": true,
+      "reject_counter_increased": true
+    }
+  ],
+  "rpc_ok": true,
+  "public_dns_https_ok": true,
+  "height": 342,
+  "publisher_observed": 1794700672038,
+  "external_genesis_probe": {
+    "verified": true,
+    "peer": "83.45.159.127:19777",
+    "genesis": "9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98",
+    "checked": 1794700678112
+  },
+  "service_states_unchanged": true,
+  "unrelated_firewall_unchanged": true,
+  "persistent_syntax_valid": true,
+  "rules_sha256": "51ab357d845a70b13a95ccea63b9627c1fbcfe05417474b62e31b3f7653d2a66",
+  "checked_at": 1794700678
+}

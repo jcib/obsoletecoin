@@ -1,0 +1,7 @@
+{
+  "p2p_handshake": true,
+  "server": "192.0.2.36:19777",
+  "genesis_verified": "9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98",
+  "remote_protocol": 70016,
+  "remote_height": 342
+}

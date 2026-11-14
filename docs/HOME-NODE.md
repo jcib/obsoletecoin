@@ -18,6 +18,15 @@ Current peer and data freshness are shown on the join page once access is grante
 Node service: `obsoletecoin-testnet.service`; exporter: `obsoletecoin-explorer.service`.
 Do not run the one-time installation scripts again against these existing services.
 
+## Outbound LAN isolation (2026-11-15)
+
+The dedicated obsoletecoin UID cannot initiate connections to private IPv4 ranges,
+other loopback services or IPv6 destinations. Local RPC 127.0.0.1:19778 and replies
+to incoming P2P peers are preserved. Public IPv4 P2P/DNS/HTTPS continue working.
+The separate nftables table is persistent; no services were restarted. See
+[implementation and limits](../deploy/lan-isolation/README.md) and
+[verification](readiness/2026-11-15-lan-isolation/README.md).
+
 ## Initial LAN installation (historical)
 
 
