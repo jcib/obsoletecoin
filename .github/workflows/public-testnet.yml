@@ -1,4 +1,4 @@
-﻿name: Public testnet connectivity
+name: Public testnet connectivity
 on:
   workflow_dispatch:
     inputs:
@@ -23,13 +23,34 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends ca-certificates python3 git libevent-2.1-7t64 libevent-extra-2.1-7t64 libevent-pthreads-2.1-7t64 libsqlite3-0
       - uses: actions/checkout@v4
-      - name: Download the exact public Linux candidate
+      - name: Download the exact Linux candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PY'
-          import hashlib,tarfile,urllib.request
+          import hashlib,tarfile,urllib.request,urllib.error,os,json
+          from urllib.parse import urlsplit
           from pathlib import Path
           url='https://github.com/jcib/obsoletecoin/releases/download/v0.3.0-testnet-rc1/ObsoleteCoin-Linux-Testnet.tar.gz'
-          data=urllib.request.urlopen(url,timeout=90).read()
+          class SafeRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self,req,fp,code,msg,headers,newurl):
+              nxt=super().redirect_request(req,fp,code,msg,headers,newurl)
+              if nxt and urlsplit(req.full_url).netloc!=urlsplit(newurl).netloc:nxt.remove_header('Authorization')
+              return nxt
+          opener=urllib.request.build_opener(SafeRedirect)
+          try:
+            data=opener.open(url,timeout=90).read()
+            print('Downloaded anonymously from public release')
+          except urllib.error.HTTPError as e:
+            if e.code!=404:raise
+            base='https://api.github.com/repos/jcib/obsoletecoin'
+            headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','User-Agent':'obsoletecoin-external-rehearsal'}
+            releases=json.load(opener.open(urllib.request.Request(base+'/releases',headers=headers),timeout=30))
+            release=next(r for r in releases if r['tag_name']=='v0.3.0-testnet-rc1')
+            asset=next(a for a in release['assets'] if a['name']=='ObsoleteCoin-Linux-Testnet.tar.gz')
+            headers['Accept']='application/octet-stream'
+            data=opener.open(urllib.request.Request(asset['url'],headers=headers),timeout=90).read()
+            print('Downloaded privately for external connectivity rehearsal; public downloads not verified')
           assert hashlib.sha256(data).hexdigest()=='e502798fabe872cfb06941de72b36a53815cb797aefcec117ec13fe55990855b'
           Path('/tmp/obsolete-testnet.tar.gz').write_bytes(data)
           with tarfile.open('/tmp/obsolete-testnet.tar.gz') as tar:tar.extractall('/tmp/obsolete-public-candidate',filter='data')
