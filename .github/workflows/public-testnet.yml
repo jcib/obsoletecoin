@@ -12,6 +12,7 @@ on:
         type: string
 permissions:
   contents: read
+  actions: read
 jobs:
   external-sync:
     runs-on: ubuntu-latest
@@ -32,7 +33,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python3 - <<'PY'
-          import hashlib,tarfile,urllib.request,urllib.error,os,json
+          import hashlib,tarfile,urllib.request,urllib.error,os,json,io,zipfile
           from urllib.parse import urlsplit
           from pathlib import Path
           url='https://github.com/jcib/obsoletecoin/releases/download/v0.3.0-testnet-rc1/ObsoleteCoin-Linux-Testnet.tar.gz'
@@ -49,12 +50,12 @@ jobs:
             if e.code!=404:raise
             base='https://api.github.com/repos/jcib/obsoletecoin'
             headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','User-Agent':'obsoletecoin-external-rehearsal'}
-            releases=json.load(opener.open(urllib.request.Request(base+'/releases',headers=headers),timeout=30))
-            release=next(r for r in releases if r['tag_name']=='v0.3.0-testnet-rc1')
-            asset=next(a for a in release['assets'] if a['name']=='ObsoleteCoin-Linux-Testnet.tar.gz')
-            headers['Accept']='application/octet-stream'
-            data=opener.open(urllib.request.Request(asset['url'],headers=headers),timeout=90).read()
-            print('Downloaded privately for external connectivity rehearsal; public downloads not verified')
+            artifact_url=base+'/actions/artifacts/14114806563/zip'
+            archive=opener.open(urllib.request.Request(artifact_url,headers=headers),timeout=90).read()
+            assert hashlib.sha256(archive).hexdigest()=='81a052095aad1fbd004cc1e9cec706e00fb6864ea645a3217a0460f3a19d0b65'
+            with zipfile.ZipFile(io.BytesIO(archive)) as z:
+              data=z.read('obsoletecoin-linux-experimental.tar.gz')
+            print('Downloaded exact verified CI artifact privately; anonymous downloads not verified')
           assert hashlib.sha256(data).hexdigest()=='e502798fabe872cfb06941de72b36a53815cb797aefcec117ec13fe55990855b'
           Path('/tmp/obsolete-testnet.tar.gz').write_bytes(data)
           with tarfile.open('/tmp/obsolete-testnet.tar.gz') as tar:tar.extractall('/tmp/obsolete-public-candidate',filter='data')
