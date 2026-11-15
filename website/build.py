@@ -71,7 +71,7 @@ def write_page(path,title,content,active='home'):
 
 <meta property="og:title" content="Obsolete Coin"><meta property="og:description" content="It's tacky, cheap, and slow."><meta property="og:url" content="{ORIGIN}/{E(path)}">
 
-<link rel="icon" href="{r}assets/floppy-disk-3d.gif" type="image/gif"><link rel="stylesheet" href="{r}assets/style.css"></head>
+<link rel="icon" href="{r}assets/obsolete-coin.gif" type="image/gif"><link rel="stylesheet" href="{r}assets/style.css"></head>
 
 <body><a class="skip" href="#content">Skip to content</a><div class="site">
 
@@ -109,14 +109,9 @@ def write_page(path,title,content,active='home'):
 
     if a.public_web_only:
         import re
-        doc=doc.replace('>GitHub</a>','>GitHub (private)</a>').replace('>Source code</a>','>GitHub (private)</a>')
-        doc=doc.replace('>jcib/obsoletecoin</a>','>jcib/obsoletecoin (private)</a>')
-        doc=doc.replace('The public GitHub repository includes the source, build instructions, test evidence and issue tracker. GitHub may require an account to report an issue.','The GitHub repository is private during testing. Wallet downloads and this explorer are public. Report reproducible problems in the community forum.')
-        doc=re.sub(r'<a href="https://github.com/jcib/obsoletecoin/issues/new/choose">GitHub Issues</a> or the announcement thread', '<a href="/forum">community forum</a>',doc)
-        doc=re.sub(r'<a href="(?:/)?downloads/source.tar.gz">Download the review source</a>[^<]*', '',doc)
-        doc=doc.replace('https://github.com/jcib/obsoletecoin/blob/main/docs/WINDOWS-NATIVE.md','/join.html')
-        doc=doc.replace('https://github.com/jcib/obsoletecoin/blob/main/docs/WINDOWS.md','/join.html')
-        doc=re.sub(r'<a href="https://github.com/jcib/obsoletecoin/blob/main/docs/[^"]+">.*?</a>', 'The source repository and detailed review documents remain private during testing.',doc)
+        doc=doc.replace('>GitHub</a>','>GitHub (public)</a>').replace('>Source code</a>','>GitHub (public)</a>')
+        doc=doc.replace('>jcib/obsoletecoin</a>','>jcib/obsoletecoin (public)</a>')
+        doc=re.sub(r'<a href="(?:/)?downloads/source.tar.gz">Download the review source</a>', '<a href="https://github.com/jcib/obsoletecoin">Source code on GitHub</a>',doc)
     (OUT/path).write_text(doc,encoding='utf-8')
 
 
@@ -251,7 +246,7 @@ if not a.live:
 
 else:
 
-    write_page('explorer/index.html','Block explorer','<h1 class="page-title">Live testnet explorer</h1><p>Automatic refresh every 15 seconds.</p><iframe class="live-frame" title="Live testnet explorer" src="/live/explorer/index.html"></iframe>','explorer')
+    write_page('explorer/index.html','Block explorer','<h1 class="page-title">Live testnet explorer</h1><p>Automatic refresh every 15 seconds. <a href="/explorer/network.html">Network power, history and reward distribution</a></p><iframe class="live-frame" title="Live testnet explorer" src="/live/explorer/index.html"></iframe>','explorer')
 
     write_page('join.html','Join the testnet',"""<h1 class="page-title">Join the Obsolete Coin testnet</h1><p class="lede">Experimental v0.2 network. Test coins have no monetary value. Resets may erase all test balances; they will not convert into mainnet coins.</p><iframe class="live-frame compact" title="Current first-node address" src="/live/peer"></iframe><h2>Windows</h2><ol><li><a href="downloads.html">Download the native x64 installer</a> and compare its SHA-256 with the published checksum. Tested on Windows 11.</li><li>Open Obsolete Coin. In <strong>Network ? Connect peer</strong>, enter the current public peer shown above.</li><li>Wait for synchronization and a connected peer. Compare your block height and hash with the explorer.</li><li>Select <strong>Open / Create</strong>, then <strong>Receive</strong>. Select <strong>Mine / Stop</strong> to run the one-thread CPU reference miner.</li></ol><h2>Linux</h2><p>Extract the Linux archive and open a terminal in its directory. Replace PUBLIC_PEER with the address shown above.</p><pre>python3 tools/node.py --peer PUBLIC_PEER
 

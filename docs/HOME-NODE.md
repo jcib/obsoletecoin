@@ -1,3 +1,7 @@
+# Sanitized historical operator notes
+
+Account names and private endpoints below are placeholders. Obtain the current public peer from https://obsoletecoin.pages.dev/join.html. Do not rerun old deployment procedures against an active node.
+
 # Home testnet node ? public preparation
 
 The public preparation was applied after local administrator authentication:

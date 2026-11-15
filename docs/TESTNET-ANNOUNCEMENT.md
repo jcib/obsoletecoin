@@ -19,7 +19,7 @@ Connection instructions and current peer: https://obsoletecoin.pages.dev/join.ht
 Explorer: https://obsoletecoin.pages.dev/explorer/index.html
 Forum: https://obsoletecoin.pages.dev/forum
 Run a node: https://obsoletecoin.pages.dev/nodes.html
-The source repository remains private during testing.
+Source code: https://github.com/jcib/obsoletecoin
 
 This is TESTNET, not mainnet. Test coins have no monetary value, the chain can be
 reset, and balances will not become mainnet coins. Initial test difficulty is easy,

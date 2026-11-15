@@ -1,0 +1,26 @@
+{
+  "pages": [
+    {
+      "width": 1440,
+      "javascript": false,
+      "network_panel": true,
+      "no_overflow": true,
+      "new_favicon": true
+    },
+    {
+      "width": 390,
+      "javascript": false,
+      "network_panel": true,
+      "no_overflow": true,
+      "new_favicon": true
+    },
+    {
+      "width": 360,
+      "javascript": false,
+      "network_panel": true,
+      "no_overflow": true,
+      "new_favicon": true
+    }
+  ],
+  "forum_gif_sha256": "9c978d35e77bc8783e6ff558fc32ce099645ba36c4aa38a9d7b492590adf2490"
+}

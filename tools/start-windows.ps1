@@ -1,5 +1,5 @@
 param(
-    [string]$Server = '192.0.2.36:19777',
+    [string]$Server = '',
     [ValidateSet('mine','wallet')][string]$Mode = 'mine',
     [ValidateRange(0,2147483647)][int]$Blocks = 0
 )
@@ -8,6 +8,10 @@ function Stop-WithHelp([string]$Message) {
     Write-Host $Message -ForegroundColor Red
     Write-Host 'See docs/WINDOWS.md for setup instructions.'
     exit 2
+}
+if ($Mode -eq 'mine' -and [string]::IsNullOrWhiteSpace($Server)) {
+    $Server = Read-Host 'Peer from https://obsoletecoin.pages.dev/join.html (IPv4:19777)'
+    if ([string]::IsNullOrWhiteSpace($Server)) { Stop-WithHelp 'A peer is required to mine.' }
 }
 if (-not (Get-Command wsl.exe -ErrorAction SilentlyContinue)) {
     Stop-WithHelp 'WSL is missing. Install WSL with Debian before starting the miner.'

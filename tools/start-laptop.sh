@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 package_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-server="${1:-192.0.2.36:19777}"
+server="${1:-}"
 mode="${2:-mine}"
 blocks="${3:-0}"
+if [ "$mode" != wallet ] && [ -z "$server" ]; then echo "Supply the current peer from https://obsoletecoin.pages.dev/join.html" >&2; exit 2; fi
 if ! [[ "$blocks" =~ ^[0-9]+$ ]]; then echo "Invalid block count" >&2; exit 2; fi
 if ! command -v python3 >/dev/null || ! ldd "$package_root/bitcoind" 2>/dev/null | awk '/not found/{missing=1} END {exit missing}'; then
   echo 'Install the Debian runtime dependencies listed in docs/WINDOWS.md first.' >&2

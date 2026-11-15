@@ -1,4 +1,4 @@
-﻿"""Build the public Pages asset directory and portable Worker sources."""
+"""Build the public Pages asset directory and portable Worker sources."""
 import argparse,json,shutil
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('--static',type=Path,required=True);a=p.parse_args()
@@ -12,7 +12,7 @@ for f in a.static.rglob('*'):
  if name in ('/forum-template.html','/downloads/source.tar.gz','/explorer/snapshot.json') or f.suffix.lower() in ('.mp3','.ogg','.wav'):continue
  target=out/relative;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(f,target)
 (src/'generated.mjs').write_text('export const PAGES='+json.dumps(pages)+';\n',encoding='utf-8')
-for name,folder in [('forum.mjs','cloudflare'),('worker.mjs','cloudflare'),('core.mjs','live'),('probe.mjs','live')]:
+for name,folder in [('network.mjs','cloudflare'),('forum.mjs','cloudflare'),('worker.mjs','cloudflare'),('core.mjs','live'),('probe.mjs','live')]:
  text=(root/'website'/folder/name).read_text(encoding='utf-8-sig').replace("'../live/","'./")
  (src/name).write_text(text,encoding='utf-8')
 (out/'_routes.json').write_text(json.dumps({'version':1,'include':['/forum','/forum/*','/api/*','/live/*','/explorer','/explorer/*'],'exclude':[]}),encoding='utf-8')

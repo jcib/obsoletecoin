@@ -1,4 +1,5 @@
-﻿import {GENESIS,validate,authorized,render,escape} from '../live/core.mjs';
+import {GENESIS,validate,authorized,render,escape} from '../live/core.mjs';
+import {mergeHistory,summarize,renderNetwork} from './network.mjs';
 import {probePeer} from '../live/probe.mjs';
 import {forum} from './forum.mjs';
 import {PAGES} from './generated.mjs';
@@ -21,13 +22,31 @@ export default {async fetch(req,env){
     return response(JSON.stringify(result),200,'application/json');
    }
    let feed;try{feed=validate(JSON.parse(new TextDecoder().decode(data)));}catch{return response('Invalid feed',400,'text/plain');}
-   const result=await env.DB.prepare('INSERT INTO public_state(name,observed,data) VALUES(?,?,?) ON CONFLICT(name) DO UPDATE SET observed=excluded.observed,data=excluded.data WHERE excluded.observed>public_state.observed').bind('feed',feed.observed,JSON.stringify(feed)).run();
-   return response(result.meta.changes?'Accepted':'Outdated feed',result.meta.changes?200:409,'text/plain');
+   for(let attempt=0;attempt<3;attempt++){
+    const rows=await env.DB.prepare("SELECT name,observed,data FROM public_state WHERE name IN ('feed','network_history')").all();
+    const previous=rows.results.find(r=>r.name==='feed'),history=rows.results.find(r=>r.name==='network_history');
+    if(previous&&previous.observed>=feed.observed)return response('Outdated feed',409,'text/plain');
+    const old=history?JSON.parse(history.data):null,next=mergeHistory(old,feed),expected=previous?.observed??-1;
+    const write=(name,observed,data)=>env.DB.prepare("INSERT INTO public_state(name,observed,data) SELECT ?,?,? WHERE COALESCE((SELECT observed FROM public_state WHERE name='feed'),-1)=? ON CONFLICT(name) DO UPDATE SET observed=excluded.observed,data=excluded.data").bind(name,observed,JSON.stringify(data),expected);
+    const batch=[];
+    if(next!==old)batch.push(write('network_history',feed.observed,next));
+    batch.push(write('feed',feed.observed,feed));
+    const result=await env.DB.batch(batch);
+    if(result.at(-1).meta.changes)return response('Accepted',200,'text/plain');
+   }
+   return response('Concurrent update; retry',409,'text/plain');
   }
   if(!['GET','HEAD'].includes(req.method))return response('Method not allowed',405);
   if(path==='/api/snapshot'){
    const s=await state(env,'feed');return response(JSON.stringify({available:!!s,fresh:!!s&&Date.now()-s.observed<=60000,...s}),s?200:503,'application/json');
   }
+  if(path==='/api/network'||path==='/live/explorer/network.html'){
+   const rows=await env.DB.prepare("SELECT name,data FROM public_state WHERE name IN ('feed','network_history')").all();
+   const read=name=>{const r=rows.results.find(r=>r.name===name);return r?JSON.parse(r.data):null;};
+   const metrics=summarize(read('feed'),read('network_history'));
+   return path==='/api/network'?response(JSON.stringify({available:!!metrics,...metrics}),metrics?200:503,'application/json'):response(req.method==='HEAD'?null:renderNetwork(metrics));
+  }
+  if(path==='/explorer/network.html')return response(req.method==='HEAD'?null:PAGES['/explorer/index.html'].replace('src="/live/explorer/index.html"','src="/live/explorer/network.html"'));
   if(path.startsWith('/live/')){const s=await state(env,'feed'),probe=path==='/live/peer'?await state(env,'probe'):null;const r=render(s,path,Date.now(),probe);return response(req.method==='HEAD'?null:r.html,r.status);}
   if(path==='/explorer/search'){
    const q=(url.searchParams.get('q')||'').trim();let to;

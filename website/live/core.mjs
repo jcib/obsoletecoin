@@ -48,7 +48,7 @@ export function render(s,path,now=Date.now(),probe=null){
  else if(path==='/live/peer')body=note+`<h2>First node: Dell Micro 7040 (2016)</h2><p>${peer&&fresh?'Public P2P connection verified':'Public connection awaiting verification'}</p><p>Current peer: <code>${escape(s.peer)}</code></p><p>Enter this in Network → Connect peer. The home connection has a dynamic IP; check this page again if it changes.</p>`;
  else if(path==='/live/recent')body=note+`<ul class="block-mini">${s.blocks.slice(-5).reverse().map(b=>`<li>${bl(b)} <span>${b.tx.length} tx</span></li>`).join('')}</ul><p>${link('/explorer/index.html','Open block explorer')}</p>`;
  else {
-  body=note+`<p>${link('/explorer/index.html','Blocks')} | ${link('/explorer/addresses/index.html','Addresses')} | ${link('/api/snapshot','Public JSON')}</p>`;
+  body=note+`<p>${link('/explorer/index.html','Blocks')} | ${link('/explorer/network.html','Network observations')} | ${link('/explorer/addresses/index.html','Addresses')} | ${link('/api/snapshot','Public JSON')}</p>`;
   if(path==='/live/explorer/index.html')body+=`<h1>Block explorer</h1><div class="stats"><div><strong>${s.height}</strong><span>HEIGHT</span></div><div><strong>${s.connections}</strong><span>NODE CONNECTIONS</span></div><div><strong>${s.mempool}</strong><span>PENDING TRANSACTIONS</span></div></div><form method="get" action="/explorer/search" target="_top"><label>Block height, transaction ID or address <input name="q" maxlength="100" required></label> <button>Find</button></form><div class="scroll"><table><thead><tr><th>Height</th><th>Hash</th><th>Tx</th><th>Block time (UTC)</th></tr></thead><tbody>${s.blocks.slice().reverse().map(b=>`<tr><td>${bl(b)}</td><td class="hash">${link('/explorer/blocks/'+b.height+'.html',b.hash.slice(0,16)+'…')}</td><td>${b.tx.length}</td><td>${utc(b.time*1000)}</td></tr>`).join('')}</tbody></table></div>`;
   else if(/^\/live\/explorer\/blocks\/\d+\.html$/.test(path)){
    const h=Number(path.split('/').at(-1).slice(0,-5)),b=s.blocks.find(b=>b.height===h);
@@ -66,5 +66,5 @@ export function render(s,path,now=Date.now(),probe=null){
    else {if(!records.length)status=404;body+=`<p class="hash">${escape(a)}</p><ul>${records.reverse().map(({b,t,v})=>'<li class="hash">'+bl(b)+' · '+tl(t)+' · '+amount(v.atoms)+' OBSC</li>').join('')}</ul>`;}
   }else{status=404;body+='<h1>Page not found</h1>';}
  }
- return {status,html:`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>Obsolete Coin testnet</title><link rel="stylesheet" href="/assets/style.css"></head><body class="live-body"><main class="live-content">${body}</main></body></html>`};
+ return {status,html:`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>Obsolete Coin testnet</title><link rel="icon" href="/assets/obsolete-coin.gif" type="image/gif"><link rel="stylesheet" href="/assets/style.css"></head><body class="live-body"><main class="live-content">${body}</main></body></html>`};
 }

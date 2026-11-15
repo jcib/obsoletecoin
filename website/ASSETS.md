@@ -2,7 +2,7 @@
 
 Layout reference: https://geocities.restorativland.org/SiliconValley/1000/
 - mazes.jpg and roughredline.gif: same reference directory, archived original decorative assets.
-- floppy-disk-3d.gif: supplied by the user in the repository root. Used as the disk icon and GIF favicon (browser may render a still frame).
+- floppy-disk-3d.gif: supplied by the user in the repository root. Retained as an archival disk asset.
 - servidor.jpeg: user photograph, metadata stripped in the previous update.
 
 GIFs selected visually from https://gifcities.org/search?q=computer&offset=0&page_size=12 and https://gifcities.org/search?q=construction&offset=0&page_size=12 :
@@ -19,3 +19,5 @@ Wallet download GIFs selected from GifCities searches linux and windows:
 The title uses CSS stepped animation; reduced-motion preference disables it.
 
 forum.gif: supplied by the user; used for the forum navigation. Audio is not included in the website.
+
+The current favicon uses obsolete-coin.gif (the user-supplied coin image). Browsers may render a still frame. The forum icon was replaced with the new user-supplied forum.gif on 2026-11-15.

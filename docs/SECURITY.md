@@ -1,6 +1,6 @@
 # Security and launch status
 
-Experimental, unaudited private test network. Bitcoin-derived code does not give
+Experimental, unaudited public test network. Bitcoin-derived code does not give
 a new chain Bitcoin's hash power, peer diversity, review or economic security.
 
 ## Majority-work attacks
@@ -40,4 +40,4 @@ and backup are explicit operations; keep the passphrase separately and securely.
 
 Inherited publicly known cryptographic test vectors are fixtures, not funded
 keys. Neither code nor CI needs trading-bot secrets, exchange credentials or home
-server access. Report problems privately to the owner while this repository is private.
+server access. For vulnerabilities, use GitHub private vulnerability reporting when available. Do not post exploitable details in public issues.

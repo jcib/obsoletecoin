@@ -8,6 +8,7 @@ It's tacky, cheap, and slow.
 [Wallet downloads](https://obsoletecoin.pages.dev/downloads.html) ·
 [Join the testnet](https://obsoletecoin.pages.dev/join.html) ·
 [Explorer](https://obsoletecoin.pages.dev/explorer/index.html) ·
+[Network statistics](https://obsoletecoin.pages.dev/explorer/network.html) ?
 [Forum](https://obsoletecoin.pages.dev/forum) ·
 [Run a node](https://obsoletecoin.pages.dev/nodes.html)
 
@@ -20,10 +21,12 @@ It's tacky, cheap, and slow.
 - Local send/receive, transaction dates and confirmations, encryption and backups.
 - A plain-HTML retro website on Cloudflare Pages, without music.
 - A live explorer refreshed every 15 seconds, with explicit stale-data reporting.
+- Estimated network power, canonical history, reward destinations and observed chain changes.
+  These metrics do not count exact miners or prove independent ownership.
 - A simple forum: read discussions, open a topic or reply using an alias.
   No account is required; aliases are not authenticated or reserved.
 
-The source repository and GitHub release remain private during testing.
+The source repository is public. Experimental release downloads are on the website.
 Public downloads are hosted on the website. Report issues in the forum, including
 the package version, OS, reproduction steps and redacted error messages.
 Never post wallet files, private keys, passwords or personal information.

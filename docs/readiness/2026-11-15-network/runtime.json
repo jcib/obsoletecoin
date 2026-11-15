@@ -1,0 +1,12 @@
+{
+  "local_only": true,
+  "workerd_d1": true,
+  "feed_and_history_atomic": true,
+  "concurrent_statuses": [
+    200,
+    200
+  ],
+  "canonical_tip_consistent": true,
+  "reorg_logged": true,
+  "forum_regressions_passed": true
+}

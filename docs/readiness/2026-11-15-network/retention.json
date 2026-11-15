@@ -1,0 +1,8 @@
+{
+  "local_only": true,
+  "feed_batches": 5,
+  "blocks_per_feed": 1024,
+  "retained_headers": 4097,
+  "full_672_window": true,
+  "api_status": 200
+}

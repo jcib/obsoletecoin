@@ -2,7 +2,7 @@
 
 Use Windows with WSL2 and Debian. The home node is reached over your home LAN;
 your wallet keys and CPU mining stay on the laptop. No home SSH or RPC password
-is needed. The prepared server address is `192.0.2.36:19777`.
+is needed. Get the current public peer from https://obsoletecoin.pages.dev/join.html.
 
 1. If WSL/Debian is not already installed, open PowerShell as administrator and
    run `wsl --install -d Debian`. Restart if Windows requests it. Open Debian once
@@ -17,7 +17,7 @@ is needed. The prepared server address is `192.0.2.36:19777`.
      libevent-pthreads-2.1-7t64 libsqlite3-0
    ```
 
-3. Download the current `obsoletecoin-linux-experimental` artifact from private
+3. Download the current `obsoletecoin-linux-experimental` artifact from
    GitHub Actions. Extract the ZIP, then extract its `.tar.gz` with Windows tar
    (`tar -xzf obsoletecoin-linux-experimental.tar.gz`) or your archive program.
 4. Connect the laptop to the same home LAN as the Dell. Open `Start-Mining.cmd`

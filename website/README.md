@@ -27,7 +27,7 @@ website/cloudflare directory using Wrangler Pages.
 Public downloads are static assets with SHA-256 checksums. The complete source
 archive, node data, source maps, personal paths and credentials are not published.
 All current download files are below Pages' 25 MiB per-file limit. Larger future
-packages need a separate download store. GitHub remains private.
+packages need a separate download store. GitHub source is public.
 
 ## Runtime secrets
 
@@ -91,3 +91,34 @@ freshness. Evidence is under docs/readiness/2026-11-15-pages-forum/.
 The former Site becomes a redirect only after Pages and the publisher are verified.
 
 Run test_runtime.mjs against a fresh disposable local D1 database, passing the local URL and a public snapshot fixture. It refuses non-local targets and does not post test messages to the public forum.
+
+
+## Network observations
+
+/explorer/network.html and /api/network expose historical network estimates derived
+from the existing authenticated public feed. No additional node RPC or wallet access
+is needed. The Dell publisher, mining software and consensus rules are unchanged.
+
+The monitor retains at most 4,097 canonical block headers and 100 chain-change events
+in D1. Feed and archive updates use an atomic compare-and-swap transaction; concurrent
+or older observations cannot replace a newer feed or leave its history at another tip.
+Unchanged tips do not rewrite the archive. Missing overlap resets coverage instead of
+retaining unproven ancestors. Reorganizations are recorded only when observed; events
+between publisher snapshots can be missed.
+
+Power estimates use exact integer expected work from each compact target, divided by
+the minimum/maximum timestamps of windows of 24, 96 and 672 block intervals. Windows
+shorter than requested are labelled partial. Zero time spans return unavailable.
+Difficulty is relative to the conventional 0x1d00ffff target. These are historical
+estimates, not live miner telemetry, and do not automatically fall to zero when mining
+stops. The last block time, feed freshness and a 90-minute delay notice are separate.
+
+Daily rows summarize retained canonical headers using miner-provided UTC timestamps;
+boundary days and coverage gaps may be incomplete. Reward statistics cover at most
+672 blocks available in the current detailed feed, exclude genesis and zero outputs,
+deduplicate an address within each block, and report split payouts without assuming
+one address equals one miner. Top 50 addresses are displayed; totals include all.
+Connections describe only the first node's peers. No peer IP list is published.
+
+Run node website/cloudflare/test_network.mjs for arithmetic, fork, gap, retention,
+payout and stale-data checks. Workerd tests also verify concurrent D1 feed updates.
