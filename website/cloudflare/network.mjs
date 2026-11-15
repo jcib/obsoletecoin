@@ -80,7 +80,6 @@ export function renderNetwork(m,now=Date.now()){
  else{
   const age=Math.max(0,Math.floor((now-m.observed)/1000)),peak=Math.max(1,...m.daily.map(r=>r.hashrate||0));
   body+='<div class="snapshot-note"><strong>'+(m.fresh?'LIVE TESTNET DATA':'STALE DATA - NODE FEED UNAVAILABLE')+'</strong><br>Observation: '+utc(m.observed)+' ('+age+'s ago). Refresh: 15 seconds.</div>';
-  body+='<p>Exact active miner count: <strong>unknown</strong>. Connections are peers of the first node, not a network-wide node or miner census.</p>';
   body+=table(['Height','First-node connections','Current difficulty','Pending transactions'],[[m.height,m.connections,num(m.difficulty),m.mempool]]);
   body+='<p>Last block timestamp: '+date(m.lastBlock)+'. '+(m.sinceBlock<0?'Timestamp is ahead of this clock.':num(m.sinceBlock)+' seconds ago.')+'</p>';
   if(m.noBlockWarning)body+='<div class="snapshot-note"><strong>BLOCK DELAY NOTICE</strong><p>No block timestamp within the last 90 minutes (six target intervals). This alone does not prove an outage or attack.</p></div>';

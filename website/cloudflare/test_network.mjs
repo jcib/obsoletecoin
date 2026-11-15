@@ -19,7 +19,7 @@ const unresolved=mergeHistory(h,feed([block(99,2),block(100,2)]));assert.equal(u
 const large=mergeHistory(null,feed(Array.from({length:RETAIN+10},(_,i)=>block(i+1))));assert.equal(large.headers.length,RETAIN);
 const m=summarize(first,mergeHistory(null,first),now);assert.equal(m.rewards.addresses,1);assert.equal(m.rewards.rows[0].blocks,100);assert.equal(m.rewards.rows[0].atoms,'50000000000100');
 assert.ok(m.noBlockWarning);assert.equal(summarize(first,h,now+61000).noBlockWarning,false);assert.equal(summarize(first,h,now+61000).fresh,false);
-assert.ok(!renderNetwork(m).includes('<script'));assert.ok(renderNetwork(m).includes('Exact active miner count'));
+assert.ok(!renderNetwork(m).includes('<script'));
 assert.ok(renderNetwork(null).includes('UNAVAILABLE'));
 const untrusted=structuredClone(first);untrusted.blocks[0].tx[0].vout[0].address='<img onerror=evil>';
 assert.ok(!renderNetwork(summarize(untrusted,null,now)).includes('<img onerror'));
