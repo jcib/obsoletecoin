@@ -133,7 +133,7 @@ home=f"""<h1 class="home-title">Obsolete Coin (OBSC)</h1>
 
 <section class="home-downloads"><h2>Testnet downloads</h2>{download_cards()}</section>
 
-<div class="under-construction"><img src="assets/construction.gif" alt="" width="64" height="64"><p><strong>Native Windows test wallet.</strong><br>Installation and wallet recovery tested on Windows 11. <a href="roadmap.html">Mainnet requirements</a></p></div>
+
 
 <table class="home-facts"><tbody><tr><th>Maximum issuance</th><th>Target block interval</th><th>Mining</th></tr><tr><td>1,000,000,000 OBSC</td><td>15 minutes</td><td>RandomX / CPU</td></tr></tbody></table>
 
