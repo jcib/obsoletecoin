@@ -5,6 +5,7 @@ It's tacky, cheap, and slow.
 **Experimental CPU-mined testnet. Mainnet is disabled. Test coins have no monetary value.**
 
 [Website](https://obsoletecoin.pages.dev/) ·
+[GitHub Releases](https://github.com/jcib/obsoletecoin/releases) ·
 [Wallet downloads](https://obsoletecoin.pages.dev/downloads.html) ·
 [Join the testnet](https://obsoletecoin.pages.dev/join.html) ·
 [Explorer](https://obsoletecoin.pages.dev/explorer/index.html) ·
@@ -26,8 +27,8 @@ It's tacky, cheap, and slow.
 - A simple forum: read discussions, open a topic or reply using an alias.
   No account is required; aliases are not authenticated or reserved.
 
-The source repository is public. Experimental release downloads are on the website.
-Public downloads are hosted on the website. Report issues in the forum, including
+The source repository and experimental prerelease binaries are public on GitHub.
+Downloads are also mirrored on the website. Report issues in the forum, including
 the package version, OS, reproduction steps and redacted error messages.
 Never post wallet files, private keys, passwords or personal information.
 

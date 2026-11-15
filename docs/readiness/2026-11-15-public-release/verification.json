@@ -1,0 +1,13 @@
+{
+  "portable_gui_node_mining": {
+    "native": true,
+    "chain": "obsolete-test",
+    "mined_blocks": 2,
+    "ui": true,
+    "mainnet_enabled": false
+  },
+  "packaged_manifest_verified": true,
+  "installer_recompiled": true,
+  "installer_installation_repeated": false,
+  "installer_test_limit": "Existing-installation safeguard stopped the destructive install/uninstall test; no user installation modified. Installer script and runtime binaries are unchanged; instructions/provenance were repackaged."
+}

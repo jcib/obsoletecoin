@@ -1,0 +1,38 @@
+{
+  "tag": "v0.3.0-testnet-rc1",
+  "source_tag_commit": "b0427473baaa71b3b55669be6b528ab77b038033",
+  "files": {
+    "ObsoleteCoin-Testnet-Setup.exe": {
+      "bytes": 23711675,
+      "sha256": "ffb080fc2d3f8d53ed469a49578965e285bc616536985f3e3424556e953c0e87"
+    },
+    "ObsoleteCoin-Windows-Native-Testnet.zip": {
+      "bytes": 29871386,
+      "sha256": "f6d80989734e97ee57d003536d98a01605fa8a75c05c809d3a70654f5faeb380"
+    },
+    "ObsoleteCoin-Linux-Testnet.tar.gz": {
+      "bytes": 11025762,
+      "sha256": "9dbf8042edc9d7fd5a2c57a5ec6ad568a4315746544f9c30e650d7599d29b7e4"
+    },
+    "ObsoleteCoin-Windows-WSL.zip": {
+      "bytes": 11060243,
+      "sha256": "801ed0293f60d976a494d1c7e0f9bfbef75ed580f287fea08a205cf6f082dbb7"
+    },
+    "Windows-PROVENANCE.json": {
+      "bytes": 115694,
+      "sha256": "a4aa059d9691a29f5a5ad0a6de7047454b1e38ab1989efe57737f9a27f7c1165"
+    },
+    "Linux-PROVENANCE.json": {
+      "bytes": 1427,
+      "sha256": "6b9aefb1fee4a3c9397e74f1528627c28ba3137fec39090ce92f7358bd5d0c6c"
+    },
+    "MAINNET-READINESS.md": {
+      "bytes": 6409,
+      "sha256": "253ce09358fe31c6f59dab8da6b387f2d5cbd6dcda69303afe72c5dc3dd5efca"
+    },
+    "RELEASE-NOTES.md": {
+      "bytes": 3015,
+      "sha256": "47e19d362258b888ab84d4ee0516150d54db7c38ab720325f8f0ff30300358b7"
+    }
+  }
+}

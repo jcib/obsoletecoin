@@ -1,0 +1,28 @@
+{
+  "compiled_windows_files_identical": 28,
+  "compiled_linux_and_wsl_identical": {
+    "obsoletecoin-linux/bitcoin-wallet": "7f3088acd25777f2bfd08740f51a53ffbb68fa9e4adccdb55f0f184ab676ce65",
+    "obsoletecoin-linux/bitcoin-cli": "a38c295d83afb0c30b4085d2485a511cb301a32ef71e831fcb6b6f0bab19f821",
+    "obsoletecoin-linux/bitcoind": "11902c3bf614fac43659827ab421780ef057e98ec9fc0f194be5eaa1bc8b0842",
+    "obsoletecoin-linux/librandomx.so": "3ab5c919956e4fa33e9e550d279a59805538a8e76590d441ebadfffadf02248c",
+    "WSL/obsoletecoin-linux/bitcoin-wallet": "c671306319c51286611d58e35a4f980919cad0e9ef40d50d7cee1f10acb50862",
+    "WSL/obsoletecoin-linux/bitcoin-cli": "5ca337145cfceed7ba3f436cc919d6dbf62936413e904e23030dec655aacafa2",
+    "WSL/obsoletecoin-linux/bitcoind": "46140c14d01a3f277c9ca6cebe37c7f6034b19c75dc1a899b1379c9d59f8dec7"
+  },
+  "updated_text_files": {
+    "ObsoleteCoin-Linux-Testnet.tar.gz": [
+      "docs/WINDOWS.md",
+      "docs/HOME-NODE.md",
+      "docs/WINDOWS-NATIVE.md",
+      "tools/start-laptop.sh",
+      "tools/laptop.py",
+      "tools/start-windows.ps1"
+    ],
+    "ObsoleteCoin-Windows-WSL.zip": [
+      "docs/WINDOWS.md",
+      "tools/start-laptop.sh",
+      "tools/laptop.py",
+      "tools/start-windows.ps1"
+    ]
+  }
+}
