@@ -1,3 +1,4 @@
+import {admin} from './admin.mjs';
 import {GENESIS,validate,authorized,render,escape} from '../live/core.mjs';
 import {mergeHistory,summarize,renderNetwork} from './network.mjs';
 import {monitorNodes} from './node-monitor.mjs';
@@ -12,6 +13,7 @@ async function state(env,key){const row=await env.DB.prepare('SELECT data FROM p
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url),path=url.pathname;
  try{
+  if(path==='/forum/admin'||path.startsWith('/forum/admin/'))return await admin(req,env,PAGES['/forum-template.html'],headers);
   if(path==='/forum'||path.startsWith('/forum/'))return await forum(req,env,PAGES['/forum-template.html'],headers);
   if(req.method==='POST'){
    if(!['/api/feed','/api/probe'].includes(path))return response('Not found',404);

@@ -28,6 +28,8 @@ It's tacky, cheap, and slow.
   Counts recently verified IPv4 testnet endpoints, not every node or independent operator.
 - A simple forum: read discussions, open a topic or reply using an alias.
   No account is required; aliases are not authenticated or reserved.
+- A password-protected moderation panel for hiding/restoring messages and topics,
+  closing/reopening topics, and reviewing moderation history.
 
 The source repository and experimental prerelease binaries are public on GitHub.
 Downloads are also mirrored on the website. Report issues in the forum, including

@@ -56,10 +56,49 @@ No raw IP is stored in the forum database. A daily keyed hash is kept only in th
 rate-limit table; stale rate rows are removed when new submissions are processed.
 The hosting provider may maintain its own network/security logs.
 
-Moderation is restricted to the owner's authenticated Cloudflare D1 tools.
-To close or hide a topic, update its locked or hidden field by exact topic UUID.
-Deleting a thread cascades to its posts. Export the dedicated database before
-destructive moderation. Never accept SQL commands from public forum users.
+Moderation is available at /forum/admin, with a separate administrator password.
+The public forum links to this sign-in page. Forum aliases confer no permissions.
+The administrator can close/reopen and hide/restore topics, hide/restore individual
+messages, and review a private action log. Hiding removes the message body and alias
+from public output; the original remains available to the administrator for restoration.
+Public reply totals include hidden-message placeholders. Hidden topics return 404.
+No permanent deletion or public registration for administrator roles is provided.
+
+The random 256-bit administrator password is stored in Windows Credential Manager
+under ObsoleteCoin/ForumAdmin. Run tools/forum_admin_access.py on that Windows
+account to reveal/copy it and open the panel. It is not stored in the repository,
+wallet, browser URL or a plaintext password file. Save a copy in a password manager
+if access from another computer is needed.
+
+FORUM_ADMIN_AUTH is a dedicated Cloudflare Pages secret containing SHA-256 of that
+random password. It also signs administrator session/form tokens and must itself be
+treated as a secret. This construction relies on a generated high-entropy password;
+do not substitute a human-chosen password or publish the hash. It is unrelated to
+the existing feed/forum secrets and all wallet/other-service credentials.
+Changing this secret and deploying invalidates old signed sessions; D1 session rows
+also allow immediate logout revocation. There is no anonymous password-reset route.
+Credential recovery or rotation requires the owner's Cloudflare access.
+
+Sessions last one hour and use Secure, HttpOnly, SameSite=Strict cookies scoped to
+/forum/admin. The database stores hashed session identifiers only. Sign-in forms
+expire after 15 minutes and successful sign-ins consume their nonce. Mutations use
+action/path/session-bound, one-use signed forms; cross-origin requests are rejected.
+Only the configured SITE_ORIGIN accepts administrator access, not deployment aliases.
+Pages are private/no-store/noindex and cannot be framed. Passwords never appear in
+HTML responses or logs. Login attempts are limited atomically to 10 per network
+identifier and 100 globally per 15-minute bucket; rate identifiers are keyed,
+rotate daily and expire after two days. No raw IP or message content is stored in
+the moderation audit log. This is single-administrator authentication, without MFA.
+
+Deployment order: export a private backup of the dedicated D1 database; apply
+cloudflare/admin-schema.sql (additive, idempotent tables/index); set FORUM_ADMIN_AUTH
+through the secret store; deploy the tested Worker. Preserve the two existing secrets.
+No existing forum posts, aliases, locks or visibility values are changed by migration.
+
+Tests: node website/cloudflare/test_admin.mjs TOOLCHAIN_DIRECTORY uses real Workerd
+and disposable D1. The public forum regression remains test_runtime.mjs. Browser tests
+exercise sign-in, hide/restore, close/reopen, audit and logout with JavaScript disabled.
+Never use the live forum for synthetic moderation tests or post test messages there.
 
 ## Explorer
 
