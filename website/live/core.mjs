@@ -1,3 +1,4 @@
+import {renderCensus} from './census.mjs';
 // Public testnet read model. No wallet RPC or arbitrary proxy route exists.
 export const GENESIS='9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98';
 const hex=/^[0-9a-f]{64}$/;const address=/^[a-zA-Z0-9]{0,100}$/;
@@ -39,7 +40,7 @@ export async function authorized(req,key,body,now=Date.now()){
 const link=(path,label)=>`<a target="_top" href="${escape(path)}">${escape(label)}</a>`;
 const bl=b=>link('/explorer/blocks/'+b.height+'.html','#'+b.height);
 const tl=t=>link('/explorer/transactions/'+t.txid+'.html',t.txid);
-export function render(s,path,now=Date.now(),probe=null){
+export function render(s,path,now=Date.now(),probe=null,census=null){
  let body='',status=200;const age=s?Math.max(0,Math.floor((now-s.observed)/1000)):null;
  const fresh=s&&age<=60;
  const note=s?`<div class="snapshot-note"><strong>${fresh?'LIVE TESTNET DATA':'STALE DATA — NODE FEED UNAVAILABLE'}</strong><br>Last node observation: ${utc(s.observed)} (${age}s ago). Refresh: 15 seconds.<br>Coverage: blocks ${s.first}–${s.height}. Confirmations refer to this observation.</div>`:'<div class="snapshot-note"><strong>NODE FEED UNAVAILABLE</strong><p>No live data received yet. Retrying in 15 seconds.</p></div>';
@@ -49,7 +50,7 @@ export function render(s,path,now=Date.now(),probe=null){
  else if(path==='/live/recent')body=note+`<ul class="block-mini">${s.blocks.slice(-5).reverse().map(b=>`<li>${bl(b)} <span>${b.tx.length} tx</span></li>`).join('')}</ul><p>${link('/explorer/index.html','Open block explorer')}</p>`;
  else {
   body=note+`<p>${link('/explorer/index.html','Blocks')} | ${link('/explorer/network.html','Network observations')} | ${link('/explorer/addresses/index.html','Addresses')} | ${link('/api/snapshot','Public JSON')}</p>`;
-  if(path==='/live/explorer/index.html')body+=`<h1>Block explorer</h1><div class="stats"><div><strong>${s.height}</strong><span>HEIGHT</span></div><div><strong>${s.connections}</strong><span>NODE CONNECTIONS</span></div><div><strong>${s.mempool}</strong><span>PENDING TRANSACTIONS</span></div></div><form method="get" action="/explorer/search" target="_top"><label>Block height, transaction ID or address <input name="q" maxlength="100" required></label> <button>Find</button></form><div class="scroll"><table><thead><tr><th>Height</th><th>Hash</th><th>Tx</th><th>Block time (UTC)</th></tr></thead><tbody>${s.blocks.slice().reverse().map(b=>`<tr><td>${bl(b)}</td><td class="hash">${link('/explorer/blocks/'+b.height+'.html',b.hash.slice(0,16)+'…')}</td><td>${b.tx.length}</td><td>${utc(b.time*1000)}</td></tr>`).join('')}</tbody></table></div>`;
+  if(path==='/live/explorer/index.html')body+=`<h1>Block explorer</h1><div class="stats"><div><strong>${s.height}</strong><span>HEIGHT</span></div><div><strong>${s.connections}</strong><span>FIRST-NODE CONNECTIONS</span></div><div><strong>${s.mempool}</strong><span>PENDING TRANSACTIONS</span></div></div>${renderCensus(census)}<form method="get" action="/explorer/search" target="_top"><label>Block height, transaction ID or address <input name="q" maxlength="100" required></label> <button>Find</button></form><div class="scroll"><table><thead><tr><th>Height</th><th>Hash</th><th>Tx</th><th>Block time (UTC)</th></tr></thead><tbody>${s.blocks.slice().reverse().map(b=>`<tr><td>${bl(b)}</td><td class="hash">${link('/explorer/blocks/'+b.height+'.html',b.hash.slice(0,16)+'…')}</td><td>${b.tx.length}</td><td>${utc(b.time*1000)}</td></tr>`).join('')}</tbody></table></div>`;
   else if(/^\/live\/explorer\/blocks\/\d+\.html$/.test(path)){
    const h=Number(path.split('/').at(-1).slice(0,-5)),b=s.blocks.find(b=>b.height===h);
    if(!b){status=404;body+='<h1>Block outside current coverage</h1>';}

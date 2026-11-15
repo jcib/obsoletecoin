@@ -24,6 +24,8 @@ It's tacky, cheap, and slow.
 - A live explorer refreshed every 15 seconds, with explicit stale-data reporting.
 - Estimated network power, canonical history, reward destinations and observed chain changes.
   These metrics do not count exact miners or prove independent ownership.
+- Public-node discovery and external reachability checks, separate from first-node connections.
+  Counts recently verified IPv4 testnet endpoints, not every node or independent operator.
 - A simple forum: read discussions, open a topic or reply using an alias.
   No account is required; aliases are not authenticated or reserved.
 

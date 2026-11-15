@@ -122,3 +122,42 @@ Connections describe only the first node's peers. No peer IP list is published.
 
 Run node website/cloudflare/test_network.mjs for arithmetic, fork, gap, retention,
 payout and stale-data checks. Workerd tests also verify concurrent D1 feed updates.
+
+## Public-node observations
+
+The explorer and network panel distinguish first-node connections from detected
+reachable public nodes. /api/nodes exposes only aggregate observations, never the
+discovered address list. /api/network includes the same publicNodes summary.
+
+Cloudflare initiates a bounded P2P crawl after accepted publisher feeds. An atomic
+D1 lease permits one batch about every five minutes; public GETs cannot start scans.
+Each batch probes the advertised first node and up to three least-recently-checked
+candidates in parallel, with a ten-second deadline per connection. No Dell service,
+wallet, consensus code, RPC permissions or signing keys are changed.
+
+Candidates come only from the first node's advertised endpoint and legacy P2P addr
+responses from verified nodes. The crawler requests getaddr, verifies network magic,
+version/services, checksums and the genesis header hash. Mere TCP reachability does
+not count. It accepts literal public IPv4 on TCP 19777, rejects private/reserved
+addresses, hostnames and other ports, and bounds messages/bytes and retained state.
+No IP-range sweep is performed. The internal D1 list holds up to 256 endpoints;
+unrefreshed candidates expire after 24 hours. Addresses are deduplicated by endpoint,
+not operator. IPv6, Tor, other ports, undiscovered and non-listening nodes are excluded.
+
+The displayed number counts endpoints whose latest probe succeeded within 30 minutes.
+A failed recheck removes the endpoint immediately. A result expires even if the monitor
+stops; after ten minutes without a completed batch the UI marks monitoring stale.
+Known candidates and recent checks make incomplete coverage visible. At high node
+counts the bounded budget will undercount; this is not an exhaustive network census.
+A peer can imitate the handshake/genesis, and multiple endpoints may belong to one
+operator. Verification is not proof of independent ownership, full synchronization,
+honest consensus validation or hash power.
+
+Short crawler sessions can temporarily appear in the first node's connection count.
+A scan failure does not block feed ingestion or alter the blockchain. If the publisher
+stops, no new scan starts. NODE_CENSUS_ENABLED=false disables future batches without
+deleting history; stale observations expire normally.
+
+Run node website/live/test_census.mjs for isolated adversarial protocol and count
+tests. Run node website/cloudflare/test_census_runtime.mjs TOOLCHAIN_DIRECTORY to
+check the actual bundled Worker and disposable D1 storage, including lease concurrency.

@@ -3,6 +3,7 @@
   "pages_build_output_dir": "../../.local/pages-dist",
   "compatibility_date": "2026-11-10",
   "vars": {
+    "NODE_CENSUS_ENABLED": "true",
     "SITE_ORIGIN": "https://obsoletecoin.pages.dev"
   },
   "d1_databases": [
