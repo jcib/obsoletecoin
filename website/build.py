@@ -137,7 +137,7 @@ home=f"""<h1 class="home-title">Obsolete Coin (OBSC)</h1>
 
 <table class="home-facts"><tbody><tr><th>Maximum issuance</th><th>Target block interval</th><th>Mining</th></tr><tr><td>1,000,000,000 OBSC</td><td>15 minutes</td><td>RandomX / CPU</td></tr></tbody></table>
 
-<section class="node-section"><h2>First node: Dell Micro 7040 (2016)</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 used as the first Obsolete Coin testnet node"><p>Experimental testnet node. CPU mining runs on a separate computer.</p></section>
+<section class="node-section"><h2>First node: Dell Micro 7040 (2016)</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 used as the first Obsolete Coin testnet node"><p>Experimental testnet node. Old, underpowered, and potentially disastrous.</p></section>
 
 <section class="block-section"><h2>Recent blocks</h2><ul class="block-mini">{latest}</ul><p>Captured {E(CAPTURE)}. This is an archive, not a live feed.</p><p><a href="explorer/index.html">Open the block explorer</a></p></section>
 
