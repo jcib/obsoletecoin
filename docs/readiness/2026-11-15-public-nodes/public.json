@@ -1,0 +1,32 @@
+{
+  "origin": "https://obsoletecoin.pages.dev",
+  "deployment": "4e78de12",
+  "checkedAt": "2026-11-15T11:38:47.046Z",
+  "nodes": {
+    "available": true,
+    "count": 1,
+    "fresh": true,
+    "checked": 1794742697657,
+    "oldestVerification": 1794742697657,
+    "known": 1,
+    "checkedRecently": 1,
+    "windowMinutes": 30,
+    "intervalMinutes": 5,
+    "limit": 256,
+    "capped": false,
+    "scope": "Public IPv4 endpoints on TCP 19777; testnet handshake and genesis verified"
+  },
+  "firstNodeConnections": 1,
+  "height": 486,
+  "feedFresh": true,
+  "browser": {
+    "widths": [
+      1440,
+      390,
+      360
+    ],
+    "javascript": false,
+    "bothPanels": true,
+    "noHorizontalOverflow": true
+  }
+}
