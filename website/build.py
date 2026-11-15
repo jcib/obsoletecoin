@@ -95,6 +95,9 @@ def write_page(path,title,content,active='home'):
 
 <footer class="footer"><img class="redline" src="{r}assets/roughredline.gif" alt="" width="550" height="20"><div class="footer-links"><a href="{r}index.html">Home</a> | <a href="{r}downloads.html">Downloads</a> | <a href="{r}explorer/index.html">Explorer</a> | <a href="{r}roadmap.html">Mainnet status</a> | <a href="{r}nodes.html">Run a node</a> | <a href="{r}forum">Forum</a> | <a href="{GITHUB}">GitHub</a></div><p>Page archive: {E(CAPTURE)}</p><div class="credits"><p>Visual inspiration: <a href="https://geocities.restorativland.org/SiliconValley/1000/">GeoCities &mdash; SiliconValley/1000</a>, archived by Restorativland.</p></div></footer></div></body></html>"""
 
+    if path=='index.html':
+        doc=doc.replace('</header>', '</header><div class="discord-banner"><a href="https://discord.gg/e6meVDjhyn">JOIN THE OBSOLETE COIN DISCORD &raquo;</a></div>', 1)
+
     if a.live:
 
         doc=doc.replace('(private during testing).','').replace('(private repository during testing).','')
