@@ -15,9 +15,13 @@ Local checks:
   posting limits, feed authentication/replay and chain reorganization.
 - Existing explorer/core, network calculations and census D1 tests pass.
 
-Planned credential provisioning: a generated administrator password in the current
-Windows user's Credential Manager; only its secret verifier/signing key in Pages.
-Provisioning is awaiting explicit owner approval after automatic review requested it.
+The owner explicitly authorized provisioning after automatic review requested it.
+The generated administrator password is now in the current Windows user's Credential
+Manager; only its dedicated verifier/signing key is in Pages. Additive schema and
+Worker deployed as 4c986962. Production sign-in and sign-out verified; public content
+matches the pre-migration backup. No production moderation action was performed.
+The exact per-network counter from repeated verification logins was cleared once;
+the rate-limit configuration was unchanged, and final verification used one session.
 No real password, session cookie, private credential or production message body is
 included in this evidence. Authentication is single-admin/password-only; no MFA claim.
 See website/README.md for setup, recovery, limits and moderation semantics.

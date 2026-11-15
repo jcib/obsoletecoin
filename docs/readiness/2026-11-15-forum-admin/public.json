@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-11-15T14:37:28.236Z",
+  "origin": "https://obsoletecoin.pages.dev",
+  "anonymousDenied": true,
+  "secureSession": true,
+  "signIn": true,
+  "signOut": true,
+  "browser": [
+    {
+      "width": 1440,
+      "controlsVisible": true,
+      "historyVisible": true,
+      "noHorizontalOverflow": true,
+      "javascript": false
+    },
+    {
+      "width": 390,
+      "controlsVisible": true,
+      "historyVisible": true,
+      "noHorizontalOverflow": true,
+      "javascript": false
+    },
+    {
+      "width": 360,
+      "controlsVisible": true,
+      "historyVisible": true,
+      "noHorizontalOverflow": true,
+      "javascript": false
+    }
+  ],
+  "moderationActionsOnProduction": 0,
+  "nodeFeedFresh": true,
+  "original_content": {
+    "forum_threads": {
+      "before": 2,
+      "after": 2,
+      "existing_records_unchanged": true
+    },
+    "forum_posts": {
+      "before": 4,
+      "after": 4,
+      "existing_records_unchanged": true
+    }
+  },
+  "deployment": "4c986962",
+  "credential_storage": "Windows Credential Manager; dedicated verifier in Pages secret store"
+}
