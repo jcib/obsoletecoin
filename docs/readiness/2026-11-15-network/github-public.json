@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/jcib/obsoletecoin",
+  "visibility": "public",
+  "anonymous_verified": true,
+  "sanitized_head": "daedcda3afee32a16cdf14e2bad47df062184c61",
+  "historical_commits_redacted": 24,
+  "private_history_backup": true,
+  "old_personal_ci_artifacts_removed": 11,
+  "draft_release_not_published": true
+}

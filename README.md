@@ -8,7 +8,7 @@ It's tacky, cheap, and slow.
 [Wallet downloads](https://obsoletecoin.pages.dev/downloads.html) ·
 [Join the testnet](https://obsoletecoin.pages.dev/join.html) ·
 [Explorer](https://obsoletecoin.pages.dev/explorer/index.html) ·
-[Network statistics](https://obsoletecoin.pages.dev/explorer/network.html) ?
+[Network statistics](https://obsoletecoin.pages.dev/explorer/network.html) ·
 [Forum](https://obsoletecoin.pages.dev/forum) ·
 [Run a node](https://obsoletecoin.pages.dev/nodes.html)
 

@@ -32,3 +32,19 @@ in an ignored local backup. Old readiness records retain their historical meanin
 but personal endpoints are now documentation examples. Original commit IDs may
 change; published packages are still identified by their unchanged SHA-256 hashes.
 The draft release is not published by changing repository visibility.
+
+
+## Publication verified
+
+GitHub is public and its metadata was verified anonymously. The source history was
+checked after redaction; 24 commit IDs changed while the reviewed current tree was
+preserved. Eleven older CI packages containing the identified personal references
+were retired only after their private backups matched GitHub's SHA-256 digests.
+The workflow logs and remaining artifacts were retained. Public distribution files
+are unchanged by this source-history cleanup.
+
+Cloudflare serves the new network panel, replacement forum GIF and coin favicon.
+Anonymous Chrome checks passed on desktop and mobile with JavaScript disabled.
+The first production observation covered blocks 0 through 342; the 672-block
+window is correctly marked partial. The Dell reported zero peer connections at
+that observation; this is not a claim that the whole network has no miners.
