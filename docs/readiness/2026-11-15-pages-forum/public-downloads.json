@@ -1,0 +1,25 @@
+{
+  "anonymous": true,
+  "files": [
+    {
+      "name": "windows-wsl.zip",
+      "sha256": "2715adde7882bfd0b5bfe2cb9a1b66792072c1df5f4a1a787901e81165c413e7",
+      "size": 11078763
+    },
+    {
+      "name": "linux-x64.tar.gz",
+      "sha256": "e502798fabe872cfb06941de72b36a53815cb797aefcec117ec13fe55990855b",
+      "size": 11112813
+    },
+    {
+      "name": "windows-native-testnet.exe",
+      "sha256": "bb609242e745d812c0bdcab44f07602507e0e974252ff9aeab7f9916f9748a25",
+      "size": 23711726
+    }
+  ],
+  "height": 342,
+  "observed": 1794702636252,
+  "feed_authenticated": true,
+  "source_not_published": true,
+  "music_not_served": true
+}

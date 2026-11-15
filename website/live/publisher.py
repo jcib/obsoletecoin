@@ -34,16 +34,15 @@ def collect(rpc,cache,peer):
     if end['bestblockhash']!=info['bestblockhash'] or end['blocks']!=tip: raise ValueError('tip-changed-during-export')
     net=rpc.call('getnetworkinfo');pool=rpc.call('getmempoolinfo')
     result={'network':'obsolete-test','genesis':GENESIS,'observed':int(time.time()*1000),'height':tip,'tip':info['bestblockhash'],'first':blocks[0]['height'],'blocks':blocks,'connections':net['connections'],'mempool':pool['size'],'peer':peer}
-    while len(encode(result))>3500000 and len(blocks)>1:
+    while len(encode(result))>1400000 and len(blocks)>1:
         blocks=blocks[len(blocks)//4 or 1:];result['blocks']=blocks;result['first']=blocks[0]['height']
-    if len(encode(result))>3500000: raise ValueError('single-block-too-large-for-explorer')
+    if len(encode(result))>1400000: raise ValueError('single-block-too-large-for-explorer')
     return result
 
-def publish(origin,key,record,bypass=None):
+def publish(origin,key,record):
     body=encode(record);stamp=str(int(time.time()));path='/api/feed'
     signature=hmac.new(key.encode(),stamp.encode()+b'\n'+path.encode()+b'\n'+body,hashlib.sha256).hexdigest()
-    headers={'Content-Type':'application/json','X-Obsolete-Time':stamp,'X-Obsolete-Signature':signature}
-    if bypass:headers['OAI-Sites-Authorization']='Bearer '+bypass
+    headers={'User-Agent':'ObsoleteCoin-Explorer/0.3 (+https://obsoletecoin.pages.dev)','Content-Type':'application/json','X-Obsolete-Time':stamp,'X-Obsolete-Signature':signature}
     req=urllib.request.Request(origin+path,data=body,headers=headers,method='POST')
     with OPENER.open(req,timeout=12) as response:
         if response.status!=200: raise RuntimeError('publish-rejected')
@@ -60,10 +59,10 @@ def main():
                 with OPENER.open('https://api.ipify.org',timeout=5) as r:address=r.read(64).decode().strip()
                 if not ipaddress.IPv4Address(address).is_global:raise ValueError('non-public-address')
                 peer=address+':19777';ip_at=time.time()
-            record=collect(rpc,cache,peer);publish(c['origin'],c['key'],record,c.get('bypass'));cache=record['blocks']
+            record=collect(rpc,cache,peer);publish(c['origin'],c['key'],record);cache=record['blocks']
             print(json.dumps({'published_at':record['observed'],'height':record['height'],'first':record['first']}),flush=True)
         except Exception as e:
             # Do not log URLs, request headers, cookie values or arbitrary exception text.
             print(json.dumps({'status':'unavailable','error_type':type(e).__name__}),flush=True)
         time.sleep(max(1,15-(time.monotonic()-started)))
-if __name__=='__main__':main()
+if __name__=='__main__':main()

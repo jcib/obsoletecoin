@@ -1,0 +1,50 @@
+import {escape,utc} from '../live/core.mjs';
+const encoder=new TextEncoder();
+const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+async function mac(secret,value){const key=await crypto.subtle.importKey('raw',encoder.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);return Array.from(new Uint8Array(await crypto.subtle.sign('HMAC',key,encoder.encode(value))),b=>b.toString(16).padStart(2,'0')).join('');}
+async function verify(secret,value,signature){if(!/^[0-9a-f]{64}$/.test(signature||''))return false;const key=await crypto.subtle.importKey('raw',encoder.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['verify']);return crypto.subtle.verify('HMAC',key,Uint8Array.from(signature.match(/../g),x=>parseInt(x,16)),encoder.encode(value));}
+async function session(req,secret,now){const c=(req.headers.get('Cookie')||'').split(';').map(s=>s.trim()).find(s=>s.startsWith('obcf='))?.slice(5)||'';const [id,expiry,sig]=c.split('.');if(uuid.test(id||'')&&Number(expiry)>now&&Number(expiry)<=now+7200000&&await verify(secret,'session|'+id+'|'+expiry,sig))return {id,cookie:null};const sid=crypto.randomUUID(),exp=now+7200000;return {id:sid,cookie:`obcf=${sid}.${exp}.${await mac(secret,'session|'+sid+'|'+exp)}; Path=/forum; Max-Age=7200; HttpOnly; Secure; SameSite=Lax`};}
+async function ticket(secret,sid,path,now){const id=crypto.randomUUID(),data=now+'.'+id;return data+'.'+await mac(secret,'form|'+sid+'|'+path+'|'+data);}
+async function validTicket(secret,sid,path,value,now){const [stamp,nonce,sig]=value.split('.');if(!/^\d{13}$/.test(stamp||'')||!uuid.test(nonce||'')||Number(stamp)>now+5000||now-Number(stamp)>7200000)return null;return await verify(secret,'form|'+sid+'|'+path+'|'+stamp+'.'+nonce,sig)?nonce:null;}
+const form=(action,token,isNew,values={})=>`<form class="forum-form paper" action="${action}" method="post"><input type="hidden" name="ticket" value="${escape(token)}"><div class="forum-trap" aria-hidden="true"><label>Leave empty<input name="website" tabindex="-1" autocomplete="off"></label></div><label for="alias">Alias</label><input id="alias" name="alias" maxlength="32" required autocomplete="nickname" value="${escape(values.alias||'')}"><p class="tiny">No account needed. Aliases are not verified or reserved.</p>${isNew?`<label for="title">Topic title</label><input id="title" name="title" minlength="3" maxlength="120" required value="${escape(values.title||'')}">`:''}<label for="body">${isNew?'Message':'Reply'}</label><textarea id="body" name="body" maxlength="5000" required>${escape(values.body||'')}</textarea><p class="tiny">Posts are public. Never include wallet files, private keys, passwords or personal information. Plain text only.</p><button type="submit">${isNew?'Post topic':'Post reply'}</button></form>`;
+const clean=(x,max,min=1)=>{if(typeof x!=='string')throw Error('text');const v=x.trim().normalize('NFC');if(v.length<min||v.length>max||/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\u202a-\u202e\u2066-\u2069]/.test(v))throw Error('text');return v;};
+const pageIndex=url=>{const p=url.searchParams.get('page')||'1';return /^\d{1,4}$/.test(p)&&Number(p)>0?Number(p):1;};
+const pager=(path,page,more)=>`<nav class="forum-pager" aria-label="Forum pages">${page>1?`<a href="${path}?page=${page-1}">Previous page</a>`:'<span></span>'}${more?`<a href="${path}?page=${page+1}">Next page</a>`:''}</nav>`;
+export async function forum(req,env,template,headers){
+ const url=new URL(req.url),path=url.pathname.replace(/\/$/,''),now=Date.now();
+ if(!env.FORUM_SECRET||!env.DB)return new Response('Forum temporarily unavailable.',{status:503,headers});
+ const sess=await session(req,env.FORUM_SECRET,now);
+ const reply=(body,status=200)=>new Response(req.method==='HEAD'?null:template.replace('<meta name="referrer" content="no-referrer">','<meta name="referrer" content="same-origin">').replace('<!--FORUM_CONTENT-->',body),{status,headers:{...headers,'Content-Type':'text/html; charset=utf-8','Referrer-Policy':'same-origin',...(sess.cookie?{'Set-Cookie':sess.cookie}:{})}});
+ const intro='<h1 class="page-title">Obsolete Coin forum</h1><p class="lede">Testnet discussion, node operators and bug reports.</p>';
+ const threadMatch=path.match(/^\/forum\/thread\/([0-9a-f-]{36})$/),threadId=threadMatch?.[1];
+ if(req.method==='POST'){
+  if(path!=='/forum/new'&&!(threadId&&uuid.test(threadId)))return reply('<h1>Page not found</h1>',404);
+  const origin=req.headers.get('Origin');if(origin!==url.origin||url.origin!==env.SITE_ORIGIN||sess.cookie)return reply('<h1>Form expired</h1><p>Open the form again and retry.</p>',403);
+  if(!(req.headers.get('Content-Type')||'').startsWith('application/x-www-form-urlencoded'))return reply('<h1>Unsupported form</h1>',415);
+  const reader=req.body?.getReader();let size=0,chunks=[];if(!reader)return reply('<h1>Empty form</h1>',400);
+  while(true){const {value,done}=await reader.read();if(done)break;size+=value.length;if(size>40000){await reader.cancel();return reply('<h1>Message too large</h1>',413);}chunks.push(value);}
+  const data=new Uint8Array(size);let i=0;for(const c of chunks){data.set(c,i);i+=c.length;}const f=new URLSearchParams(new TextDecoder().decode(data));
+  const nonce=await validTicket(env.FORUM_SECRET,sess.id,path,f.get('ticket')||'',now);if(!nonce||f.get('website'))return reply('<h1>Form rejected</h1><p>Open a fresh form and retry.</p>',403);
+  let alias,body,title;try{alias=clean(f.get('alias'),32);body=clean(f.get('body'),5000);if(/[\r\n]/.test(alias))throw Error('alias');if(path==='/forum/new'){title=clean(f.get('title'),120,3);if(/[\r\n]/.test(title))throw Error('title');}}catch{return reply('<h1>Check your message</h1><p>Use an alias of 1–32 characters, a title of 3–120 and a message of 1–5000.</p>'+form(path,await ticket(env.FORUM_SECRET,sess.id,path,now),path==='/forum/new',{alias:f.get('alias')?.slice(0,32),title:f.get('title')?.slice(0,120),body:f.get('body')?.slice(0,5000)}),400);}
+  const thread=threadId||crypto.randomUUID(),post=crypto.randomUUID(),bucket=Math.floor(now/3600000),ip=req.headers.get('CF-Connecting-IP')||'local-preview';
+  const tag=await mac(env.FORUM_SECRET,'rate|'+Math.floor(now/86400000)+'|'+ip);
+  const rate=(tag,cap,gap)=>env.DB.prepare(`INSERT INTO forum_limits(tag,bucket,count,cap,last_at) VALUES(?,?,1,?,?) ON CONFLICT(tag) DO UPDATE SET count=CASE WHEN ?-last_at<? THEN cap+1 WHEN bucket<>? THEN 1 ELSE count+1 END,bucket=?,last_at=?`).bind(tag,bucket,cap,now,now,gap,bucket,bucket,now);
+  const batch=[env.DB.prepare('DELETE FROM forum_nonces WHERE expires<?').bind(now),env.DB.prepare('DELETE FROM forum_limits WHERE last_at<?').bind(now-172800000),env.DB.prepare('INSERT INTO forum_nonces(nonce,expires) VALUES(?,?)').bind(nonce,now+7200000),rate(tag,10,10000),rate('site',100,0)];
+  if(!threadId)batch.push(env.DB.prepare('INSERT INTO forum_threads(id,title,created_at,updated_at) VALUES(?,?,?,?)').bind(thread,title,now,now));
+  batch.push(env.DB.prepare('INSERT INTO forum_posts(id,thread_id,alias,body,created_at) VALUES(?,?,?,?,?)').bind(post,thread,alias,body,now));
+  try{await env.DB.batch(batch);}catch{return reply('<h1>Message not posted</h1><p>The topic may be closed, the form already used, or the posting limit reached. Wait before retrying.</p><p><a href="/forum">Return to forum</a></p>',429);}
+  return new Response(null,{status:303,headers:{...headers,Location:'/forum/thread/'+thread+'?page=last#post-'+post}});
+ }
+ if(!['GET','HEAD'].includes(req.method))return reply('<h1>Method not allowed</h1>',405);
+ if(path==='/forum/new')return reply('<h1 class="page-title">New topic</h1><p><a href="/forum">Back to forum</a></p>'+form(path,await ticket(env.FORUM_SECRET,sess.id,path,now),true));
+ if(path==='/forum'){
+  const page=pageIndex(url),rows=(await env.DB.prepare('SELECT t.id,t.title,t.updated_at,t.replies,(SELECT alias FROM forum_posts p WHERE p.thread_id=t.id ORDER BY created_at,id LIMIT 1) AS alias FROM forum_threads t WHERE hidden=0 ORDER BY updated_at DESC,id LIMIT 21 OFFSET ?').bind((page-1)*20).all()).results;
+  return reply(intro+'<a class="forum-action" href="/forum/new">New topic</a>'+(!rows.length?'<div class="paper"><p>No topics yet. Start the first discussion.</p></div>':'<table class="forum-list"><thead><tr><th>Topic</th><th>Alias</th><th>Replies</th><th>Updated (UTC)</th></tr></thead><tbody>'+rows.slice(0,20).map(t=>`<tr><td><a href="/forum/thread/${t.id}">${escape(t.title)}</a></td><td>${escape(t.alias)}</td><td>${Math.max(0,t.replies-1)}</td><td>${utc(t.updated_at)}</td></tr>`).join('')+'</tbody></table>')+pager('/forum',page,rows.length>20)+'<p class="tiny">Aliases are unverified. Moderators may remove spam or private information. Temporary pseudonymous network identifiers are used to limit posting.</p>');
+ }
+ if(threadId&&uuid.test(threadId)){
+  const thread=await env.DB.prepare('SELECT * FROM forum_threads WHERE id=? AND hidden=0').bind(threadId).first();if(!thread)return reply('<h1>Topic not found</h1>',404);
+  const page=url.searchParams.get('page')==='last'?Math.max(1,Math.ceil(thread.replies/20)):pageIndex(url),posts=(await env.DB.prepare('SELECT id,alias,body,created_at FROM forum_posts WHERE thread_id=? ORDER BY created_at,id LIMIT 21 OFFSET ?').bind(threadId,(page-1)*20).all()).results;
+  return reply(`<p><a href="/forum">Back to forum</a></p><h1 class="page-title">${escape(thread.title)}</h1>`+posts.slice(0,20).map(p=>`<article class="paper forum-post" id="post-${p.id}"><p class="forum-meta"><strong>${escape(p.alias)}</strong> · ${utc(p.created_at)}</p><div class="message">${escape(p.body)}</div></article>`).join('')+pager(path,page,posts.length>20)+(thread.locked?'<p>This topic is closed.</p>':'<h2>Write a reply</h2>'+form(path,await ticket(env.FORUM_SECRET,sess.id,path,now),false)));
+ }
+ return reply('<h1>Page not found</h1>',404);
+}

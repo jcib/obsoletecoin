@@ -1,0 +1,9 @@
+{
+  "local_only": true,
+  "simultaneous_submissions": 2,
+  "statuses": [
+    303,
+    429
+  ],
+  "atomic_rate_limit": true
+}

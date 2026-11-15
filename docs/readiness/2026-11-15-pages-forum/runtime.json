@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "scope": "local Workerd and persistent D1",
+  "checks": [
+    "cross-origin rejected",
+    "forged form rejected",
+    "honeypot rejected",
+    "length validation",
+    "topic created",
+    "HTML and SQL payloads rendered as text",
+    "duplicate submission rejected",
+    "rapid posting rejected",
+    "reply stored and readable",
+    "topic list updated",
+    "D1 feed authentication and replay checks",
+    "canonical chain reorganization replaces D1 feed"
+  ]
+}

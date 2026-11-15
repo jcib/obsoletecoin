@@ -1,4 +1,4 @@
-# Obsolete Coin (OBSC) ? CPU-mined testnet looking for testers
+# Obsolete Coin (OBSC) - CPU-mined testnet looking for testers
 
 It's tacky, cheap, and slow.
 
@@ -17,14 +17,16 @@ wallet restarts and encrypted backups. Independent full-node operators are welco
 Website and downloads: https://obsoletecoin.pages.dev/
 Connection instructions and current peer: https://obsoletecoin.pages.dev/join.html
 Explorer: https://obsoletecoin.pages.dev/explorer/index.html
-The source repository remains private during testing. Please report problems in this announcement thread.
+Forum: https://obsoletecoin.pages.dev/forum
+Run a node: https://obsoletecoin.pages.dev/nodes.html
+The source repository remains private during testing.
 
 This is TESTNET, not mainnet. Test coins have no monetary value, the chain can be
 reset, and balances will not become mainnet coins. Initial test difficulty is easy,
 so actual block intervals vary. Mining rewards require 100-block maturity.
 The chain already contains locally mined test rewards; this is not a fresh mainnet launch.
 
-The Windows candidate is unsigned. This code has not had an independent security
+This code has not had an independent security
 audit. Local and CI tests cover transfers, reorganizations and several failure cases,
 but do not prove safety. A dominant miner can reorganize this small network.
 The first home node has no uptime guarantee. There is no investment offer, exchange
@@ -35,5 +37,6 @@ Never share wallet files, keys, passphrases or RPC credentials.
 
 ---
 Operator note: anonymous website/download checks, external P2P genesis handshake,
-and fresh synchronization to height 305 passed on 2026-11-15 (Madrid).
+and fresh synchronization passed. Mining and desktop transfers were also verified
+on disposable nodes. The website and forum are hosted on Cloudflare Pages.
 This document is ready for the owner to post; it was not sent to a forum.

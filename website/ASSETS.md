@@ -18,4 +18,4 @@ Wallet download GIFs selected from GifCities searches linux and windows:
 - windows.gif: https://blob.gifcities.org/gifcities/ELCBYU2PFJX26M7DX3X7JOFPXG4W2SZF.gif
 The title uses CSS stepped animation; reduced-motion preference disables it.
 
-Music: music.mp3 supplied by the user; credited as Memories OST by P l a y s t a s i s. Served locally through native HTML audio controls, autoplay requested and playback subject to browser policy. Visual inspiration is credited in every page footer.
+forum.gif: supplied by the user; used for the forum navigation. Audio is not included in the website.

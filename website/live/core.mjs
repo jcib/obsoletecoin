@@ -28,7 +28,7 @@ export function validate(s,now=Date.now()){
  return {network:s.network,genesis:GENESIS,observed:s.observed,height:s.height,tip:s.tip,first:s.first,connections:s.connections,mempool:s.mempool,peer:s.peer,blocks};
 }
 export const amount=s=>{const n=BigInt(s);return (n/100000000n).toLocaleString('en-US')+'.'+(n%100000000n).toString().padStart(8,'0');};
-export const utc=n=>new Date(n).toISOString().replace('T',' ').replace('.000Z',' UTC');
+export const utc=n=>new Date(n).toISOString().replace('T',' ').replace(/\.\d{3}Z$/,' UTC');
 export async function authorized(req,key,body,now=Date.now()){
  if(!key)return false;const stamp=req.headers.get('X-Obsolete-Time')||'',sig=req.headers.get('X-Obsolete-Signature')||'';
  if(!/^\d{10}$/.test(stamp)||Math.abs(now/1000-Number(stamp))>120||!hex.test(sig))return false;
@@ -67,4 +67,4 @@ export function render(s,path,now=Date.now(),probe=null){
   }else{status=404;body+='<h1>Page not found</h1>';}
  }
  return {status,html:`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>Obsolete Coin testnet</title><link rel="stylesheet" href="/assets/style.css"></head><body class="live-body"><main class="live-content">${body}</main></body></html>`};
-}
+}

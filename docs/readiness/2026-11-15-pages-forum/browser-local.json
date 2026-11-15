@@ -1,0 +1,38 @@
+[
+  {
+    "width": 1440,
+    "javascript": false,
+    "home": true,
+    "forum": true,
+    "node_guide": true,
+    "explorer": true,
+    "no_audio": true,
+    "no_unsigned_copy": true,
+    "no_overflow": true,
+    "form_submission": true
+  },
+  {
+    "width": 390,
+    "javascript": false,
+    "home": true,
+    "forum": true,
+    "node_guide": true,
+    "explorer": true,
+    "no_audio": true,
+    "no_unsigned_copy": true,
+    "no_overflow": true,
+    "form_submission": false
+  },
+  {
+    "width": 360,
+    "javascript": false,
+    "home": true,
+    "forum": true,
+    "node_guide": true,
+    "explorer": true,
+    "no_audio": true,
+    "no_unsigned_copy": true,
+    "no_overflow": true,
+    "form_submission": false
+  }
+]

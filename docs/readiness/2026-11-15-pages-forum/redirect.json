@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/",
+    "status": 308,
+    "destination": "https://obsoletecoin.pages.dev/"
+  },
+  {
+    "path": "/join.html",
+    "status": 308,
+    "destination": "https://obsoletecoin.pages.dev/join.html"
+  },
+  {
+    "path": "/explorer/index.html",
+    "status": 308,
+    "destination": "https://obsoletecoin.pages.dev/explorer/index.html"
+  },
+  {
+    "path": "/forum",
+    "status": 308,
+    "destination": "https://obsoletecoin.pages.dev/forum"
+  }
+]

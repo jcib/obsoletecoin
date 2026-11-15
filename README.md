@@ -1,118 +1,112 @@
-# Obsolete Coin
-
-A deliberately slow, CPU-mined memecoin with a retro desktop wallet.
-Ticker: **OBSC** (working symbol; no exchange listing or uniqueness claim).
-
-**Experimental v0.2 testnet. Mainnet is disabled. Test coins have no monetary value.**
-This is a working-source prototype, not audited production currency software.
-
-v0.2 starts a new test chain with a new genesis, network identity and data subdirectory.
-Old experimental balances and blocks do not carry over.
-
-![Obsolete Coin desktop preview](docs/wallet.png)
-
-| Rule | Obsolete Coin |
-| --- | --- |
-| Mining | RandomX proof of work, CPU |
-| Target block interval | 900 seconds / 15 minutes; actual waits vary |
-| Difficulty | ASERT, every block, 6-hour half-life |
-| Maximum authorized issuance | 1,000,000,000 OBSC |
-| Precision | 8 decimals; integer accounting |
-| Initial reward | 5,000 OBSC |
-| Halving | Every 100,000 blocks, counted from block 1 |
-| Genesis reward / premine | 0 / none |
-| End of subsidy | Block 3,900,000; fees thereafter |
-| Mining reward maturity | 100 blocks (about 25 hours at target) |
-| Wallet | Local Core wallet, send/receive, encryption, backup |
-| Testnet ports | P2P 19777; authenticated localhost RPC 19778 |
-
-At target, halvings are about 2.85 years apart and the last subsidy about 111 years
-after block 1. Difficulty follows hash power, not miner count; it cannot guarantee
-a calendar schedule. A one-off 0.01300000 OBSC rounding remainder at the last
-rewarded block makes the authorized schedule sum exactly to the cap. Unclaimed
-rewards and lost keys reduce circulating supply.
-
-## Public testnet participation
-
-- [Website and downloads](https://obsoletecoin.pages.dev/)
-- [Join guide and current first-node address](https://obsoletecoin.pages.dev/join.html)
-- [Live explorer](https://obsoletecoin.pages.dev/explorer/index.html)
-- [Testnet wallets and connection instructions](https://obsoletecoin.pages.dev/join.html)
-- GitHub source and draft release remain private during testing.
-- [Report a reproducible problem](https://github.com/jcib/obsoletecoin/issues/new/choose)
-
-The first node is a Dell Micro 7040 (2016). Its residential IP can change: use the
-current peer shown on the join page and check its connection-verification status.
-Testnet can reset without compensation and balances never convert into mainnet coins.
-The initial test chain already contains locally mined test rewards; joining is not a
-mainnet launch or an allocation of future mainnet coins. Independent operators welcome.
-
-## Try it
-
-Linux is the reference node platform. Build following [BUILD.md](docs/BUILD.md):
-
-```sh
-git clone --recurse-submodules https://github.com/jcib/obsoletecoin.git
-cd obsoletecoin
-# Build first, then start:
-python3 tools/node.py
-# In another terminal:
-python3 tools/wallet.py
-```
-
-Click **Open / Create**, then **Receive**. **Mine / Stop** runs actual CPU mining
-inside your local node. Newly mined coins need 100 confirmations before spending.
-**Send** uses a 1-atom/vbyte test fee. **Encrypt** protects the wallet at rest;
-make a new private backup afterward. Keep the passphrase safe.
-
-Preview without a node: `python tools/wallet.py --demo` (also works on Windows).
-A native Windows x64 wallet/node/miner is available as an unsigned test candidate.
-It needs neither WSL nor Python. See [WINDOWS-NATIVE.md](docs/WINDOWS-NATIVE.md).
-
-Windows laptop: see [WINDOWS.md](docs/WINDOWS.md) and the packaged `Start-Mining.cmd` launcher.
-
-## Server and mining laptop
-
-Run a full node on each machine; the laptop connects to the server through P2P.
-Mining work runs on the laptop, without sharing RPC credentials.
-
-```sh
-# Home server, manual foreground process:
-python3 tools/node.py --listen
-# Laptop: replace YOUR_SERVER_LAN_IP:
-python3 tools/node.py --peer YOUR_SERVER_LAN_IP:19777
-python3 tools/wallet.py
-# Or mine to an address already created by a wallet:
-python3 tools/mine.py --address YOUR_TOBS1_ADDRESS
-```
-
-The included miner is a **single-threaded RandomX light-mode reference miner**,
-not an optimized multi-core miner or pool. See [RUN.md](docs/RUN.md).
-
-## Verification and provenance
-
-GitHub Actions builds the actual C++ node and wallet, reproduces the experimental
-genesis proofs, runs inherited unit suites plus Obsolete consensus tests, and
-exercises two real nodes with disposable wallets. Integration covers mining,
-RandomX seed rotation at height 64, signed transfers, invalid proof and excess
-subsidy rejection, competing-chain reorganization, restart persistence, and encrypted-wallet backup
-and restoration.
-Python tests cover exact large balances, wrong-network protection and local RPC
-authentication. Check the exact commit
-in [Actions](https://github.com/jcib/obsoletecoin/actions); unfinished or failed CI
-is not a passing build.
-
-This fork is based on [Brisvia](https://github.com/brisvia/brisvia) and Bitcoin Core
-30.2 with pinned upstream RandomX. Original licenses are preserved. Internal
-Brisvia identifiers and `bitcoind` / `bitcoin-cli` build names remain for a
-reviewable diff. The Obsolete launcher explicitly selects the new network.
-
-- [Specification](docs/SPEC.md)
-- [Build and verification](docs/BUILD.md)
-- [Operation and backup](docs/RUN.md)
-- [Security and outstanding launch work](docs/SECURITY.md)
-- [Pinned upstream provenance](docs/UPSTREAM.md)
-
-There is no exchange, pool, DNS seed network or checkpoint signer. Public bootstrap
-initially depends on one home node; its availability is best effort. A dominant miner can reorganize a small PoW network.
-Four confirmations do not guarantee finality or protection against that attack.
+# Obsolete Coin (OBSC)
+
+It's tacky, cheap, and slow.
+
+**Experimental CPU-mined testnet. Mainnet is disabled. Test coins have no monetary value.**
+
+[Website](https://obsoletecoin.pages.dev/) ·
+[Wallet downloads](https://obsoletecoin.pages.dev/downloads.html) ·
+[Join the testnet](https://obsoletecoin.pages.dev/join.html) ·
+[Explorer](https://obsoletecoin.pages.dev/explorer/index.html) ·
+[Forum](https://obsoletecoin.pages.dev/forum) ·
+[Run a node](https://obsoletecoin.pages.dev/nodes.html)
+
+![Obsolete Coin website preview](docs/website.png)
+
+## What is available
+
+- Native Windows x64 wallet, full node and CPU miner; no WSL required.
+- Linux x86-64 package and an alternative Windows/WSL package.
+- Local send/receive, transaction dates and confirmations, encryption and backups.
+- A plain-HTML retro website on Cloudflare Pages, without music.
+- A live explorer refreshed every 15 seconds, with explicit stale-data reporting.
+- A simple forum: read discussions, open a topic or reply using an alias.
+  No account is required; aliases are not authenticated or reserved.
+
+The source repository and GitHub release remain private during testing.
+Public downloads are hosted on the website. Report issues in the forum, including
+the package version, OS, reproduction steps and redacted error messages.
+Never post wallet files, private keys, passwords or personal information.
+
+## Network parameters
+
+| Parameter | Testnet |
+| --- | --- |
+| Ticker | OBSC |
+| Proof of work | RandomX, CPU |
+| Target block interval | 900 seconds / 15 minutes; actual intervals vary |
+| Difficulty | ASERT, adjusted every block; 6-hour half-life |
+| Maximum authorized issuance | 1,000,000,000 OBSC |
+| Precision | 8 decimals; integer accounting |
+| Initial reward | 5,000 OBSC |
+| Halving | Every 100,000 blocks, counted from block 1 |
+| Genesis reward / premine | Zero / none |
+| Reward maturity | 100 blocks |
+| End of subsidy | Block 3,900,000; fees afterward |
+| P2P | TCP 19777 |
+| RPC | TCP 19778, authenticated and local only |
+
+The first node is a Dell Micro 7040 (2016). Get its current public peer address from
+the Join guide; do not rely on an old IP copied from a forum post.
+
+At the target interval, halvings are approximately 2.85 years apart. Difficulty
+follows hash power, not miner count, and cannot guarantee a calendar schedule.
+A final 0.01300000 OBSC rounding remainder makes the authorized subsidy schedule
+sum to the cap. Unclaimed rewards and lost keys reduce circulating supply.
+The inherited timestamp format needs an upgrade before 2106.
+
+## Try the testnet
+
+1. Download a wallet and compare its SHA-256 with the published checksums.
+2. Connect to the current peer shown in the Join guide.
+3. Wait for synchronization and compare your tip with the explorer.
+4. Use **Open / Create**, then **Receive** to obtain an address.
+5. Use **Mine / Stop** for the single-thread reference miner, or receive test coins
+   from another participant.
+6. Once funds are spendable, use **Send**. Newly mined rewards require 100-block
+   maturity; a received transfer and an immature mining reward are different.
+7. Encrypt the wallet and make a private backup. Keep the passphrase separately.
+
+The current chain is experimental v0.2. It already contains test mining rewards.
+It may reset, and test balances will not become mainnet balances. Four confirmations
+do not guarantee safety against a dominant miner on a small network.
+
+## Run an independent node
+
+Follow the [public node guide](https://obsoletecoin.pages.dev/nodes.html).
+A full node verifies blocks, signatures and issuance rules, relays transactions,
+and can provide synchronization data to other participants. Mining is optional;
+being online alone does not earn a reward.
+
+The current Windows desktop app is outbound-only. For an inbound node, use the
+Linux/WSL dedicated-node guide. Outbound-only nodes can still validate. Permit and,
+where necessary, forward TCP 19777. Never expose RPC 19778 or enable a router's
+DMZ-host option. Keep software updated and monitor disk space and traffic.
+More independently operated nodes improve reachability and independent validation;
+they do not substitute for mining hash power.
+
+## Verification and limitations
+
+Real disposable-node integration covers RandomX mining, peer synchronization,
+sending from the desktop wallet, receipt of funds, reward maturity, duplicate
+submission, insufficient funds, invalid blocks, reorganizations, restarts,
+encryption, backup and restoration. A fresh external node has also synchronized
+the public testnet.
+
+The forum and explorer are tested against Workerd and D1, including escaped user
+content, form authentication, duplicate submissions, posting limits and feed
+replay/reorganization handling. Forum messages are plain text; no uploads.
+
+These tests are not an independent security audit or a mainnet readiness claim.
+Mainnet remains blocked pending independent review, sustained adversarial testing
+and operational readiness. See [MAINNET-READINESS.md](docs/MAINNET-READINESS.md).
+
+## Development
+
+For repository collaborators: [build](docs/BUILD.md), [specification](docs/SPEC.md),
+[Windows](docs/WINDOWS-NATIVE.md), [website](website/README.md).
+Public participants should use the website guides and packages.
+
+Derived from Brisvia and Bitcoin Core, with RandomX. Original copyright and license
+notices are retained; see [COPYING](COPYING) and the notices in distribution packages.
+Asset provenance and visual inspiration are recorded in [website/ASSETS.md](website/ASSETS.md).

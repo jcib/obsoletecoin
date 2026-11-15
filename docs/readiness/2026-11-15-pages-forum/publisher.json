@@ -1,0 +1,14 @@
+{
+  "migrated": true,
+  "origin": "https://obsoletecoin.pages.dev",
+  "height": 342,
+  "observations": [
+    1794702451044,
+    1794702456248
+  ],
+  "source_sha256": "78c19ec8107c3be1f883eca90f171e0bc724f813f3e29746fc5285ad75cc104a",
+  "node_and_trading_unchanged": true,
+  "external_p2p_verified": true,
+  "old_host_token_removed": true,
+  "publisher": "MainPID=271317\nNRestarts=0\nActiveState=active"
+}

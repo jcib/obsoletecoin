@@ -1,0 +1,32 @@
+[
+  {
+    "width": 1440,
+    "anonymous": true,
+    "javascript": false,
+    "forum_form": true,
+    "explorer_navigation": true,
+    "no_audio": true,
+    "no_removed_copy": true,
+    "no_overflow": true
+  },
+  {
+    "width": 390,
+    "anonymous": true,
+    "javascript": false,
+    "forum_form": true,
+    "explorer_navigation": true,
+    "no_audio": true,
+    "no_removed_copy": true,
+    "no_overflow": true
+  },
+  {
+    "width": 360,
+    "anonymous": true,
+    "javascript": false,
+    "forum_form": true,
+    "explorer_navigation": true,
+    "no_audio": true,
+    "no_removed_copy": true,
+    "no_overflow": true
+  }
+]

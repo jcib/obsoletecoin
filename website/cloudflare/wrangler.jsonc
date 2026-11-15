@@ -1,0 +1,15 @@
+{
+  "name": "obsoletecoin",
+  "pages_build_output_dir": "../../.local/pages-dist",
+  "compatibility_date": "2026-11-10",
+  "vars": {
+    "SITE_ORIGIN": "https://obsoletecoin.pages.dev"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "obsoletecoin-community",
+      "database_id": "456147aa-4220-4424-89cd-5bbf4ae4da9a"
+    }
+  ]
+}
