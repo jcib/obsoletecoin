@@ -89,7 +89,7 @@ def write_page(path,title,content,active='home'):
 
 <nav class="nav" aria-label="Main navigation">{links}</nav>
 
-<div class="link-table"><a href="{r}index.html">Home</a><a href="{r}faq.html">Questions &amp; answers</a><a href="{GITHUB}">GitHub</a><a href="{r}roadmap.html">Mainnet status</a></div>
+<div class="link-table"><a href="{r}index.html">Home</a><a href="{r}faq.html">Questions &amp; answers</a><a href="{GITHUB}">GitHub</a><a href="{r}roadmap.html">Mainnet status</a><a href="{r}nodes.html">Run a node</a></div>
 
 <main class="content" id="content">{content.replace('@ROOT@',r)}</main>
 
