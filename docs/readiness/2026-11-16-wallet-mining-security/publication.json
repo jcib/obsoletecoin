@@ -1,0 +1,49 @@
+{
+  "verified_at": "2026-11-16T11:13:31.692447+00:00",
+  "release_url": "https://github.com/jcib/obsoletecoin/releases/tag/v0.4.0-testnet-rc1",
+  "release_commit": "0f6021f2fca075932bd619f6ed1a3954913a9727",
+  "website": "https://obsoletecoin.pages.dev",
+  "public_downloads": {
+    "github/ObsoleteCoin-Testnet-Setup.exe": {
+      "sha256": "4e41a49fdd45b111addc942a9b6c132feb559205c75fd81f6022a4a9a611b6d3",
+      "bytes": 23943205
+    },
+    "github/ObsoleteCoin-0.4.0-Testnet-Windows-x64.zip": {
+      "sha256": "c90ab6c038b0540c55d461397ef79407924abd47aa80c18be1b4f19d2f8579d6",
+      "bytes": 31083882
+    },
+    "github/Windows-PROVENANCE.json": {
+      "sha256": "8e727f0ae09103883ca1fb7c46a4174aa1c62a69156f8d9992d123dd7f1d69ca",
+      "bytes": 122748
+    },
+    "github/Native-SOURCE-HASHES.json": {
+      "sha256": "8e4a3e2f5b2ad018d11e1a4cdb8fdcf36eb36352498ef3c4d0dad832d55a75f6",
+      "bytes": 222515
+    },
+    "github/RELEASE-NOTES.md": {
+      "sha256": "8cfe4a5835d82e86da9050477979e240c94d4117e879b3b8287ca275ade16edf",
+      "bytes": 3350
+    },
+    "github/SHA256SUMS.txt": {
+      "sha256": "04c1bcb267f629b6901469dcaec2b21556ccd532a94cb920f9440f3e3ec5fe66",
+      "bytes": 476
+    },
+    "website/windows-0.4.0-testnet-rc1.exe": {
+      "sha256": "4e41a49fdd45b111addc942a9b6c132feb559205c75fd81f6022a4a9a611b6d3",
+      "bytes": 23943205
+    },
+    "website/windows-native-testnet.exe": {
+      "sha256": "4e41a49fdd45b111addc942a9b6c132feb559205c75fd81f6022a4a9a611b6d3",
+      "bytes": 23943205
+    }
+  },
+  "verified_pages": [
+    "/",
+    "/downloads",
+    "/mining",
+    "/forum",
+    "/explorer/index.html"
+  ],
+  "linux_wsl_version": "0.3.0-testnet-rc1",
+  "authenticated_requests": false
+}

@@ -5,6 +5,20 @@ The measurements and JSON files below record the pre-publication validation stat
 They did not update a public node or installed wallet. Publication is tracked
 separately; see the [0.4.0 release notes](../../../release/RELEASE-NOTES-0.4.0.md).
 
+## Public release
+
+Windows [v0.4.0-testnet-rc1](https://github.com/jcib/obsoletecoin/releases/tag/v0.4.0-testnet-rc1)
+was published on 16 November 2026 from source commit
+`0f6021f2fca075932bd619f6ed1a3954913a9727`. The website was updated in deployment
+`d5116b08` at https://obsoletecoin.pages.dev/. Linux/WSL downloads remain at 0.3.0-rc1.
+
+`publication.json` records anonymous verification of all six GitHub assets, both
+website installer URLs, their SHA-256 hashes, the release tag's source commit and
+five public pages. The versioned installer URL avoids cached older downloads.
+The published binaries are the exact locally validated files recorded below.
+Additional GitHub Linux and Windows CI runs were still in progress at publication;
+the release's validation claims refer to the completed local checks.
+
 ## Windows desktop and miner
 
 Initial validation used CPython 3.14.10 with the pinned Tcl/Tk 9.0.4 runtime and the
