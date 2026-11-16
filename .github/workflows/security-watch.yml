@@ -1,0 +1,15 @@
+name: Upstream security review reminder
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 8 * * 1'
+permissions:
+  contents: read
+jobs:
+  advisories:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for new upstream disclosures
+        run: python3 tools/check_upstream_security.py

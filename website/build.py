@@ -33,19 +33,30 @@ ORIGIN='https://obsoletecoin.pages.dev'
 
 GITHUB='https://github.com/jcib/obsoletecoin'
 
+RELEASES=json.loads((ROOT/'release/downloads.json').read_text(encoding='utf-8'))
+WINDOWS=RELEASES['windows'];LEGACY_VERSION=RELEASES['linux_wsl_version']
+RELEASE_URL=GITHUB+'/releases/tag/'+WINDOWS['tag']
+ASSET_URL=GITHUB+'/releases/download/'+WINDOWS['tag']+'/'
+
+NEWS='Windows 0.4.0 now available: CPU mining with selectable threads & activity / live hash rate and block counters / automatic wallet refresh / encrypted backup recovery checks / network and storage security fixes.'
+
 for folder in ('assets','downloads','explorer/blocks','explorer/transactions','explorer/addresses'):(OUT/folder).mkdir(parents=True,exist_ok=True)
 
 for f in (ROOT/'website/assets').iterdir():
     if f.suffix.lower() not in ('.mp3','.wav','.ogg'):shutil.copyfile(f,OUT/'assets'/f.name)
 
-DOWNLOADS=[('source.tar.gz',ROOT/'.local/release/ObsoleteCoin-Review-Source.tar.gz'),('windows-wsl.zip',ROOT/'.local/release/ObsoleteCoin-Windows-WSL.zip'),('linux-x64.tar.gz',ROOT/'.local/release/ObsoleteCoin-Linux-Testnet.tar.gz'),('windows-native-testnet.exe',ROOT/'.local/release/ObsoleteCoin-Testnet-Setup.exe')]
+DOWNLOADS=[('source.tar.gz',ROOT/'.local/release/ObsoleteCoin-Review-Source.tar.gz'),('windows-wsl.zip',ROOT/'.local/release/ObsoleteCoin-Windows-WSL.zip'),('linux-x64.tar.gz',ROOT/'.local/release/ObsoleteCoin-Linux-Testnet.tar.gz'),('windows-native-testnet.exe',ROOT/WINDOWS['directory']/WINDOWS['installer'])]
+DOWNLOADS.append((WINDOWS['web_installer'],ROOT/WINDOWS['directory']/WINDOWS['installer']))
 
 if a.public_web_only:DOWNLOADS=[(name,path) for name,path in DOWNLOADS if name!='source.tar.gz']
 CHECKSUMS={}
 
 for name,path in DOWNLOADS:
 
-    data=path.read_bytes();CHECKSUMS[name]=hashlib.sha256(data).hexdigest();(OUT/'downloads'/name).write_bytes(data)
+    data=path.read_bytes();CHECKSUMS[name]=hashlib.sha256(data).hexdigest()
+    if name in ('windows-native-testnet.exe',WINDOWS['web_installer']) and CHECKSUMS[name]!=WINDOWS['installer_sha256']:
+        raise ValueError('Windows installer does not match release/downloads.json')
+    (OUT/'downloads'/name).write_bytes(data)
 
 (OUT/'downloads/SHA256SUMS.txt').write_text(''.join(f'{v}  {k}\n' for k,v in CHECKSUMS.items()),encoding='utf-8')
 
@@ -73,7 +84,14 @@ def write_page(path,title,content,active='home'):
 
 <link rel="icon" href="{r}assets/obsolete-coin.gif" type="image/gif"><link rel="stylesheet" href="{r}assets/style.css"></head>
 
-<body><a class="skip" href="#content">Skip to content</a><div class="site">
+<body><a class="skip" href="#content">Skip to content</a>
+
+<section class="news-marquee" aria-label="Project news">
+<strong class="news-label">LATEST NEWS</strong>
+<div class="news-window"><div class="news-track"><span class="news-item">{E(NEWS)}</span><span class="news-item" aria-hidden="true">{E(NEWS)}</span></div></div>
+</section>
+
+<div class="site">
 
 <header class="masthead"><a class="brand" href="{r}index.html"><img src="{r}assets/obsolete-coin.gif" alt="" width="80" height="80"><span>Obsolete Coin</span></a>
 
@@ -121,9 +139,9 @@ def write_page(path,title,content,active='home'):
 
 def download_cards():
 
-    return """<div class="download-grid"><article class="download"><h3><img src="@ROOT@assets/windows.gif" alt="">Windows native</h3><p>Testnet wallet, local node and CPU miner. No WSL required.</p><a class="button" href="@ROOT@downloads/windows-native-testnet.exe" download>DOWNLOAD .EXE &darr;</a><div class="minor">x86-64 &middot; <a href="@ROOT@mining.html#windows-native">Setup instructions</a><br><a href="@ROOT@downloads/windows-wsl.zip" download>Alternative: Windows + WSL ZIP</a></div></article>
+    return f"""<div class="download-grid"><article class="download"><h3><img src="@ROOT@assets/windows.gif" alt="">Windows native</h3><p>Testnet wallet, local node and configurable CPU miner. No WSL required.</p><a class="button" href="@ROOT@downloads/{WINDOWS['web_installer']}" download>DOWNLOAD .EXE &darr;</a><div class="minor">{E(WINDOWS['version'])} &middot; x86-64 &middot; <a href="@ROOT@mining.html#windows-native">Setup instructions</a><br><a href="{ASSET_URL}{WINDOWS['portable']}">Portable Windows ZIP</a><br><a href="@ROOT@downloads/windows-wsl.zip" download>Alternative: Windows + WSL ZIP ({E(LEGACY_VERSION)})</a></div></article>
 
-<article class="download"><h3><img src="@ROOT@assets/linux.gif" alt="">Linux</h3><p>The testnet node, command-line tools and retro desktop wallet.</p><a class="button" href="@ROOT@downloads/linux-x64.tar.gz" download>DOWNLOAD .TAR.GZ &darr;</a><div class="minor">v0.2 &middot; x86-64 &middot; <a href="@ROOT@mining.html#linux">Setup instructions</a></div></article></div>"""
+<article class="download"><h3><img src="@ROOT@assets/linux.gif" alt="">Linux</h3><p>The testnet node, command-line tools and retro desktop wallet. Previous release; Windows 0.4.0 changes are not included.</p><a class="button" href="@ROOT@downloads/linux-x64.tar.gz" download>DOWNLOAD .TAR.GZ &darr;</a><div class="minor">{E(LEGACY_VERSION)} &middot; x86-64 &middot; <a href="@ROOT@mining.html#linux">Setup instructions</a></div></article></div>"""
 
 
 
@@ -155,17 +173,38 @@ write_page('index.html','Home',home)
 
 checks=''.join(f'<p><strong>{E(k)}</strong><br><code class="hash">{v}</code></p>' for k,v in CHECKSUMS.items())
 
-write_page('downloads.html','Downloads',f"""<h1 class="page-title">Downloads</h1><p class="lede">Testnet packages for native Windows, Windows with WSL and Linux.</p><p><a href="https://github.com/jcib/obsoletecoin/releases/tag/v0.3.0-testnet-rc1">GitHub Release: installers, portable packages and compiled binaries</a></p>{download_cards()}<div class="under-construction">These are experimental testnet packages. Mainnet remains disabled.</div><h2 class="section-head">Package contents</h2><div class="paper"><ul><li>A full testnet node and a local wallet with send, receive, encryption and backup.</li><li>A single-threaded RandomX reference miner. Mining uses the computer running the node.</li><li>Windows launchers in the WSL ZIP. These use Debian inside WSL; they are not native Windows binaries.</li><li>Build, operation and license documentation.</li></ul><p>Use the current first-node address and connection status on the <a href="join.html">Join the testnet</a> page. No DNS seed network is supplied.</p><p><a href="mining.html">Read the setup guide before opening the package &raquo;</a></p></div><h2 class="section-head">SHA-256 verification</h2><div class="paper"><p>SHA-256 checksums identify these exact files. They are checksums, not signed releases.</p><p><a href="downloads/SHA256SUMS.txt" download>Download SHA256SUMS.txt</a></p>{checks}</div><h2 class="section-head">Other systems</h2><div class="paper"><p><strong>Native Windows:</strong> x86-64 test candidate, tested on Windows 11 build 26300. <strong>macOS and ARM:</strong> no validated packages in this release.</p><p>Source code: <a href="{GITHUB}">jcib/obsoletecoin</a> (private repository during testing).</p><p class="tiny">Compiled inputs (sanitized history): Windows node 3560329; desktop 950f6bc; Linux node 6f1d111; WSL node 5a89029. Packages include updated setup instructions. Native installer checks include mining, reinstall and wallet preservation. Official code signing and independent reproducible builds remain pending. Wallet keys, cookies and local balances are not included in any download.</p></div>""",'downloads')
+write_page('downloads.html','Downloads',f"""<h1 class="page-title">Downloads</h1>
+<p class="lede">Windows {E(WINDOWS['version'])}. Linux and Windows/WSL remain at {E(LEGACY_VERSION)}.</p>
+<p><a href="{RELEASE_URL}">GitHub Release: Windows installer, portable ZIP and release notes</a></p>
+{download_cards()}
+<div class="under-construction">These are experimental testnet packages. Mainnet remains disabled.</div>
+<h2 class="section-head">Package contents</h2><div class="paper"><ul>
+<li>A full testnet node and a local wallet with send, receive, encryption and backup.</li>
+<li>Windows 0.4.0: selectable mining threads and activity, measured hash rate and block counters.</li>
+<li>Windows 0.4.0: automatic wallet refresh, offline encrypted-backup verification and network/storage security fixes.</li>
+<li>Linux and WSL retain the previous single-threaded reference miner and wallet.</li>
+<li>Build, operation, provenance and license documentation.</li></ul>
+<p>Use the current first-node address and connection status on the <a href="join.html">Join the testnet</a> page. No DNS seed network is supplied.</p>
+<p><a href="mining.html">Read the setup guide before opening the package &raquo;</a></p></div>
+<h2 class="section-head">SHA-256 verification</h2><div class="paper">
+<p>SHA-256 checksums identify these exact files. They are checksums, not signed releases.</p>
+<p><a href="downloads/SHA256SUMS.txt" download>Website download checksums</a> | <a href="{ASSET_URL}SHA256SUMS.txt">GitHub release checksums</a></p>{checks}
+<p><strong>{E(WINDOWS['portable'])} (GitHub)</strong><br><code class="hash">{WINDOWS['portable_sha256']}</code></p></div>
+<h2 class="section-head">Compatibility and verification</h2><div class="paper">
+<p><strong>Native Windows:</strong> x86-64 test candidate, tested on Windows 11. <strong>macOS and ARM:</strong> no validated packages in this release.</p>
+<p>The Windows core passed 148 test suites; one optional suite lacked external data. Mining, transfers, synchronization and encrypted recovery passed local integration checks. The frozen application was tested; installation/uninstallation was not repeated against the existing real installation.</p>
+<p><a href="{ASSET_URL}Windows-PROVENANCE.json">Windows build provenance</a> | <a href="{GITHUB}">Source code</a></p>
+<p class="tiny">Unsigned testnet binaries. Independent security review and matching builds remain pending. No wallet keys, cookies or local balances are included in a download.</p></div>""",'downloads')
 
 
 
 facts=[('Name / working ticker','Obsolete Coin / OBSC'),('Mining','RandomX proof of work, CPU'),('Maximum authorized issuance','1,000,000,000 OBSC'),('Decimal places','8'),('Target block interval','900 seconds / 15 minutes'),('Difficulty adjustment','ASERT, every block; six-hour half-life'),('Initial block reward','5,000 OBSC'),('Halving interval','100,000 blocks, counted from block 1'),('Genesis reward / premine','Zero / none'),('Mining reward maturity','100 blocks'),('End of subsidy','Block 3,900,000; transaction fees thereafter'),('Current network','Experimental testnet v0.2; mainnet disabled')]
 
-write_page('coin.html','The coin',f"""<h1 class="page-title">Technical specifications</h1><p class="lede">Obsolete Coin network parameters.</p><table class="facts"><tbody>{''.join(f'<tr><th scope="row">{E(k)}</th><td>{E(v)}</td></tr>' for k,v in facts)}</tbody></table><h2 class="section-head">Slow is the target</h2><div class="paper"><p>The software does not delay your payment with a timer. Miners produce blocks, and the difficulty adjusts toward an average interval of 15 minutes. Real waits vary. Initial testnet difficulty is deliberately easy.</p><p>More hash power raises difficulty over time; it does not guarantee an exact calendar schedule. The included reference miner uses one CPU thread.</p></div><h2 class="section-head">A finite supply</h2><div class="paper"><p>The integer reward schedule authorizes exactly one billion OBSC. A one-off 0.013 OBSC rounding remainder is included at the final rewarded block. Unclaimed rewards and lost keys reduce the circulating amount.</p><p>At the target interval, halvings are roughly 2.85 years apart. The inherited timestamp format needs an upgrade before 2106, earlier than the theoretical end of the subsidy schedule.</p></div><h2 class="section-head">Where it comes from</h2><div class="paper"><p>This is a fork of Brisvia and Bitcoin Core, with pinned upstream RandomX. Original licenses are preserved. Obsolete Coin is developed with assistance from OpenAI Codex in writing and modifying its code. A Bitcoin-derived codebase does not give a new chain Bitcoin's hash power or security.</p><p><a href="{GITHUB}/blob/main/docs/SPEC.md">Read the full specification on GitHub &raquo;</a></p></div>""",'coin')
+write_page('coin.html','The coin',f"""<h1 class="page-title">Technical specifications</h1><p class="lede">Obsolete Coin network parameters.</p><table class="facts"><tbody>{''.join(f'<tr><th scope="row">{E(k)}</th><td>{E(v)}</td></tr>' for k,v in facts)}</tbody></table><h2 class="section-head">Slow is the target</h2><div class="paper"><p>The software does not delay your payment with a timer. Miners produce blocks, and the difficulty adjusts toward an average interval of 15 minutes. Real waits vary. Initial testnet difficulty is deliberately easy.</p><p>More hash power raises difficulty over time; it does not guarantee an exact calendar schedule. The native Windows 0.4.0 miner supports configurable CPU threads; the older Linux/WSL packages retain the single-threaded reference miner.</p></div><h2 class="section-head">A finite supply</h2><div class="paper"><p>The integer reward schedule authorizes exactly one billion OBSC. A one-off 0.013 OBSC rounding remainder is included at the final rewarded block. Unclaimed rewards and lost keys reduce the circulating amount.</p><p>At the target interval, halvings are roughly 2.85 years apart. The inherited timestamp format needs an upgrade before 2106, earlier than the theoretical end of the subsidy schedule.</p></div><h2 class="section-head">Where it comes from</h2><div class="paper"><p>This is a fork of Brisvia and Bitcoin Core, with pinned upstream RandomX. Original licenses are preserved. Obsolete Coin is developed with assistance from OpenAI Codex in writing and modifying its code. A Bitcoin-derived codebase does not give a new chain Bitcoin's hash power or security.</p><p><a href="{GITHUB}/blob/main/docs/SPEC.md">Read the full specification on GitHub &raquo;</a></p></div>""",'coin')
 
 
 
-write_page('mining.html','How to mine',"""<h1 class="page-title">Mining instructions</h1><p class="lede">Installation and operation of the testnet node and miner.</p><div class="snapshot-note"><strong>Testnet only.</strong> Use the current peer on the <a href="join.html">Join the testnet</a> page. Test balances do not become mainnet coins.</div><div class="paper"><h2 id="windows-native">Native Windows x86-64</h2><ol><li>Download and install the testnet EXE. It needs neither WSL nor a separate Python installation.</li><li>Open Obsolete Coin. In <strong>Network &gt; Connect peer</strong>, enter the testnet address and P2P port supplied by your operator.</li><li>Wait for synchronization, then use <strong>Mine / Stop</strong>. CPU mining runs locally with one thread.</li><li>Use <strong>Encrypt</strong> and <strong>Backup</strong> to protect the wallet. The native data directory is <code>%USERPROFILE%\.obsoletecoin</code>, separate from your WSL wallet. Closing the app stops the node it started; uninstalling preserves wallet data.</li></ol><p><a href="https://github.com/jcib/obsoletecoin/blob/main/docs/WINDOWS-NATIVE.md">Native Windows guide</a></p><h2 id="windows">Windows + WSL (alternative)</h2><ol><li>Install Debian in WSL. From an administrator PowerShell:<pre class="code">wsl --install -d Debian</pre>Restart if Windows requests it, then open Debian to finish setup.</li><li>Inside Debian, install the runtime libraries:<pre class="code">sudo apt-get update
+write_page('mining.html','How to mine',"""<h1 class="page-title">Mining instructions</h1><p class="lede">Installation and operation of the testnet node and miner.</p><div class="snapshot-note"><strong>Testnet only.</strong> Use the current peer on the <a href="join.html">Join the testnet</a> page. Test balances do not become mainnet coins.</div><div class="paper"><h2 id="windows-native">Native Windows x86-64</h2><ol><li>Download and install the testnet EXE. It needs neither WSL nor a separate Python installation.</li><li>Open Obsolete Coin. In <strong>Network &gt; Connect peer</strong>, enter the testnet address and P2P port supplied by your operator.</li><li>Wait for synchronization, then use <strong>Mine / Stop</strong>. Choose the thread count and activity percentage in the CPU mining panel; measured hash rate and accepted blocks appear below.</li><li>Use <strong>Protect / check recovery</strong> to encrypt, back up and verify recovery of your wallet. The native data directory is <code>%USERPROFILE%\.obsoletecoin</code>, separate from your WSL wallet. Closing the app stops the node it started; uninstalling preserves wallet data.</li></ol><p><a href="https://github.com/jcib/obsoletecoin/blob/main/docs/WINDOWS-NATIVE.md">Native Windows guide</a></p><h2 id="windows">Windows + WSL (alternative)</h2><ol><li>Install Debian in WSL. From an administrator PowerShell:<pre class="code">wsl --install -d Debian</pre>Restart if Windows requests it, then open Debian to finish setup.</li><li>Inside Debian, install the runtime libraries:<pre class="code">sudo apt-get update
 
 sudo apt-get install python3 python3-tk \
 

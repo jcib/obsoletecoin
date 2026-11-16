@@ -45,6 +45,8 @@ struct ConnmanTestMsg : public CConnman {
         m_peer_connect_timeout = timeout;
     }
 
+    bool InactivityCheckForTest(const CNode& node) const { return InactivityCheck(node); }
+
     void ResetAddrCache();
     void ResetMaxOutboundCycle();
 

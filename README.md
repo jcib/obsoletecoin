@@ -17,6 +17,10 @@ It's tacky, cheap, and slow.
 
 ## What is available
 
+Windows [0.4.0-testnet-rc1](https://github.com/jcib/obsoletecoin/releases/tag/v0.4.0-testnet-rc1)
+adds configurable mining, measured hash rate, offline backup recovery checks and
+network/storage security fixes. Linux and Windows/WSL packages remain at 0.3.0-rc1.
+
 - Native Windows x64 wallet, full node and CPU miner; no WSL required.
 - Linux x86-64 package and an alternative Windows/WSL package.
 - Local send/receive, transaction dates and confirmations, encryption and backups.
@@ -110,6 +114,10 @@ Mainnet remains blocked pending independent review, sustained adversarial testin
 and operational readiness. See [MAINNET-READINESS.md](docs/MAINNET-READINESS.md).
 
 ## Development
+
+Unreleased source improvements: [measured mining and wallet recovery](docs/MINING-WALLET-UPGRADE.md)
+and [security maintenance](docs/SECURITY-REVIEW-2026-11-16.md). Existing published
+packages remain the earlier candidate until a separately validated release replaces them.
 
 For repository collaborators: [build](docs/BUILD.md), [specification](docs/SPEC.md),
 [Windows](docs/WINDOWS-NATIVE.md), [website](website/README.md).

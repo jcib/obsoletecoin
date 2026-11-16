@@ -1,0 +1,13 @@
+{
+  "before": {
+    "exit_code": 201,
+    "expected_result": true,
+    "source_sha256": "5c08d44270ae048faec7d353f4191d1c32becfd8166e87e43eae8cec932aa632"
+  },
+  "after": {
+    "exit_code": 0,
+    "expected_result": true,
+    "source_sha256": "f6e9c6a4bff8e247c9fd6a735d77e605050530c2947d0096298a6973698f6567"
+  },
+  "scope": "Production select branch on Linux; before fails, patched source passes. Not a Windows build."
+}

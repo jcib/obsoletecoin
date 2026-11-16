@@ -1,0 +1,63 @@
+{
+  "source_sha256": "30f85a0d349f60290b79f05a778f2145c0100ed88afaf5e19a2a98c0a302e76f",
+  "implementation": "verbatim CalculateASERT from src/pow.cpp",
+  "seed": 7,
+  "scenarios": [
+    {
+      "scenario": "steady",
+      "blocks": 1000,
+      "elapsed_seconds": 891511,
+      "longest_interval_seconds": 6179,
+      "first_100_mean_seconds": 907.46,
+      "last_100_mean_seconds": 854.8,
+      "min_target_over_reference": 0.7295148177288224,
+      "max_target_over_reference": 1.2608788117206686
+    },
+    {
+      "scenario": "100x-arrival",
+      "blocks": 1000,
+      "elapsed_seconds": 891510,
+      "longest_interval_seconds": 72554,
+      "first_100_mean_seconds": 907.46,
+      "last_100_mean_seconds": 854.85,
+      "min_target_over_reference": 0.007523715220656605,
+      "max_target_over_reference": 1.2189476193882174
+    },
+    {
+      "scenario": "99pct-departure",
+      "blocks": 1000,
+      "elapsed_seconds": 891542,
+      "longest_interval_seconds": 19783,
+      "first_100_mean_seconds": 907.46,
+      "last_100_mean_seconds": 849.48,
+      "min_target_over_reference": 0.7584378799799728,
+      "max_target_over_reference": 124.49889802827647
+    },
+    {
+      "scenario": "timestamp-forward-2h",
+      "blocks": 1000,
+      "elapsed_seconds": 884311,
+      "longest_interval_seconds": 6179,
+      "first_100_mean_seconds": 907.46,
+      "last_100_mean_seconds": 854.8,
+      "min_target_over_reference": 0.7469327420546933,
+      "max_target_over_reference": 1.265624299644756
+    },
+    {
+      "scenario": "testnet-easy-start",
+      "blocks": 1000,
+      "elapsed_seconds": 481110,
+      "longest_interval_seconds": 5889,
+      "first_100_mean_seconds": 1.0,
+      "last_100_mean_seconds": 854.8,
+      "min_target_over_reference": 0.7575452399685287,
+      "max_target_over_reference": 524288.4375004172
+    }
+  ],
+  "limitations": [
+    "Poisson arrival model, not measured network hashrate",
+    "Forward timestamp scenario is a sensitivity test, not proof of admissible timestamps",
+    "Initial production difficulty cannot be selected without independent miner benchmarks",
+    "No-miner case produces zero blocks; difficulty does not adjust without another block"
+  ]
+}

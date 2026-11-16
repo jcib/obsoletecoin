@@ -34,6 +34,32 @@ static SOCKET CreateSocket()
     return s;
 }
 
+BOOST_AUTO_TEST_CASE(paused_receive_ignores_urgent_data)
+{
+    // Local TCP (not socketpair): exercise the Windows select backend too.
+    Sock listener{CreateSocket()};
+    sockaddr_in addr{};
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    BOOST_REQUIRE_EQUAL(listener.Bind(reinterpret_cast<sockaddr*>(&addr), sizeof(addr)), 0);
+    socklen_t length{sizeof(addr)};
+    BOOST_REQUIRE_EQUAL(listener.GetSockName(reinterpret_cast<sockaddr*>(&addr), &length), 0);
+    BOOST_REQUIRE_EQUAL(listener.Listen(1), 0);
+    auto client = std::make_shared<Sock>(CreateSocket());
+    BOOST_REQUIRE_EQUAL(client->Connect(reinterpret_cast<sockaddr*>(&addr), length), 0);
+    std::shared_ptr<const Sock> receiver{listener.Accept(nullptr, nullptr)};
+    BOOST_REQUIRE(receiver);
+    BOOST_REQUIRE_EQUAL(client->Send("a", 1, 0), 1);
+    BOOST_REQUIRE_EQUAL(client->Send("b", 1, MSG_OOB), 1);
+    Sock::Event occurred{};
+    BOOST_REQUIRE(receiver->Wait(1s, Sock::RECV, &occurred));
+    BOOST_REQUIRE(occurred != 0);
+    // Keep one SEND descriptor so Windows select() has a non-empty set.
+    Sock::EventsPerSock events{{receiver, Sock::Events{0}}, {client, Sock::Events{Sock::SEND}}};
+    BOOST_REQUIRE(receiver->WaitMany(100ms, events));
+    BOOST_CHECK_EQUAL(events.at(receiver).occurred, 0);
+}
+
 BOOST_AUTO_TEST_CASE(constructor_and_destructor)
 {
     const SOCKET s = CreateSocket();

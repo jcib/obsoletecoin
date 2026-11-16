@@ -17,6 +17,15 @@ assert app.balance.get()=='12,345.00000000 OBSC'
 assert len(app.table.get_children())==2
 assert 'DEMO' in app.status.get()
 assert root.winfo_width()>=740
+assert app.activity.get()==50
+assert 'peers' in app.network.get()
+assert app.more_button.winfo_rooty()+app.more_button.winfo_height()<root.winfo_rooty()+root.winfo_height()
+root.geometry('940x640');root.update()
+assert app.viewport.yview()[1]<1
+app.viewport.yview_moveto(1);root.update()
+assert app.more_button.winfo_rooty()+app.more_button.winfo_height()<root.winfo_rooty()+root.winfo_height()
+root.geometry('1020x940');root.update();app.viewport.yview_moveto(0);root.update()
+root.after(250,root.quit);root.mainloop();root.update()
 if args.screenshot:
     import sys,subprocess
     args.screenshot.parent.mkdir(parents=True,exist_ok=True)

@@ -1,0 +1,55 @@
+{
+  "scope": "Local fixed-header microbenchmark; excludes initialization; host load affects results",
+  "scenarios": [
+    {
+      "threads": 1,
+      "activity_percent": 25,
+      "elapsed_seconds": 5.007487499970011,
+      "hashes": 61,
+      "hashes_per_worker": [
+        61
+      ],
+      "hps": 12.181757817740996,
+      "process_cpu_seconds": 1.34375,
+      "cpu_core_equivalents": 0.2683481486490076
+    },
+    {
+      "threads": 1,
+      "activity_percent": 100,
+      "elapsed_seconds": 5.0112975999945775,
+      "hashes": 219,
+      "hashes_per_worker": [
+        219
+      ],
+      "hps": 43.70125613777896,
+      "process_cpu_seconds": 4.96875,
+      "cpu_core_equivalents": 0.9915096640848823
+    },
+    {
+      "threads": 2,
+      "activity_percent": 50,
+      "elapsed_seconds": 5.000586300040595,
+      "hashes": 224,
+      "hashes_per_worker": [
+        112,
+        112
+      ],
+      "hps": 44.79474736755999,
+      "process_cpu_seconds": 5.046875,
+      "cpu_core_equivalents": 1.0092566545564925
+    },
+    {
+      "threads": 2,
+      "activity_percent": 100,
+      "elapsed_seconds": 5.02394570002798,
+      "hashes": 424,
+      "hashes_per_worker": [
+        213,
+        211
+      ],
+      "hps": 84.39581661832823,
+      "process_cpu_seconds": 9.921875,
+      "cpu_core_equivalents": 1.97491684672164
+    }
+  ]
+}

@@ -17,6 +17,7 @@
 #include <span.h>
 #include <streams.h>
 #include <test/util/random.h>
+#include <test/util/net.h>
 #include <test/util/setup_common.h>
 #include <test/util/validation.h>
 #include <util/strencodings.h>
@@ -36,6 +37,30 @@ using namespace util::hex_literals;
 using util::ToString;
 
 BOOST_FIXTURE_TEST_SUITE(net_tests, RegTestingSetup)
+
+BOOST_AUTO_TEST_CASE(paused_send_timeout)
+{
+    auto& connman = static_cast<ConnmanTestMsg&>(*m_node.connman);
+    const auto start{GetTime<std::chrono::seconds>()};
+    CNode peer{0, nullptr, CAddress{}, 0, 0, CAddress{}, "", ConnectionType::INBOUND, false};
+    peer.fSuccessfullyConnected = true;
+    // Recent traffic cannot keep a permanently backpressured peer alive.
+    const auto now{start + 2 * TIMEOUT_INTERVAL};
+    SetMockTime(now);
+    peer.m_last_send = now;
+    peer.m_last_recv = now;
+    peer.m_pause_send_since = now - TIMEOUT_INTERVAL;
+    peer.fPauseSend = true;
+    BOOST_CHECK(!connman.InactivityCheckForTest(peer));
+    peer.m_pause_send_since = now - TIMEOUT_INTERVAL - 1s;
+    BOOST_CHECK(connman.InactivityCheckForTest(peer));
+    peer.fPauseSend = false;
+    BOOST_CHECK(!connman.InactivityCheckForTest(peer));
+    peer.fPauseSend = true;
+    peer.m_pause_send_since = now;
+    BOOST_CHECK(!connman.InactivityCheckForTest(peer));
+    SetMockTime(0s);
+}
 
 BOOST_AUTO_TEST_CASE(cnode_listen_port)
 {

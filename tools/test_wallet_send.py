@@ -20,4 +20,12 @@ class SendTests(unittest.TestCase):
   names=[c.args[0] for c in a.wallet_call.call_args_list]
   self.assertEqual(names,['validateaddress','walletcreatefundedpsbt','walletprocesspsbt','finalizepsbt','sendrawtransaction'])
   a.status.set.assert_called_once_with('Transfer submitted: txid')
+ def test_confirmation_excludes_background_refresh(self):
+  a=self.app()
+  def confirm(*args):
+   self.assertTrue(a.interacting)
+   return False
+  with patch('wallet.simpledialog.askstring',side_effect=['tobs1test','1.25']),patch('wallet.messagebox.askyesno',side_effect=confirm):
+   a.send()
+  self.assertFalse(a.interacting)
 if __name__=='__main__':unittest.main()

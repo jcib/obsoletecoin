@@ -1,0 +1,38 @@
+{
+  "result": "passed",
+  "directory": "artifacts/windows-0.4.0-testnet",
+  "files": {
+    "ObsoleteCoin-Testnet-Setup.exe": "4e41a49fdd45b111addc942a9b6c132feb559205c75fd81f6022a4a9a611b6d3",
+    "ObsoleteCoin-0.4.0-Testnet-Windows-x64.zip": "c90ab6c038b0540c55d461397ef79407924abd47aa80c18be1b4f19d2f8579d6"
+  },
+  "manifest_files_verified": 1044,
+  "portable_zip_verified": true,
+  "installer_compiled": true,
+  "installer_executed": false,
+  "frozen_smoke": {
+    "native": true,
+    "chain": "obsolete-test",
+    "ui": true,
+    "mainnet_enabled": false,
+    "bootstrap_blocks": 2,
+    "mining": {
+      "hashes": 6,
+      "blocks": 2,
+      "rejected": 0,
+      "elapsed": 0.802652999991551,
+      "hps": 0,
+      "average_hps": 7.475210333809452,
+      "threads": 2,
+      "duty": 50,
+      "state": "Stopped"
+    },
+    "recovery": {
+      "matched": true,
+      "encrypted": true,
+      "descriptors": 16,
+      "balances_rescanned": false
+    }
+  },
+  "signed": false,
+  "published": false
+}

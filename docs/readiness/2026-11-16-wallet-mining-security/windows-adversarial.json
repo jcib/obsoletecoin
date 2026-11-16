@@ -1,0 +1,17 @@
+{
+  "result": "passed",
+  "checks": [
+    "Conflicting spend loses confirmations after greater-work reorganization",
+    "Unauthenticated RPC rejected",
+    "16 oversized P2P message headers do not crash node",
+    "Abrupt process termination recovers and resynchronizes with peer",
+    "Fresh node syncs from genesis after recovery"
+  ],
+  "height": 105,
+  "immediate_restart_height": 0,
+  "limits": [
+    "Loopback only, 16 malformed messages; not public-network DoS capacity testing",
+    "No sustained independent-miner campaign",
+    "No real ENOSPC/full-disk injection in this test"
+  ]
+}

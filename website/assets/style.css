@@ -26,3 +26,11 @@
 .node-census{margin:20px 0;padding:12px;border:2px ridge #ffff00;background:#000}.node-census h2{margin:0 0 10px;font-size:22px}.public-node-count{font-size:32px;color:#00ffff}.node-census summary{cursor:pointer;color:#00ffff;text-decoration:underline}.node-census details{font-size:14px}.stats>div{margin:5px 0}.stats strong{margin-right:8px}
 
 .admin-action{display:inline-block;margin:8px 12px 8px 0}.admin-action button{padding:8px 14px;background:#c0c0c0;color:#000;border:3px outset #eee;font:bold 15px Arial,sans-serif;cursor:pointer}.admin-action button:focus-visible{outline:3px solid #00ffff;outline-offset:2px}.admin-nav{margin:16px 0}.admin-actions{display:flex;flex-wrap:wrap}
+
+.news-marquee{display:flex;align-items:center;gap:8px;margin:-8px -8px 0;padding:8px 10px;border:3px ridge #ffff00;background:#000;font:14px/1.5 "Courier New",monospace;text-align:left}
+.news-label{flex:none;color:#000;background:#ffff00;padding:2px 7px;font:bold 13px/1.5 Arial,sans-serif}
+.news-window{flex:1;min-width:0;overflow:hidden}.news-track{display:flex;width:max-content;animation:news-scroll 55s linear infinite}.news-item{flex:none;white-space:nowrap;padding-right:4em}
+.news-marquee:hover .news-track{animation-play-state:paused}
+@keyframes news-scroll{to{transform:translateX(-50%)}}
+@media(max-width:700px){.news-label{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.news-track{animation:none;width:auto;display:block}.news-item{display:block;white-space:normal;padding:0;overflow-wrap:anywhere}.news-item[aria-hidden="true"]{display:none}}

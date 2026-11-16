@@ -7,10 +7,31 @@
 #include <flatfile.h>
 #include <streams.h>
 #include <test/util/setup_common.h>
+#include <util/fs_helpers.h>
 
 #include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(flatfile_tests, BasicTestingSetup)
+
+BOOST_AUTO_TEST_CASE(flatfile_large_positions)
+{
+    // CVE-2026-117346: exercise offsets beyond both Windows LONG and uint32.
+    // Seeking without writing does not allocate a multi-gigabyte test file.
+    const uint64_t offset{(uint64_t{1} << 32) + 17};
+    FlatFilePos original{0, offset};
+    DataStream stream;
+    stream << original;
+    FlatFilePos decoded;
+    stream >> decoded;
+    BOOST_CHECK_EQUAL(decoded.nPos, offset);
+    FlatFileSeq seq{m_args.GetDataDirBase(), "large", 1024};
+    AutoFile file{seq.Open(decoded)};
+    BOOST_REQUIRE(!file.IsNull());
+    BOOST_CHECK_EQUAL(file.tell(), offset);
+    file.seek(offset + 23, SEEK_SET);
+    BOOST_CHECK_EQUAL(file.tell(), offset + 23);
+    BOOST_REQUIRE_EQUAL(file.fclose(), 0);
+}
 
 BOOST_AUTO_TEST_CASE(flatfile_filename)
 {

@@ -6,6 +6,11 @@ The site uses plain HTML/CSS and local GIFs. There is no music or browser JavaSc
 The forum supports topics and replies with a public alias, without registration.
 Aliases are not verified or reserved.
 
+The CSS news marquee sits at the very top of every page, before the branding.
+Edit `NEWS` in `build.py` to describe the latest implemented development changes.
+It has no buttons or links, pauses on hover, and becomes wrapped static text for
+reduced-motion users. The second visual copy is hidden from assistive technology.
+
 ## Cloudflare Pages
 
 cloudflare/wrangler.jsonc identifies the dedicated obsoletecoin Pages project and
@@ -23,6 +28,12 @@ TOOLCHAIN_DIRECTORY contains an installed esbuild dependency. Output is
 .local/pages-dist. Do not deploy the repository root. Install cloudflare/schema.sql
 in the dedicated D1 database, configure the secrets below, and deploy from the
 website/cloudflare directory using Wrangler Pages.
+
+`release/downloads.json` selects the current Windows package and its verified hash;
+the build refuses a mismatched installer. Installer links contain the version to
+avoid cached older downloads. Portable ZIPs exceeding the Pages per-file limit are
+linked to the corresponding GitHub release. A distributable build includes both
+publications as described in `AGENTS.md`.
 
 Public downloads are static assets with SHA-256 checksums. The complete source
 archive, node data, source maps, personal paths and credentials are not published.

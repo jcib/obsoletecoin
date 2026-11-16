@@ -1,0 +1,51 @@
+{
+  "linux_core": {
+    "passed": 148,
+    "failed": 0,
+    "skipped": [
+      "script_assets_tests: external test data absent"
+    ]
+  },
+  "python_final_windows": {
+    "client_and_watch_passed": 9,
+    "wallet_and_miner_passed": 15
+  },
+  "python_linux_pre_final_capability_guard": {
+    "client_and_watch_passed": 9,
+    "wallet_and_miner_passed": 14
+  },
+  "real_integration": {
+    "windows_wallet_miner_existing_node": "passed",
+    "linux_rebuilt_node": "passed",
+    "windows_rebuilt_node": "passed"
+  },
+  "select_backend_regression": {
+    "original_source": "failed as expected",
+    "patched_source": "passed",
+    "host": "Linux"
+  },
+  "adversarial_linux": "passed",
+  "asert_simulation_scenarios": 5,
+  "tk_preview": {
+    "normal": [
+      1020,
+      940
+    ],
+    "scrollable": [
+      940,
+      640
+    ],
+    "callback_errors": 0
+  },
+  "native_windows_cpp_rebuild": "passed",
+  "independent_audit": "not performed",
+  "published": false,
+  "windows_core": {
+    "passed": 148,
+    "failed": 0,
+    "skipped": 1
+  },
+  "adversarial_windows": "passed",
+  "windows_package": "passed",
+  "installer_executed": false
+}

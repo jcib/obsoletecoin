@@ -25,6 +25,7 @@ if bootloader.is_file():shutil.copy2(bootloader,licenses/'PyInstaller.txt')
 shutil.copy2('docs/WINDOWS-NATIVE.md',a.output/'READ-ME.txt')
 head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 source_files=['tools/native_wallet.py','tools/wallet.py','tools/rpc.py','tools/mine.py','release/build-wallet.ps1','release/requirements-build.txt','release/requirements-build.lock','release/prepare-tk.py']
+source_files += ['tools/mining.py','tools/rx.py','tools/wallet_recovery.py']
 source_files += [str(x).replace('\\','/') for x in Path('tools/assets').rglob('*') if x.is_file()]
 manifest={'network':'obsolete-test','unsigned':True,'mainnet_enabled':False,'gui_base_commit':head,'gui_sources':{x:hashlib.sha256(Path(x).read_bytes()).hexdigest() for x in source_files},'node':json.loads((a.node/'node-provenance.json').read_text()),'runtime':'CPython 3.14.10','files':{}}
 for item in sorted(a.output.rglob('*')):

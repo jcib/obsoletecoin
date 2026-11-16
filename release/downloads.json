@@ -1,0 +1,13 @@
+{
+  "windows": {
+    "version": "0.4.0-testnet-rc1",
+    "tag": "v0.4.0-testnet-rc1",
+    "directory": "artifacts/windows-0.4.0-testnet",
+    "installer": "ObsoleteCoin-Testnet-Setup.exe",
+    "web_installer": "windows-0.4.0-testnet-rc1.exe",
+    "installer_sha256": "4e41a49fdd45b111addc942a9b6c132feb559205c75fd81f6022a4a9a611b6d3",
+    "portable": "ObsoleteCoin-0.4.0-Testnet-Windows-x64.zip",
+    "portable_sha256": "c90ab6c038b0540c55d461397ef79407924abd47aa80c18be1b4f19d2f8579d6"
+  },
+  "linux_wsl_version": "0.3.0-testnet-rc1"
+}

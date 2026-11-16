@@ -10,7 +10,7 @@ Experimental TESTNET only. Test coins have no monetary value. This candidate is 
 
 
 
-Install ObsoleteCoin-Testnet-Setup.exe or extract the entire portable ZIP. Run ObsoleteCoin.exe. Keep the _internal directory and all DLLs next to the executable. From Network > Connect peer, enter your testnet operator's hostname or IPv4 address and P2P port. Use the current public peer and verification status at https://obsoletecoin.pages.dev/join.html. Wait for synchronization, then select Mine / Stop for one CPU mining thread.
+Install ObsoleteCoin-Testnet-Setup.exe or extract the entire portable ZIP. Run ObsoleteCoin.exe. Keep the _internal directory and all DLLs next to the executable. Close the previous wallet application before opening the new version. From Network > Connect peer, enter your testnet operator's hostname or IPv4 address and P2P port. Use the current public peer and verification status at https://obsoletecoin.pages.dev/join.html. Wait for synchronization, choose the CPU mining threads and activity percentage, then select Mine / Stop. Defaults are one thread and 50% activity. The panel shows measured H/s, elapsed time and accepted blocks. Each thread needs approximately 256 MiB in addition to the node's memory.
 
 
 
@@ -22,7 +22,7 @@ The native wallet stores its own data in %USERPROFILE%\.obsoletecoin, and saves 
 
 
 
-Use Encrypt and then Backup; store the passphrase and backup privately. An unencrypted newly created wallet remains unencrypted until you select Encrypt. Receive shows your address. Send shows the exact transaction fee and total before signing. Activity includes local date/time and transaction details. Mining rewards require 100-block maturity, and actual block waits vary. A dominant miner can reorganize testnet; confirmations do not guarantee security.
+Use Protect / check recovery to encrypt, back up and verify recovery in a temporary offline node; store the passphrase and backup privately. Verification compares the recovered wallet with the open wallet without replacing it or rescanning balances. An unencrypted newly created wallet remains unencrypted until you select Encrypt. Receive shows your address. Send shows the exact transaction fee and total before signing. Activity includes local date/time and transaction details. Available, pending and immature balances are shown separately and refresh automatically. Mining rewards require 100 additional blocks after inclusion, and actual block waits vary. A dominant miner can reorganize testnet; confirmations do not guarantee security.
 
 
 

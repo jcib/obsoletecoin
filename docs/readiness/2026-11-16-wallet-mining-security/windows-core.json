@@ -1,0 +1,755 @@
+{
+  "counts": {
+    "passed": 148,
+    "failed": 0,
+    "skipped": 1
+  },
+  "tests": [
+    {
+      "name": "univalue_test",
+      "time": "0.0329626",
+      "status": "passed"
+    },
+    {
+      "name": "univalue_object_test",
+      "time": "0.03201",
+      "status": "passed"
+    },
+    {
+      "name": "secp256k1_noverify_tests",
+      "time": "24.3768",
+      "status": "passed"
+    },
+    {
+      "name": "secp256k1_tests",
+      "time": "46.1548",
+      "status": "passed"
+    },
+    {
+      "name": "secp256k1_exhaustive_tests",
+      "time": "6.3716",
+      "status": "passed"
+    },
+    {
+      "name": "addrman_tests",
+      "time": "0.650403",
+      "status": "passed"
+    },
+    {
+      "name": "allocator_tests",
+      "time": "0.126235",
+      "status": "passed"
+    },
+    {
+      "name": "amount_tests",
+      "time": "0.123234",
+      "status": "passed"
+    },
+    {
+      "name": "argsman_tests",
+      "time": "1.21555",
+      "status": "passed"
+    },
+    {
+      "name": "arith_uint256_tests",
+      "time": "0.131171",
+      "status": "passed"
+    },
+    {
+      "name": "banman_tests",
+      "time": "0.139139",
+      "status": "passed"
+    },
+    {
+      "name": "brisvia_randomx_tests",
+      "time": "5.17039",
+      "status": "passed"
+    },
+    {
+      "name": "brisvia_headerssync_tests",
+      "time": "6.0988",
+      "status": "passed"
+    },
+    {
+      "name": "brisvia_consensus_guards_tests",
+      "time": "1.34846",
+      "status": "passed"
+    },
+    {
+      "name": "base32_tests",
+      "time": "0.124493",
+      "status": "passed"
+    },
+    {
+      "name": "base58_tests",
+      "time": "0.133628",
+      "status": "passed"
+    },
+    {
+      "name": "base64_tests",
+      "time": "0.124357",
+      "status": "passed"
+    },
+    {
+      "name": "bech32_tests",
+      "time": "0.123757",
+      "status": "passed"
+    },
+    {
+      "name": "bip32_tests",
+      "time": "0.170149",
+      "status": "passed"
+    },
+    {
+      "name": "bip324_tests",
+      "time": "0.498764",
+      "status": "passed"
+    },
+    {
+      "name": "blockchain_tests",
+      "time": "1.9894",
+      "status": "passed"
+    },
+    {
+      "name": "blockencodings_tests",
+      "time": "0.340257",
+      "status": "passed"
+    },
+    {
+      "name": "blockfilter_index_tests",
+      "time": "3.10037",
+      "status": "passed"
+    },
+    {
+      "name": "blockfilter_tests",
+      "time": "0.127906",
+      "status": "passed"
+    },
+    {
+      "name": "blockmanager_tests",
+      "time": "2.46829",
+      "status": "passed"
+    },
+    {
+      "name": "bloom_tests",
+      "time": "0.176454",
+      "status": "passed"
+    },
+    {
+      "name": "bswap_tests",
+      "time": "0.127806",
+      "status": "passed"
+    },
+    {
+      "name": "caches_tests",
+      "time": "0.13211",
+      "status": "passed"
+    },
+    {
+      "name": "chainstate_write_tests",
+      "time": "0.162103",
+      "status": "passed"
+    },
+    {
+      "name": "checkqueue_tests",
+      "time": "1.32793",
+      "status": "passed"
+    },
+    {
+      "name": "cluster_linearize_tests",
+      "time": "0.13618",
+      "status": "passed"
+    },
+    {
+      "name": "coins_tests_base",
+      "time": "2.43104",
+      "status": "passed"
+    },
+    {
+      "name": "coins_tests_dbbase",
+      "time": "4.39595",
+      "status": "passed"
+    },
+    {
+      "name": "coins_tests",
+      "time": "1.22908",
+      "status": "passed"
+    },
+    {
+      "name": "coinscachepair_tests",
+      "time": "0.125113",
+      "status": "passed"
+    },
+    {
+      "name": "coinstatsindex_tests",
+      "time": "2.10601",
+      "status": "passed"
+    },
+    {
+      "name": "common_url_tests",
+      "time": "0.130595",
+      "status": "passed"
+    },
+    {
+      "name": "compilerbug_tests",
+      "time": "0.127228",
+      "status": "passed"
+    },
+    {
+      "name": "compress_tests",
+      "time": "0.264849",
+      "status": "passed"
+    },
+    {
+      "name": "crypto_tests",
+      "time": "0.960765",
+      "status": "passed"
+    },
+    {
+      "name": "cuckoocache_tests",
+      "time": "0.501387",
+      "status": "passed"
+    },
+    {
+      "name": "dbwrapper_tests",
+      "time": "0.381602",
+      "status": "passed"
+    },
+    {
+      "name": "denialofservice_tests",
+      "time": "0.253498",
+      "status": "passed"
+    },
+    {
+      "name": "descriptor_tests",
+      "time": "0.530237",
+      "status": "passed"
+    },
+    {
+      "name": "disconnected_transactions",
+      "time": "0.738332",
+      "status": "passed"
+    },
+    {
+      "name": "feefrac_tests",
+      "time": "0.124824",
+      "status": "passed"
+    },
+    {
+      "name": "flatfile_tests",
+      "time": "0.169083",
+      "status": "passed"
+    },
+    {
+      "name": "fs_tests",
+      "time": "0.156129",
+      "status": "passed"
+    },
+    {
+      "name": "getarg_tests",
+      "time": "0.15824",
+      "status": "passed"
+    },
+    {
+      "name": "hash_tests",
+      "time": "0.13369",
+      "status": "passed"
+    },
+    {
+      "name": "headers_sync_chainwork_tests",
+      "time": "0.184793",
+      "status": "passed"
+    },
+    {
+      "name": "httpserver_tests",
+      "time": "0.131197",
+      "status": "passed"
+    },
+    {
+      "name": "i2p_tests",
+      "time": "0.157426",
+      "status": "passed"
+    },
+    {
+      "name": "interfaces_tests",
+      "time": "13.0509",
+      "status": "passed"
+    },
+    {
+      "name": "key_io_tests",
+      "time": "0.140877",
+      "status": "passed"
+    },
+    {
+      "name": "key_tests",
+      "time": "0.213609",
+      "status": "passed"
+    },
+    {
+      "name": "logging_tests",
+      "time": "0.279751",
+      "status": "passed"
+    },
+    {
+      "name": "mempool_tests",
+      "time": "0.297414",
+      "status": "passed"
+    },
+    {
+      "name": "merkle_tests",
+      "time": "0.425419",
+      "status": "passed"
+    },
+    {
+      "name": "merkleblock_tests",
+      "time": "0.124938",
+      "status": "passed"
+    },
+    {
+      "name": "miner_tests",
+      "time": "3.2056",
+      "status": "passed"
+    },
+    {
+      "name": "miniminer_tests",
+      "time": "8.73711",
+      "status": "passed"
+    },
+    {
+      "name": "miniscript_tests",
+      "time": "1.05913",
+      "status": "passed"
+    },
+    {
+      "name": "minisketch_tests",
+      "time": "0.168972",
+      "status": "passed"
+    },
+    {
+      "name": "multisig_tests",
+      "time": "0.146359",
+      "status": "passed"
+    },
+    {
+      "name": "net_peer_connection_tests",
+      "time": "0.163659",
+      "status": "passed"
+    },
+    {
+      "name": "net_peer_eviction_tests",
+      "time": "0.199219",
+      "status": "passed"
+    },
+    {
+      "name": "net_tests",
+      "time": "1.93332",
+      "status": "passed"
+    },
+    {
+      "name": "netbase_tests",
+      "time": "0.182635",
+      "status": "passed"
+    },
+    {
+      "name": "node_init_tests",
+      "time": "1.22415",
+      "status": "passed"
+    },
+    {
+      "name": "node_warnings_tests",
+      "time": "0.130657",
+      "status": "passed"
+    },
+    {
+      "name": "orphanage_tests",
+      "time": "0.373553",
+      "status": "passed"
+    },
+    {
+      "name": "pcp_tests",
+      "time": "0.167119",
+      "status": "passed"
+    },
+    {
+      "name": "peerman_tests",
+      "time": "0.203162",
+      "status": "passed"
+    },
+    {
+      "name": "pmt_tests",
+      "time": "0.177641",
+      "status": "passed"
+    },
+    {
+      "name": "policy_fee_tests",
+      "time": "0.123384",
+      "status": "passed"
+    },
+    {
+      "name": "policyestimator_tests",
+      "time": "97.2866",
+      "status": "passed"
+    },
+    {
+      "name": "pool_tests",
+      "time": "0.145903",
+      "status": "passed"
+    },
+    {
+      "name": "pow_tests",
+      "time": "0.182208",
+      "status": "passed"
+    },
+    {
+      "name": "prevector_tests",
+      "time": "0.323526",
+      "status": "passed"
+    },
+    {
+      "name": "raii_event_tests",
+      "time": "0.136565",
+      "status": "passed"
+    },
+    {
+      "name": "random_tests",
+      "time": "2.55058",
+      "status": "passed"
+    },
+    {
+      "name": "rbf_tests",
+      "time": "3.48744",
+      "status": "passed"
+    },
+    {
+      "name": "rest_tests",
+      "time": "0.131946",
+      "status": "passed"
+    },
+    {
+      "name": "result_tests",
+      "time": "0.125104",
+      "status": "passed"
+    },
+    {
+      "name": "reverselock_tests",
+      "time": "0.123922",
+      "status": "passed"
+    },
+    {
+      "name": "rpc_tests",
+      "time": "0.529618",
+      "status": "passed"
+    },
+    {
+      "name": "sanity_tests",
+      "time": "0.131788",
+      "status": "passed"
+    },
+    {
+      "name": "scheduler_tests",
+      "time": "0.144578",
+      "status": "passed"
+    },
+    {
+      "name": "script_assets_tests",
+      "time": "0.127973",
+      "status": "skipped"
+    },
+    {
+      "name": "script_p2sh_tests",
+      "time": "0.155615",
+      "status": "passed"
+    },
+    {
+      "name": "script_parse_tests",
+      "time": "0.124364",
+      "status": "passed"
+    },
+    {
+      "name": "script_segwit_tests",
+      "time": "0.168835",
+      "status": "passed"
+    },
+    {
+      "name": "script_standard_tests",
+      "time": "0.159347",
+      "status": "passed"
+    },
+    {
+      "name": "script_tests",
+      "time": "0.545717",
+      "status": "passed"
+    },
+    {
+      "name": "scriptnum_tests",
+      "time": "0.182769",
+      "status": "passed"
+    },
+    {
+      "name": "serfloat_tests",
+      "time": "0.393038",
+      "status": "passed"
+    },
+    {
+      "name": "serialize_tests",
+      "time": "0.209584",
+      "status": "passed"
+    },
+    {
+      "name": "settings_tests",
+      "time": "0.173273",
+      "status": "passed"
+    },
+    {
+      "name": "sighash_tests",
+      "time": "0.278373",
+      "status": "passed"
+    },
+    {
+      "name": "sigopcount_tests",
+      "time": "0.135593",
+      "status": "passed"
+    },
+    {
+      "name": "skiplist_tests",
+      "time": "0.342929",
+      "status": "passed"
+    },
+    {
+      "name": "sock_tests",
+      "time": "0.142832",
+      "status": "passed"
+    },
+    {
+      "name": "span_tests",
+      "time": "0.124874",
+      "status": "passed"
+    },
+    {
+      "name": "streams_tests",
+      "time": "0.297596",
+      "status": "passed"
+    },
+    {
+      "name": "sync_tests",
+      "time": "0.125282",
+      "status": "passed"
+    },
+    {
+      "name": "system_ram_tests",
+      "time": "0.124647",
+      "status": "passed"
+    },
+    {
+      "name": "system_tests",
+      "time": "0.265185",
+      "status": "passed"
+    },
+    {
+      "name": "testnet4_miner_tests",
+      "time": "0.191832",
+      "status": "passed"
+    },
+    {
+      "name": "timeoffsets_tests",
+      "time": "0.136904",
+      "status": "passed"
+    },
+    {
+      "name": "torcontrol_tests",
+      "time": "0.124385",
+      "status": "passed"
+    },
+    {
+      "name": "transaction_tests",
+      "time": "1.9461",
+      "status": "passed"
+    },
+    {
+      "name": "translation_tests",
+      "time": "0.123822",
+      "status": "passed"
+    },
+    {
+      "name": "txdownload_tests",
+      "time": "2.22003",
+      "status": "passed"
+    },
+    {
+      "name": "txgraph_tests",
+      "time": "0.468392",
+      "status": "passed"
+    },
+    {
+      "name": "txindex_tests",
+      "time": "0.898616",
+      "status": "passed"
+    },
+    {
+      "name": "txpackage_tests",
+      "time": "25.902",
+      "status": "passed"
+    },
+    {
+      "name": "txreconciliation_tests",
+      "time": "0.139973",
+      "status": "passed"
+    },
+    {
+      "name": "txrequest_tests",
+      "time": "1.09852",
+      "status": "passed"
+    },
+    {
+      "name": "txvalidation_tests",
+      "time": "0.791524",
+      "status": "passed"
+    },
+    {
+      "name": "txvalidationcache_tests",
+      "time": "2.33287",
+      "status": "passed"
+    },
+    {
+      "name": "uint256_tests",
+      "time": "0.124597",
+      "status": "passed"
+    },
+    {
+      "name": "util_string_tests",
+      "time": "0.124476",
+      "status": "passed"
+    },
+    {
+      "name": "util_tests",
+      "time": "0.319648",
+      "status": "passed"
+    },
+    {
+      "name": "util_threadnames_tests",
+      "time": "0.129236",
+      "status": "passed"
+    },
+    {
+      "name": "util_trace_tests",
+      "time": "0.139459",
+      "status": "passed"
+    },
+    {
+      "name": "validation_block_tests",
+      "time": "20.9687",
+      "status": "passed"
+    },
+    {
+      "name": "validation_chainstate_tests",
+      "time": "0.906136",
+      "status": "passed"
+    },
+    {
+      "name": "validation_chainstatemanager_tests",
+      "time": "55.3959",
+      "status": "passed"
+    },
+    {
+      "name": "validation_flush_tests",
+      "time": "0.235773",
+      "status": "passed"
+    },
+    {
+      "name": "validation_tests",
+      "time": "0.266279",
+      "status": "passed"
+    },
+    {
+      "name": "validationinterface_tests",
+      "time": "0.208117",
+      "status": "passed"
+    },
+    {
+      "name": "versionbits_tests",
+      "time": "1.06183",
+      "status": "passed"
+    },
+    {
+      "name": "db_tests",
+      "time": "0.601816",
+      "status": "passed"
+    },
+    {
+      "name": "coinselector_tests",
+      "time": "12.8675",
+      "status": "passed"
+    },
+    {
+      "name": "coinselection_tests",
+      "time": "0.456449",
+      "status": "passed"
+    },
+    {
+      "name": "feebumper_tests",
+      "time": "0.160634",
+      "status": "passed"
+    },
+    {
+      "name": "group_outputs_tests",
+      "time": "0.486213",
+      "status": "passed"
+    },
+    {
+      "name": "init_tests",
+      "time": "0.178868",
+      "status": "passed"
+    },
+    {
+      "name": "ismine_tests",
+      "time": "0.132931",
+      "status": "passed"
+    },
+    {
+      "name": "psbt_wallet_tests",
+      "time": "0.304229",
+      "status": "passed"
+    },
+    {
+      "name": "scriptpubkeyman_tests",
+      "time": "0.130791",
+      "status": "passed"
+    },
+    {
+      "name": "spend_tests",
+      "time": "2.7458",
+      "status": "passed"
+    },
+    {
+      "name": "wallet_crypto_tests",
+      "time": "1.01396",
+      "status": "passed"
+    },
+    {
+      "name": "wallet_rpc_tests",
+      "time": "0.134007",
+      "status": "passed"
+    },
+    {
+      "name": "wallet_tests",
+      "time": "20.2163",
+      "status": "passed"
+    },
+    {
+      "name": "wallet_transaction_tests",
+      "time": "0.159201",
+      "status": "passed"
+    },
+    {
+      "name": "walletdb_tests",
+      "time": "0.129329",
+      "status": "passed"
+    },
+    {
+      "name": "walletload_tests",
+      "time": "0.149132",
+      "status": "passed"
+    }
+  ],
+  "ctest_xml_sha256": "7ddd350e155a622352f0562cc10d98e824ef2a0bda42be117c651f567d3e742e"
+}

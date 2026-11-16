@@ -4,6 +4,8 @@ from pathlib import Path
 from decimal import Decimal
 from rpc import RPC, RPCError
 from rx import RandomX
+from mining import mine, MiningStats
+from wallet_recovery import verify_backup
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'test/functional'))
 from test_framework.messages import CBlock, from_hex
@@ -60,11 +62,16 @@ def run(binary,library):
             assert addr.startswith('tobs1') and other.startswith('tobs1')
             # Actual RandomX mining crosses the initial-seed/genesis-seed boundary at 64.
             miner=subprocess.run([sys.executable,str(ROOT/'tools/mine.py'),'--address',addr,
-                                  '--cookie',str(a.rpc.cookie),'--rpcport',str(a.rpcport),'--blocks','1'],
+                                  '--cookie',str(a.rpc.cookie),'--rpcport',str(a.rpcport),'--blocks','1','--library',str(library)],
                                  capture_output=True,text=True,timeout=120)
             assert miner.returncode==0 and 'Found block' in miner.stdout,miner.stderr
-            blocks=a.rpc.call('generatetoaddress',101,addr,1000000)
-            assert len(blocks)==101 and a.rpc.call('getblockcount')==102
+            a.rpc.call('generatetoaddress',61,addr,1000000)
+            telemetry=MiningStats(2,50)
+            assert mine(a.rpc,addr,max_blocks=3,threads=2,duty=50,library=library,stats=telemetry)==3
+            assert telemetry.hashes>=3 and telemetry.snapshot()['average_hps']>0
+            assert a.rpc.call('getblockcount')==65
+            blocks=a.rpc.call('generatetoaddress',37,addr,1000000)
+            assert len(blocks)==37 and a.rpc.call('getblockcount')==102
             wait(lambda:b.rpc.call('getbestblockhash')==blocks[-1])
             assert wa.call('getbalances')['mine']['trusted']>=5000
             # Exercise the real desktop's send flow against the running wallet.
@@ -87,7 +94,8 @@ def run(binary,library):
                     txid=app.status.get().split(': ',1)[1]
             finally: desktop.destroy()
             wait(lambda:txid in b.rpc.call('getrawmempool'))
-            tip=a.rpc.call('generatetoaddress',1,addr,100000)[0]
+            assert mine(a.rpc,addr,max_blocks=1,threads=2,library=library)==1
+            tip=a.rpc.call('getbestblockhash')
             wait(lambda:b.rpc.call('getbestblockhash')==tip)
             assert Decimal(str(wb.call('getbalances')['mine']['trusted']))==Decimal('12.34')
             try:wa.call('sendtoaddress',other,'1000000000','','',False,True,None,None,False,1)
@@ -157,6 +165,14 @@ def run(binary,library):
             wb.call('backupwallet',str(backup))
             wb.call('walletlock')
             assert backup.is_file() and backup.stat().st_size>0
+            check=verify_backup(wb,backup,binary,phrase)
+            assert check['matched'] and check['encrypted'] and not check['balances_rescanned']
+            try:verify_backup(wb,backup,binary,'wrong-test-passphrase')
+            except RPCError as error:assert error.code==-14
+            else:raise AssertionError('Recovery accepted a wrong passphrase')
+            try:verify_backup(wa,backup,binary,phrase)
+            except ValueError as error:assert 'does not match' in str(error)
+            else:raise AssertionError('Recovery accepted another wallet backup')
             b.rpc.call('restorewallet','recovered',str(backup))
             recovered=b.rpc.for_wallet('recovered')
             assert recovered.call('getbalances')==balance
@@ -165,10 +181,10 @@ def run(binary,library):
             laptop=subprocess.run([sys.executable,str(ROOT/'tools/laptop.py'),
                 '--server','127.0.0.1:'+str(b.port),'--datadir',str(base/'laptop'),
                 '--port',str(free_port()),'--rpcport',str(free_port()),
-                '--binary',str(binary),'--blocks','1'],capture_output=True,text=True,timeout=180)
+                '--binary',str(binary),'--blocks','1','--library',str(library)],capture_output=True,text=True,timeout=180)
             assert laptop.returncode==0 and 'Found block' in laptop.stdout,(laptop.stdout,laptop.stderr)
             print(json.dumps({'result':'passed','height':b.rpc.call('getblockcount'),
-                'checks':['CLI RandomX mining','laptop launcher mining against peer','seed boundary 64','two-node synchronization',
+                'checks':['CLI RandomX mining','measured two-thread mining','external miner seed boundary 64','external miner includes witness spend','offline backup verification and wrong-password/wrong-wallet rejection','laptop launcher mining against peer','seed boundary 64','two-node synchronization',
                           'coinbase maturity','desktop signed transfer','insufficient funds','no duplicate credit',
                           'invalid proof rejected','overpaying coinbase rejected','past/future timestamps and wrong difficulty rejected','chainwork reorganization',
                           'restart and wallet persistence','encryption and wrong-passphrase rejection','wallet backup and restore']}))

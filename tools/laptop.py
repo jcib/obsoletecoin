@@ -12,6 +12,7 @@ def main():
     p.add_argument('--port',type=int,default=19777)
     p.add_argument('--binary',type=Path)
     p.add_argument('--blocks',type=int)
+    p.add_argument('--library',type=Path)
     a=p.parse_args()
     import ipaddress
     try:
@@ -54,7 +55,7 @@ def main():
         wrpc=rpc.for_wallet(wallet);address=wrpc.call('getnewaddress','laptop mining','bech32')
         print('Mining TEST OBSC into your LOCAL wallet: '+address,flush=True)
         print('One CPU thread. Rewards mature after 100 blocks. Ctrl-C stops mining.',flush=True)
-        mine(rpc,address,max_blocks=a.blocks)
+        mine(rpc,address,max_blocks=a.blocks,library=a.library)
         print('Mining session complete.',flush=True)
     except KeyboardInterrupt:print('\nStopping mining and local node...',flush=True)
     finally:

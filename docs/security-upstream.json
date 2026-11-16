@@ -1,0 +1,8 @@
+{
+  "reviewed_through": "2026-11-16",
+  "base": "Bitcoin Core 30.2 via Brisvia",
+  "backport_source": "https://github.com/bitcoin/bitcoin/pull/36664",
+  "backported": ["CVE-2026-117349", "CVE-2026-117350", "CVE-2026-117346"],
+  "fix_present_in_source": ["CVE-2025-62859", "CVE-2025-62860", "CVE-2025-62861"],
+  "report": "SECURITY-REVIEW-2026-11-16.md"
+}

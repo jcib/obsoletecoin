@@ -9,6 +9,14 @@ This pipeline produces an unsigned TESTNET candidate. Mainnet stays disabled.
 5. With verified Inno Setup 7.1.1, run `ISCC.exe release/windows.iss`. Output is .local/release/ObsoleteCoin-Testnet-Setup.exe. The default install is per user, with no autostart and no wallet-data deletion.
 6. On a clean Windows test account run `python release/test-installer.py .local/release/ObsoleteCoin-Testnet-Setup.exe --output .local/readiness/installer.json`. The test refuses an existing real installation. It installs, launches the frozen UI/node, mines into a disposable wallet, reinstalls, uninstalls, verifies wallet file hashes, reinstalls and opens the same wallet.
 7. Archive the entire native-package directory as ObsoleteCoin-Windows-Native-Testnet.zip. Publish SHA256SUMS and PROVENANCE.json alongside it, explicitly unsigned. Record tested OS versions and all unresolved launch gates.
+8. Publication is part of completing a distributable build, as authorized in
+   `AGENTS.md`: commit/push the matching source, publish the tested packages and
+   checksums on GitHub Releases, and update `release/downloads.json` and the website
+   in the same task. No additional publication request is needed.
+9. Rebuild and deploy the existing Cloudflare Pages project, then verify anonymous
+   downloads against their SHA-256 hashes on both hosts. Keep other platforms'
+   existing versions explicit if they were not rebuilt. Use GitHub for the portable
+   ZIP if it exceeds Pages' per-file limit. Report any incomplete publication.
 
 When an official signing certificate becomes available, use sign-windows.ps1 on the application executable and rebuilt installer, then verify signatures and repeat installation testing. Do not publish any private key. Signing changes hashes, so regenerate the release manifest afterward. Independent source-to-binary rebuilds remain required.
 
