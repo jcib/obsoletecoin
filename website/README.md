@@ -29,9 +29,10 @@ TOOLCHAIN_DIRECTORY contains an installed esbuild dependency. Output is
 in the dedicated D1 database, configure the secrets below, and deploy from the
 website/cloudflare directory using Wrangler Pages.
 
-`release/downloads.json` selects the current Windows package and its verified hash;
-the build refuses a mismatched installer. Installer links contain the version to
-avoid cached older downloads. Portable ZIPs exceeding the Pages per-file limit are
+`release/downloads.json` selects the current Windows and Linux packages and hashes;
+the build refuses mismatched artifacts. Download links contain the version to
+avoid cached older downloads. The WSL package and its setup instructions have
+been withdrawn. Portable ZIPs exceeding the Pages per-file limit are
 linked to the corresponding GitHub release. A distributable build includes both
 publications as described in `AGENTS.md`.
 

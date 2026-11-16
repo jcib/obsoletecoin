@@ -22,6 +22,15 @@ When an official signing certificate becomes available, use sign-windows.ps1 on 
 
 ## Linux adversarial checks
 
+The native Linux package uses the same wallet/miner modules as Windows. Capture
+inputs with `python3 release/capture-linux-inputs.py --output BUILD_INPUTS.json`,
+then build the node and RandomX library and run the checks below. Assemble with
+`python3 release/assemble-linux.py --bindir BUILD/bin --library RANDOMX/librandomx.so --inputs BUILD_INPUTS.json --output PACKAGE/obsoletecoin-linux`.
+Run `Start-Wallet.sh --self-test RESULT.json` under Xvfb on the packaged files,
+create a tar.gz preserving executable permissions, extract it and repeat that
+launcher check. Publish the Linux archive/provenance/checksums alongside the same
+version of Windows. The old Windows/WSL download is withdrawn.
+
 Use disposable loopback nodes only. Run tools/integration.py, tools/adversarial.py and tools/difficulty_simulation.py. For actual ENOSPC injection, use `sudo unshare --mount --fork sh release/test-disk-full.sh /absolute/bitcoind /absolute/result.json` from the source root. This creates a private 700 MiB tmpfs and refuses the host mount namespace. Never fill a real node filesystem for testing.
 
 `python tools/health.py --datadir /path/to/node --rpcport 19778` is read-only and returns JSON plus exit 0 for healthy, 1 for degraded/unavailable. Native desktop RPC defaults to 29778. An old tip is an investigation signal, not proof of a fault or an attack. Alert delivery and independent hosts are not provisioned by these files.

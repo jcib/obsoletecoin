@@ -26,14 +26,15 @@ The first build takes many minutes and several GB of disk. Prefer another machin
 if the Dell runs other services. Nothing here installs into an existing bot or
 uses its files or credentials. RandomX is a pinned source submodule.
 
-Private Actions artifacts provide an experimental Linux archive with SHA256SUMS.
+Actions artifacts provide experimental Linux archives with SHA256SUMS.
 They are not signed production releases or reproducible-build certification.
 Build locally on Debian when possible; an Ubuntu artifact may need newer system
 libraries than another Linux distribution provides.
 
-Windows node/miner: use WSL2 and Linux instructions. WSLg displays the Tk wallet.
-Native Windows preview: `python tools/wallet.py --demo`. No native Windows node
-package, macOS validation or ARM validation is provided in v0.2.
+Native Windows builds are documented in `release/README.md` and
+`docs/WINDOWS-NATIVE.md`. Native Linux packages and their desktop launcher are
+documented in `docs/LINUX-NATIVE.md`. Both downloads use application version
+0.4.0-testnet-rc1 on testnet v0.2. macOS and ARM are not validated.
 
 Two historical upstream genesis-mining helpers are preserved in
 `docs/upstream-genesis-fixtures.cpp.txt` outside the active suite; they mine a
@@ -42,9 +43,9 @@ fixed constants. Official RandomX vectors and remaining inherited suites run.
 
 ## Use the experimental Debian 13 archive
 
-Download `obsoletecoin-linux-experimental` from the successful private Actions
-run. The ZIP contains a `.tar.gz` and `SHA256SUMS`; extracting the tar preserves
-executable permissions. On Debian 13 x86-64, install the runtime libraries:
+Download `ObsoleteCoin-0.4.0-Testnet-Linux-x64.tar.gz` and `SHA256SUMS.txt` from
+the public GitHub release. Extracting the tar preserves executable permissions.
+On Debian 13 x86-64, install the runtime libraries:
 
 ```sh
 sudo apt-get update
@@ -52,12 +53,10 @@ sudo apt-get install --no-install-recommends python3 python3-tk \
   libevent-2.1-7t64 libevent-core-2.1-7t64 libevent-extra-2.1-7t64 \
   libevent-pthreads-2.1-7t64 libsqlite3-0
 # Place the two downloaded files in a directory named artifacts:
-sha256sum -c artifacts/SHA256SUMS
-tar -xzf artifacts/obsoletecoin-linux-experimental.tar.gz
+(cd artifacts && sha256sum --ignore-missing -c SHA256SUMS.txt)
+tar -xzf artifacts/ObsoleteCoin-0.4.0-Testnet-Linux-x64.tar.gz
 cd obsoletecoin-linux
-python3 tools/node.py
-# Another graphical terminal, from the same directory:
-python3 tools/wallet.py
+./Start-Wallet.sh
 ```
 
 The node works without a graphical desktop. Use a separate local node on the

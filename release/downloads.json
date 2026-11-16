@@ -9,5 +9,12 @@
     "portable": "ObsoleteCoin-0.4.0-Testnet-Windows-x64.zip",
     "portable_sha256": "c90ab6c038b0540c55d461397ef79407924abd47aa80c18be1b4f19d2f8579d6"
   },
-  "linux_wsl_version": "0.3.0-testnet-rc1"
+  "linux": {
+    "version": "0.4.0-testnet-rc1",
+    "tag": "v0.4.0-testnet-rc1",
+    "directory": "artifacts/linux-0.4.0-testnet",
+    "archive": "ObsoleteCoin-0.4.0-Testnet-Linux-x64.tar.gz",
+    "archive_sha256": "c539c352383d2adf8ad272f2f968c56175ca3b026e56411621312a9b9c5fabd9",
+    "web_archive": "linux-0.4.0-testnet-rc1-x64.tar.gz"
+  }
 }

@@ -1,0 +1,24 @@
+{
+  "version": "0.4.0-testnet-rc1",
+  "platform": "Debian 13 x86-64",
+  "files": {
+    "ObsoleteCoin-0.4.0-Testnet-Linux-x64.tar.gz": "c539c352383d2adf8ad272f2f968c56175ca3b026e56411621312a9b9c5fabd9",
+    "Linux-PROVENANCE.json": "5aeb88b1718546e793ba5b1aecb027989da71c373fc27148ca988a2ba67df2ba"
+  },
+  "shared_windows_runtime_sources": [
+    "tools/native_wallet.py",
+    "tools/wallet.py",
+    "tools/rpc.py",
+    "tools/mine.py",
+    "tools/mining.py",
+    "tools/rx.py",
+    "tools/wallet_recovery.py"
+  ],
+  "matching_core_sources": 2147,
+  "archive_files_verified": 30,
+  "extracted_launcher_passed": true,
+  "executable_stack": false,
+  "runtime_integration": "passed",
+  "adversarial": "passed",
+  "python_tests": 24
+}

@@ -17,12 +17,12 @@ It's tacky, cheap, and slow.
 
 ## What is available
 
-Windows [0.4.0-testnet-rc1](https://github.com/jcib/obsoletecoin/releases/tag/v0.4.0-testnet-rc1)
+Windows and Linux [0.4.0-testnet-rc1](https://github.com/jcib/obsoletecoin/releases/tag/v0.4.0-testnet-rc1)
 adds configurable mining, measured hash rate, offline backup recovery checks and
-network/storage security fixes. Linux and Windows/WSL packages remain at 0.3.0-rc1.
+network/storage security fixes. Both native packages provide the same features.
 
-- Native Windows x64 wallet, full node and CPU miner; no WSL required.
-- Linux x86-64 package and an alternative Windows/WSL package.
+- Native Windows x64 wallet, full node and CPU miner.
+- Native Linux x86-64 package with a desktop launcher; Python 3 and Tk are required.
 - Local send/receive, transaction dates and confirmations, encryption and backups.
 - A plain-HTML retro website on Cloudflare Pages, without music.
 - A live explorer refreshed every 15 seconds, with explicit stale-data reporting.
@@ -91,7 +91,7 @@ and can provide synchronization data to other participants. Mining is optional;
 being online alone does not earn a reward.
 
 The current Windows desktop app is outbound-only. For an inbound node, use the
-Linux/WSL dedicated-node guide. Outbound-only nodes can still validate. Permit and,
+Linux dedicated-node guide. Outbound-only nodes can still validate. Permit and,
 where necessary, forward TCP 19777. Never expose RPC 19778 or enable a router's
 DMZ-host option. Keep software updated and monitor disk space and traffic.
 More independently operated nodes improve reachability and independent validation;

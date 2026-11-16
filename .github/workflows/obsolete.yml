@@ -77,21 +77,9 @@ jobs:
           path: .local/readiness/
       - name: Package experimental Linux build
         run: |
-          mkdir -p artifacts/obsoletecoin-linux
-          cp build/bin/bitcoind build/bin/bitcoin-cli build/bin/bitcoin-wallet artifacts/obsoletecoin-linux/
-          cp build-randomx-shared/librandomx.so artifacts/obsoletecoin-linux/
-          cp -r tools docs artifacts/obsoletecoin-linux/
-          cp README.md COPYING Start-Mining.cmd Start-Wallet.cmd artifacts/obsoletecoin-linux/
-          mkdir -p artifacts/obsoletecoin-linux/licenses
-          cp src/randomx/LICENSE artifacts/obsoletecoin-linux/licenses/RandomX.txt
-          cp src/secp256k1/COPYING artifacts/obsoletecoin-linux/licenses/secp256k1.txt
-          cp src/leveldb/LICENSE artifacts/obsoletecoin-linux/licenses/LevelDB.txt
-          cp src/leveldb/AUTHORS artifacts/obsoletecoin-linux/licenses/LevelDB-authors.txt
-          cp src/crc32c/LICENSE artifacts/obsoletecoin-linux/licenses/CRC32C.txt
-          cp src/crc32c/AUTHORS artifacts/obsoletecoin-linux/licenses/CRC32C-authors.txt
-          cp src/minisketch/LICENSE artifacts/obsoletecoin-linux/licenses/Minisketch.txt
-          cp src/crypto/ctaes/COPYING artifacts/obsoletecoin-linux/licenses/CTAES.txt
-          cp docs/THIRD_PARTY.md artifacts/obsoletecoin-linux/licenses/THIRD_PARTY.md
+          python3 release/capture-linux-inputs.py --output .local/linux-build-inputs.json
+          python3 release/assemble-linux.py --bindir build/bin --library build-randomx-shared/librandomx.so --inputs .local/linux-build-inputs.json --output artifacts/obsoletecoin-linux
+          xvfb-run -a artifacts/obsoletecoin-linux/Start-Wallet.sh --self-test .local/readiness/linux-launcher.json
           tar -czf artifacts/obsoletecoin-linux-experimental.tar.gz -C artifacts obsoletecoin-linux
           sha256sum artifacts/obsoletecoin-linux-experimental.tar.gz > artifacts/SHA256SUMS
       - uses: actions/upload-artifact@v4
@@ -125,5 +113,6 @@ jobs:
       - name: Mine, transfer, reorganize and restore on Debian 13
         run: |
           xvfb-run -a python3 tools/integration.py --bindir .local/package/obsoletecoin-linux --library .local/package/obsoletecoin-linux/librandomx.so
+          xvfb-run -a .local/package/obsoletecoin-linux/Start-Wallet.sh --self-test .local/package/linux-launcher.json
           python3 -m unittest discover -s tests -v
           xvfb-run -a python3 tools/ui_smoke.py

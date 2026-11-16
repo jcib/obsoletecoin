@@ -1,11 +1,12 @@
-# Mining and wallet improvements (Windows 0.4.0)
+# Mining and wallet improvements (Windows and Linux 0.4.0)
 
-These changes follow v0.3.0-testnet-rc1. The Windows x64 installer and portable ZIP
+These changes follow v0.3.0-testnet-rc1. The Windows x64 installer/portable ZIP and
+native Linux x86-64 archive
 are released as [v0.4.0-testnet-rc1](https://github.com/jcib/obsoletecoin/releases/tag/v0.4.0-testnet-rc1)
 and linked from the [website](https://obsoletecoin.pages.dev/downloads).
 They include the rebuilt native node with the security backports. The chain remains
-experimental testnet v0.2. The binaries are unsigned. Linux/WSL packages remain at
-0.3.0-rc1; existing installations do not update themselves.
+experimental testnet v0.2. The binaries are unsigned. Both platforms provide the
+same mining and wallet features; existing installations do not update themselves.
 
 ## Mining
 

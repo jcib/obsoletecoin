@@ -1,0 +1,24 @@
+{
+  "native": true,
+  "chain": "obsolete-test",
+  "ui": true,
+  "mainnet_enabled": false,
+  "bootstrap_blocks": 2,
+  "mining": {
+    "hashes": 3,
+    "blocks": 2,
+    "rejected": 0,
+    "elapsed": 1.2085019730000113,
+    "hps": 0,
+    "average_hps": 2.4824121656605453,
+    "threads": 2,
+    "duty": 50,
+    "state": "Stopped"
+  },
+  "recovery": {
+    "matched": true,
+    "encrypted": true,
+    "descriptors": 16,
+    "balances_rescanned": false
+  }
+}
