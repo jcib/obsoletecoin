@@ -15,7 +15,7 @@ for f in a.static.rglob('*'):
 for name,folder in [('admin.mjs','cloudflare'),('admin-auth.mjs','cloudflare'),('node-monitor.mjs','cloudflare'),('census.mjs','live'),('peers.mjs','live'),('probe-protocol.mjs','live'),('network.mjs','cloudflare'),('forum.mjs','cloudflare'),('worker.mjs','cloudflare'),('core.mjs','live'),('probe.mjs','live')]:
  text=(root/'website'/folder/name).read_text(encoding='utf-8-sig').replace("'../live/","'./")
  (src/name).write_text(text,encoding='utf-8')
-(out/'_routes.json').write_text(json.dumps({'version':1,'include':['/forum','/forum/*','/api/*','/live/*','/explorer','/explorer/*'],'exclude':[]}),encoding='utf-8')
+(out/'_routes.json').write_text(json.dumps({'version':1,'include':['/forum','/forum/*','/api/*','/live/*','/explorer','/explorer/*','/downloads/windows-wsl.zip'],'exclude':[]}),encoding='utf-8')
 (out/'_headers').write_text("/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Content-Security-Policy: default-src 'none'; img-src 'self'; style-src 'self'; frame-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'self'\n  X-Frame-Options: SAMEORIGIN\n/downloads/*\n  Cache-Control: public, max-age=3600\n",encoding='utf-8')
 print(json.dumps({'pages':len(pages),'output':str(out)}))
 with (out/'_headers').open('a',encoding='utf-8') as headers:

@@ -12,6 +12,7 @@ async function bytes(req,max){const reader=req.body?.getReader();if(!reader)retu
 async function state(env,key){const row=await env.DB.prepare('SELECT data FROM public_state WHERE name=?').bind(key).first();return row?JSON.parse(row.data):null;}
 export default {async fetch(req,env,ctx){
  const url=new URL(req.url),path=url.pathname;
+ if(path==='/downloads/windows-wsl.zip')return response(req.method==='HEAD'?null:'The WSL package has been withdrawn. Current native Windows and Linux downloads: https://obsoletecoin.pages.dev/downloads.html',410,'text/plain; charset=utf-8');
  try{
   if(path==='/forum/admin'||path.startsWith('/forum/admin/'))return await admin(req,env,PAGES['/forum-template.html'],headers);
   if(path==='/forum'||path.startsWith('/forum/'))return await forum(req,env,PAGES['/forum-template.html'],headers);
