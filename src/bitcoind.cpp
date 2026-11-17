@@ -147,8 +147,8 @@ static bool ProcessInitCommands(interfaces::Init& init, ArgsManager& args)
             strUsage += FormatParagraph(LicenseInfo());
         } else {
             strUsage += "\n"
-                "The " CLIENT_NAME " daemon (bitcoind) is a headless program that connects to the Obsolete test network to validate and relay transactions and blocks, as well as relaying addresses.\n\n"
-                "It provides the backbone of the Obsolete test network and its RPC, REST and ZMQ services can provide various transaction, block and address-related services.\n\n"
+                "The " CLIENT_NAME " daemon (bitcoind) is a headless program that connects to the selected Obsolete Coin network to validate and relay transactions and blocks, as well as relaying addresses.\n\n"
+                "It provides the backbone of the selected Obsolete Coin network and its RPC, REST and ZMQ services can provide various transaction, block and address-related services.\n\n"
                 "There is an optional wallet component which provides transaction services.\n\n"
                 "It can be used in a headless environment or as part of a server setup.\n"
                 "\n"
@@ -169,8 +169,8 @@ static bool AppInit(NodeContext& node)
     bool fRet = false;
     ArgsManager& args = *Assert(node.args);
     const ChainType chain = args.GetChainType();
-    if (chain != ChainType::BRISVIA_TESTNET && chain != ChainType::REGTEST) {
-        return InitError(Untranslated("Obsolete Coin is experimental. Start with -chain=obsolete-test. Mainnet is not released."));
+    if (chain != ChainType::BRISVIA_MAIN && chain != ChainType::BRISVIA_TESTNET && chain != ChainType::REGTEST) {
+        return InitError(Untranslated("Choose -chain=obsolete for Obsolete Coin mainnet or -chain=obsolete-test for testnet."));
     }
 
 #if HAVE_DECL_FORK

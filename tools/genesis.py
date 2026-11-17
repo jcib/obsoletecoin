@@ -3,10 +3,10 @@ import argparse, hashlib, json, struct
 from pathlib import Path
 from rx import RandomX
 
-# The public testnet is already in use. The separate MAIN entry is an experimental candidate.
+# Each network has its own immutable genesis timestamp and compact work target.
 GENESIS_PARAMETERS = {
     'TEST': (1794614400, 0x207fffff),
-    'MAIN': (1794614400, 0x207fffff),
+    'MAIN': (1794960000, 0x1f014000),
 }
 POW_LIMIT = 0x7fffff << 232
 
@@ -33,13 +33,14 @@ def genesis_parts(label):
     head = struct.pack('<I',1)+bytes(32)+merkle+struct.pack('<II',timestamp,bits)
     return phrase.decode(), seed, merkle, head
 
-def generate(library):
+def generate(library, nonces=None):
     records = {}
     for label, (_, bits) in GENESIS_PARAMETERS.items():
         target = target_from_bits(bits)
         phrase,seed,merkle,head=genesis_parts(label)
         with RandomX(library,seed) as rx:
-            for nonce in range(100000):
+            candidates = (nonces[label],) if nonces is not None else range(2**32)
+            for nonce in candidates:
                 header=head+struct.pack('<I',nonce)
                 work=rx.hash(header)
                 if int.from_bytes(work,'little')<=target: break
@@ -64,11 +65,14 @@ def generate(library):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--library',required=True);p.add_argument('--verify',action='store_true');a=p.parse_args()
     root=Path(__file__).resolve().parents[1]
-    header,records=generate(Path(a.library).resolve())
+    vectors = root/'docs/genesis.json'
+    pinned = json.loads(vectors.read_text()) if vectors.exists() or a.verify else None
+    nonces = {label: record['nonce'] for label,record in pinned.items()} if pinned else None
+    header,records=generate(Path(a.library).resolve(), nonces)
     dest=root/'src/consensus/obsolete_genesis.h'
     if a.verify:
         if dest.read_text()!=header: raise SystemExit('Genesis differs from pinned constants')
-        if json.loads((root/'docs/genesis.json').read_text()) != records:
+        if pinned != records:
             raise SystemExit('Genesis differs from published proof vectors')
     else:
         if dest.exists() and dest.read_text()!=header: raise SystemExit('Refusing to overwrite different genesis')

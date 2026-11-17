@@ -2,7 +2,9 @@
 
 It's tacky, cheap, and slow.
 
-**Experimental CPU-mined testnet. Mainnet is disabled. Test coins have no monetary value.**
+**Experimental CPU-mined Obsolete Coin.** Mainnet-capable clients use `-chain=obsolete` and receive addresses beginning with `obs1`. The existing testnet uses `obsolete-test` and `tobs1`. Test coins have no monetary value.
+
+See [mainnet wallet and node instructions](docs/MAINNET-WALLET.md) for startup, network isolation and release limitations.
 
 [Website](https://obsoletecoin.pages.dev/) ·
 [GitHub Releases](https://github.com/jcib/obsoletecoin/releases) ·
@@ -110,8 +112,9 @@ content, form authentication, duplicate submissions, posting limits and feed
 replay/reorganization handling. Forum messages are plain text; no uploads.
 
 These tests are not an independent security audit or a mainnet readiness claim.
-Mainnet remains blocked pending independent review, sustained adversarial testing
-and operational readiness. See [MAINNET-READINESS.md](docs/MAINNET-READINESS.md).
+The owner authorized an experimental launch with independent review, sustained
+resilience testing and independent reproducibility still outstanding. The
+[readiness assessment](docs/MAINNET-READINESS.md) records the earlier testnet evidence.
 
 ## Development
 

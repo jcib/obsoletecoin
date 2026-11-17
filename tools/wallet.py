@@ -6,7 +6,8 @@ from pathlib import Path
 from decimal import Decimal
 from rpc import RPC, RPCError, default_data_dir, parse_amount
 from mine import mine
-from mining import MiningStats, MAX_THREADS, GENESIS
+from mining import MiningStats, MAX_THREADS
+from coin_network import TESTNET
 from wallet_recovery import verify_backup
 from functools import wraps
 
@@ -19,14 +20,6 @@ def user_action(method):
         try:return method(self,*args,**kwargs)
         finally:self.interacting=False
     return wrapped
-
-def verify_testnet(rpc):
-    chain = rpc.call('getblockchaininfo')
-    if chain['chain'] != 'obsolete-test':
-        raise ValueError('Only Obsolete testnet is supported')
-    if rpc.call('getblockhash', 0) != GENESIS:
-        raise ValueError('Wrong testnet genesis')
-    return chain
 
 def network_state(chain, peers):
     blocks, headers = chain['blocks'], chain['headers']
@@ -60,7 +53,10 @@ def transaction_state(tx):
 BG='#000033'; NAVY='#000033'; TEAL='#000033'
 YELLOW='#ffff00'; CYAN='#00ffff'; BLACK='#000000'
 class Wallet:
-    def __init__(self,root,rpc,demo=False):
+    coin_network = TESTNET
+
+    def __init__(self,root,rpc,demo=False,*,network=TESTNET):
+        self.coin_network = network
         self.root=root;self.rpc=rpc;self.demo=demo;self.queue=queue.Queue();self.busy=False
         self.mining=threading.Event();self.miner=None;self.snapshot=None;self.history_count=20;self.transactions={}
         self.mining_stats=None;self.mining_events=queue.Queue();self.closing=False;self.interacting=False;self.wallet_info={};self.last_backup=None
@@ -112,13 +108,15 @@ class Wallet:
                                ('Wallet',[('Open / Create',self.open_wallet),('Receive',self.receive),('Send',self.send),('Backup',self.backup),('Protect / check recovery',self.recovery_guide)]),
                                ('Network',[('Connect peer...',self.connect_peer)]),
                                ('Mining',[('Start / Stop',self.toggle_mine)]),
-                               ('Help',[('About',lambda:messagebox.showinfo('Obsolete Coin','Experimental testnet v0.2\nTest coins have no value. Blocks target 15 minutes.\nA dominant miner can reorganize this network.'))])]:
+                               ('Help',[('About',lambda:messagebox.showinfo('Obsolete Coin',f'Experimental {network.label}\nBlocks target 15 minutes.\nA dominant miner can reorganize this network.'))])]:
             button=tk.Menubutton(menus,text=label,relief='flat');button.pack(side='left')
             menu=tk.Menu(button,tearoff=0)
             for title,command in commands:menu.add_command(label=title,command=command)
             button.configure(menu=menu)
         tk.Frame(shell,height=3,bg='#ff0000').pack(fill='x',padx=22,pady=(12,10))
-        tk.Label(shell,text='DEMO PREVIEW - no blockchain connection' if demo else 'EXPERIMENTAL TESTNET - test coins have no monetary value',fg=YELLOW,anchor='w').pack(fill='x',padx=22)
+        banner = ('EXPERIMENTAL TESTNET - test coins have no monetary value' if network == TESTNET
+                  else 'EXPERIMENTAL MAINNET - OBSC transactions are irreversible')
+        tk.Label(shell,text='DEMO PREVIEW - no blockchain connection' if demo else banner,fg=YELLOW,anchor='w').pack(fill='x',padx=22)
         self.network=tk.StringVar(value='Connecting to local node...')
         tk.Label(shell,textvariable=self.network,fg=CYAN,anchor='w',wraplength=850).pack(fill='x',padx=22,pady=(6,0))
         panel=tk.Frame(shell,bd=1,relief='solid',bg=BLACK,highlightbackground=YELLOW,highlightthickness=1);panel.pack(fill='x',padx=22,pady=10)
@@ -171,7 +169,7 @@ class Wallet:
     def wallet_call(self,method,*params):
         # Guard every operation, including backup/encryption, if a user selects
         # the wrong local port or a different node restarts on the same port.
-        chain=verify_testnet(self.rpc)
+        chain=self.coin_network.verify(self.rpc)
         if method=='getblockchaininfo':return chain
         return self.rpc.call(method,*params)
     def work(self,job,done,on_error=None):
@@ -199,7 +197,6 @@ class Wallet:
     def refresh(self,automatic=False):
         def job():
             chain=self.wallet_call('getblockchaininfo')
-            if chain['chain']!='obsolete-test':raise ValueError('Only Obsolete testnet is supported')
             peers=self.wallet_call('getconnectioncount')
             info=self.wallet_call('getwalletinfo')
             return chain,peers,self.wallet_call('getbalances'),self.wallet_call('listtransactions','*',self.history_count+1),info
@@ -210,7 +207,7 @@ class Wallet:
             self.protection.set(protection)
             self.balance.set(f"{Decimal(str(m['trusted'])):,.8f} OBSC")
             self.detail.set(f"Immature: {m['immature']:.8f} OBSC | Pending: {m['untrusted_pending']:.8f} OBSC")
-            self.status.set(previous_status if automatic else f"TESTNET | {chain['blocks']} blocks | {peers} peers | Wallet: {self.rpc.wallet}")
+            self.status.set(previous_status if automatic else f"{self.coin_network.label} | {chain['blocks']} blocks | {peers} peers | Wallet: {self.rpc.wallet}")
             for item in self.table.get_children():self.table.delete(item)
             self.transactions={}
             self.more_button.configure(state='normal' if len(txs)>self.history_count else 'disabled')
@@ -248,7 +245,7 @@ class Wallet:
     def open_wallet(self):
         def job():
             base=RPC(self.rpc.cookie,self.rpc.port)
-            verify_testnet(base)
+            self.coin_network.verify(base)
             name=self.rpc.wallet
             if name not in base.call('listwallets'):
                 known=[w['name'] for w in base.call('listwalletdir')['wallets']]
@@ -258,27 +255,29 @@ class Wallet:
     def receive(self):
         def done(address):
             win=tk.Toplevel(self.root);win.title('Receive obsolete money');win.geometry('620x150')
-            tk.Label(win,text='Your TESTNET receive address').pack(pady=10)
+            tk.Label(win,text=f'Your {self.coin_network.label} receive address').pack(pady=10)
             entry=tk.Entry(win,width=76);entry.pack(padx=10);entry.insert(0,address);entry.configure(state='readonly')
             tk.Button(win,text='Copy address',command=lambda:(win.clipboard_clear(),win.clipboard_append(address))).pack(pady=10)
             self.status.set('Receive address ready')
         self.work(lambda:self.wallet_call('getnewaddress','', 'bech32'),done)
     @user_action
     def send(self):
-        address=simpledialog.askstring('Send OBSC','Recipient testnet address:',parent=self.root)
+        address=simpledialog.askstring('Send OBSC',f'Recipient {self.coin_network.label} address:',parent=self.root)
         if not address:return
         amount=simpledialog.askstring('Send OBSC','Amount in OBSC:',parent=self.root)
         if amount is None:return
         try:amount=parse_amount(amount)
         except ValueError as e:messagebox.showerror('Invalid amount',str(e));return
-        if not address.startswith('tobs1'):messagebox.showerror('Wrong address','Use an Obsolete testnet address (tobs1...).');return
+        if not address.startswith(self.coin_network.address_prefix):
+            messagebox.showerror('Wrong address',f'Use a {self.coin_network.label} address starting with {self.coin_network.address_prefix}.')
+            return
         def prepare():
-            if not self.wallet_call('validateaddress',address)['isvalid']:raise ValueError('Invalid testnet address')
+            if not self.wallet_call('validateaddress',address)['isvalid']:raise ValueError(f'Invalid {self.coin_network.label} address')
             return self.wallet_call('walletcreatefundedpsbt',[],[{address:amount}],0,{'fee_rate':1,'replaceable':True},True)
         def confirm(funded):
             fee=Decimal(str(funded['fee']));total=Decimal(amount)+fee
             self.interacting=True
-            try:approved=messagebox.askyesno('Confirm transfer',f'Send {amount} TEST OBSC to\n{address}\n\nNetwork fee: {fee:.8f} OBSC\nTotal debit: {total:.8f} OBSC\n\nBroadcast this transaction?')
+            try:approved=messagebox.askyesno('Confirm transfer',f'Send {amount} {self.coin_network.label} OBSC to\n{address}\n\nNetwork fee: {fee:.8f} OBSC\nTotal debit: {total:.8f} OBSC\n\nBroadcast this transaction?')
             finally:self.interacting=False
             if not approved:return
             def broadcast():
@@ -323,7 +322,7 @@ class Wallet:
         def checked(result):
             self.status.set('Backup restored offline; descriptors match'+('; passphrase verified.' if result['encrypted'] else '. Backup is unencrypted.'))
             messagebox.showinfo('Recovery check passed','Temporary restore succeeded and public descriptors match.\n'+('The backup passphrase works.\n' if result['encrypted'] else 'This backup is not encrypted.\n')+'Balances were not rescanned. Keep the backup and passphrase separately.')
-        self.work(lambda:verify_backup(self.rpc,path,binary,phrase),checked)
+        self.work(lambda:verify_backup(self.rpc,path,binary,phrase,network=self.coin_network),checked)
     @user_action
     def encrypt(self):
         pw=simpledialog.askstring('Encrypt wallet','New passphrase (cannot be recovered):',show='*')
@@ -338,11 +337,11 @@ class Wallet:
     def lock(self):self.work(lambda:self.wallet_call('walletlock'),lambda _:self.status.set('Wallet locked'))
     @user_action
     def connect_peer(self):
-        peer=simpledialog.askstring('Connect testnet peer','Peer hostname or IPv4 address and port (host:19777):',parent=self.root)
+        peer=simpledialog.askstring(f'Connect {self.coin_network.label} peer',f'Peer hostname or IPv4 address and port (host:{self.coin_network.p2p}):',parent=self.root)
         if not peer:return
         import re
         if not re.fullmatch(r'[A-Za-z0-9.-]+:[0-9]{1,5}',peer) or not 1<=int(peer.rsplit(':',1)[1])<=65535:
-            messagebox.showerror('Invalid peer','Use host:port, supplied by a testnet operator.');return
+            messagebox.showerror('Invalid peer','Use host:port, supplied by a node operator.');return
         def connected(_):
             save=getattr(self,'peer_added',None)
             if save:save(peer)
@@ -354,7 +353,7 @@ class Wallet:
         if self.busy:return
         threads,duty=self.threads.get(),self.activity.get()
         self.interacting=True
-        try:approved=messagebox.askyesno('CPU mining',f'Mine TEST OBSC with {threads} thread(s), {duty}% activity per thread?\n\nAbout {256*threads} MiB of mining memory, plus the node.\nActivity uses short work/rest cycles; it is not an exact total CPU limit.')
+        try:approved=messagebox.askyesno('CPU mining',f'Mine {self.coin_network.label} OBSC with {threads} thread(s), {duty}% activity per thread?\n\nAbout {256*threads} MiB of mining memory, plus the node.\nActivity uses short work/rest cycles; it is not an exact total CPU limit.')
         finally:self.interacting=False
         if not approved:return
         self.mining.clear()
@@ -362,9 +361,9 @@ class Wallet:
         self.thread_control.configure(state='disabled');self.activity_control.configure(state='disabled')
         def job():
             try:
-                if self.wallet_call('getblockchaininfo')['initialblockdownload'] or self.wallet_call('getconnectioncount')<1:raise ValueError('Connect a testnet peer and finish synchronization before mining')
+                if self.wallet_call('getblockchaininfo')['initialblockdownload'] or self.wallet_call('getconnectioncount')<1:raise ValueError('Connect a peer and finish synchronization before mining')
                 address=self.wallet_call('getnewaddress','mining','bech32')
-                mine(RPC(self.rpc.cookie,self.rpc.port,timeout=30),address,self.mining,threads=threads,duty=duty,library=getattr(self,'mining_library',None),stats=self.mining_stats)
+                mine(RPC(self.rpc.cookie,self.rpc.port,timeout=30),address,self.mining,threads=threads,duty=duty,library=getattr(self,'mining_library',None),stats=self.mining_stats,network=self.coin_network)
             except Exception as e:
                 with self.mining_stats.lock:
                     self.mining_stats.state='Error';self.mining_stats.ended=time.monotonic()

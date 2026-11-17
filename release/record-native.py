@@ -7,6 +7,8 @@ from pathlib import Path
 
 p = argparse.ArgumentParser()
 p.add_argument('--build', type=Path, default=Path('.local/windows-upgrade'))
+p.add_argument('--node', type=Path, help='Staged runtime for the build being recorded')
+p.add_argument('--ctest', type=Path, help='CTest report produced by the current build')
 a = p.parse_args()
 digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
 files = subprocess.check_output(
@@ -14,7 +16,7 @@ files = subprocess.check_output(
 ).decode().split('\0')
 sources = {name: digest(Path(name)) for name in sorted(files) if name and Path(name).is_file()}
 source_json = json.dumps(sources, indent=2) + '\n'
-node = a.build/'node'
+node = a.node or a.build/'node'
 (node/'source-hashes.json').write_text(source_json, encoding='utf-8')
 manifest = {
     'kind': 'local-windows-build',
@@ -24,9 +26,9 @@ manifest = {
     'build_script_sha256': digest(Path('release/build-native-msys.sh')),
     'cmake_cache_sha256': digest(a.build/'core/CMakeCache.txt'),
     'toolchain_sha256': digest(node/'toolchain.txt'),
-    'ctest_xml_sha256': digest(a.build/'ctest.xml'),
-    'network': 'obsolete-test',
-    'mainnet_enabled': False,
+    'ctest_xml_sha256': digest(a.ctest or a.build/'ctest.xml'),
+    'network': 'obsolete',
+    'mainnet_enabled': True,
     'files': {path.name: digest(path) for path in sorted(node.iterdir())
               if path.suffix.lower() in ('.exe', '.dll')},
 }

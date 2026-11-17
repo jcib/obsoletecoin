@@ -806,7 +806,7 @@ public:
     }
 };
 
-/** Obsolete Coin reserved candidate. Startup is disabled pending a separate public launch. */
+/** Obsolete Coin mainnet. */
 class CBrisviaMainParams : public CChainParams {
 public:
     CBrisviaMainParams() {
@@ -863,7 +863,7 @@ public:
         pchMessageStart[1] = 0x42;
         pchMessageStart[2] = 0x53;
         pchMessageStart[3] = 0x32;
-        nDefaultPort = 9777;
+        nDefaultPort = 19777;
         nPruneAfterHeight = 100000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;

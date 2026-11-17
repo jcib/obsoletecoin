@@ -1,13 +1,13 @@
 import {renderCensus} from './census.mjs';
-// Public testnet read model. No wallet RPC or arbitrary proxy route exists.
-export const GENESIS='9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98';
+// Public mainnet read model. No wallet RPC or arbitrary proxy route exists.
+export const GENESIS='39edafd04ad371911d1d17c38c40d16878b550489bc3df92530a7c813b0de133';
 const hex=/^[0-9a-f]{64}$/;const address=/^[a-zA-Z0-9]{0,100}$/;
 const enc=new TextEncoder();
 export const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const integer=(v,max=Number.MAX_SAFE_INTEGER)=>Number.isSafeInteger(v)&&v>=0&&v<=max;
 const check=(v)=>{if(!v)throw new Error('invalid-feed');};
 export function validate(s,now=Date.now()){
- check(s&&s.network==='obsolete-test'&&s.genesis===GENESIS&&integer(s.observed)&&Math.abs(now-s.observed)<=120000);
+ check(s&&s.network==='obsolete'&&s.genesis===GENESIS&&integer(s.observed)&&Math.abs(now-s.observed)<=120000);
  check(integer(s.height)&&integer(s.first)&&hex.test(s.tip)&&Array.isArray(s.blocks)&&s.blocks.length>0&&s.blocks.length<=1024);
  check(s.blocks.length===s.height-s.first+1&&integer(s.connections,100000)&&integer(s.mempool,10000000));
  check(typeof s.peer==='string'&&/^(\d{1,3}\.){3}\d{1,3}:19777$/.test(s.peer));
@@ -43,7 +43,7 @@ const tl=t=>link('/explorer/transactions/'+t.txid+'.html',t.txid);
 export function render(s,path,now=Date.now(),probe=null,census=null){
  let body='',status=200;const age=s?Math.max(0,Math.floor((now-s.observed)/1000)):null;
  const fresh=s&&age<=60;
- const note=s?`<div class="snapshot-note"><strong>${fresh?'LIVE TESTNET DATA':'STALE DATA — NODE FEED UNAVAILABLE'}</strong><br>Last node observation: ${utc(s.observed)} (${age}s ago). Refresh: 15 seconds.<br>Coverage: blocks ${s.first}–${s.height}. Confirmations refer to this observation.</div>`:'<div class="snapshot-note"><strong>NODE FEED UNAVAILABLE</strong><p>No live data received yet. Retrying in 15 seconds.</p></div>';
+ const note=s?`<div class="snapshot-note"><strong>${fresh?'LIVE MAINNET DATA':'STALE DATA — NODE FEED UNAVAILABLE'}</strong><br>Last node observation: ${utc(s.observed)} (${age}s ago). Refresh: 15 seconds.<br>Coverage: blocks ${s.first}–${s.height}. Confirmations refer to this observation.</div>`:'<div class="snapshot-note"><strong>NODE FEED UNAVAILABLE</strong><p>No live data received yet. Retrying in 15 seconds.</p></div>';
  const peer=s&&probe&&probe.peer===s.peer&&probe.verified===true&&now-probe.checked<1800000;
  if(!s)body=note;
  else if(path==='/live/peer')body=note+`<h2>First node: Dell Micro 7040 (2016)</h2><p>${peer&&fresh?'Public P2P connection verified':'Public connection awaiting verification'}</p><p>Current peer: <code>${escape(s.peer)}</code></p><p>Enter this in Network → Connect peer. The home connection has a dynamic IP; check this page again if it changes.</p>`;
@@ -67,5 +67,5 @@ export function render(s,path,now=Date.now(),probe=null,census=null){
    else {if(!records.length)status=404;body+=`<p class="hash">${escape(a)}</p><ul>${records.reverse().map(({b,t,v})=>'<li class="hash">'+bl(b)+' · '+tl(t)+' · '+amount(v.atoms)+' OBSC</li>').join('')}</ul>`;}
   }else{status=404;body+='<h1>Page not found</h1>';}
  }
- return {status,html:`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>Obsolete Coin testnet</title><link rel="icon" href="/assets/obsolete-coin.gif" type="image/gif"><link rel="stylesheet" href="/assets/style.css"></head><body class="live-body"><main class="live-content">${body}</main></body></html>`};
+ return {status,html:`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>Obsolete Coin mainnet</title><link rel="icon" href="/assets/obsolete-coin.gif" type="image/gif"><link rel="stylesheet" href="/assets/style.css"></head><body class="live-body"><main class="live-content">${body}</main></body></html>`};
 }

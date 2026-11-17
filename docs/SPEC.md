@@ -1,8 +1,8 @@
 # Experimental protocol v0.2
 
-The executable network is `obsolete-test`. `obsolete` is a disabled experimental
-candidate, not a public-mainnet launch commitment. Private testnet distribution
-and trivial initial difficulty are not a fair public launch.
+The experimental mainnet is `obsolete`. The independent test network is
+`obsolete-test`. Each starts with its own zero-value genesis. Existing test
+coins remain on testnet.
 
 ## Monetary consensus
 
@@ -47,7 +47,7 @@ does not promise an unchanged century-long protocol.
 | Network | Selection | Magic | P2P / RPC | SegWit prefix |
 | --- | --- | --- | --- | --- |
 | Test | `obsolete-test` | `4f425432` | 19777 / 19778 | `tobs1` |
-| Disabled candidate | `obsolete` | `4f425332` | 9777 / 9778 | `obs1` |
+| Experimental mainnet | `obsolete` | `4f425332` | 19777 / 9778 | `obs1` |
 
 Subdirectories: `obsolete-testnet-v2`, `obsolete-mainnet-v2`. Neither new chain has DNS
 seeds, fixed peers, assumed-valid blocks or inherited minimum chainwork. Peers

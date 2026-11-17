@@ -12,7 +12,7 @@ const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:resolv
 const peer='8.8.8.8:19777',other='9.9.9.9:19777';
 try{
  await mf.ready;const db=await mf.getD1Database('DB');
- await db.prepare('CREATE TABLE public_state(name TEXT PRIMARY KEY,observed INTEGER NOT NULL,data TEXT NOT NULL)').run();
+ await db.prepare('CREATE TABLE mainnet_public_state(name TEXT PRIMARY KEY,observed INTEGER NOT NULL,data TEXT NOT NULL)').run();
  const missing=await (await mf.dispatchFetch('http://localhost/api/nodes')).json();
  assert.equal(missing.count,null);assert.equal(missing.available,false);
  let calls=0;
@@ -26,18 +26,18 @@ try{
  // Reads never start scans.
  await mf.dispatchFetch('http://localhost/api/nodes');assert.equal(calls,1);
  assert.equal(await monitorNodes(env,peer,probe,now+1000),false);
- await db.prepare("UPDATE public_state SET observed=? WHERE name='node_census_lease'").bind(now-INTERVAL).run();
+ await db.prepare("UPDATE mainnet_public_state SET observed=? WHERE name='node_census_lease'").bind(now-INTERVAL).run();
  await monitorNodes(env,peer,probe,Date.now());assert.equal(calls,3);
  census=await (await mf.dispatchFetch('http://localhost/api/nodes')).json();assert.equal(census.count,2);
- await db.prepare("UPDATE public_state SET observed=? WHERE name='node_census_lease'").bind(now-INTERVAL).run();
+ await db.prepare("UPDATE mainnet_public_state SET observed=? WHERE name='node_census_lease'").bind(now-INTERVAL).run();
  await monitorNodes(env,peer,async p=>{if(p===peer)throw Error('offline');return {verified:true,peer:p,peers:[]};},Date.now());
  census=await (await mf.dispatchFetch('http://localhost/api/nodes')).json();assert.equal(census.count,1);
  // A lease takeover prevents a late scan from overwriting the newer observation.
- await db.prepare("UPDATE public_state SET observed=? WHERE name='node_census_lease'").bind(now-INTERVAL).run();
+ await db.prepare("UPDATE mainnet_public_state SET observed=? WHERE name='node_census_lease'").bind(now-INTERVAL).run();
  let release,start;const gate=new Promise(r=>release=r),started=new Promise(r=>start=r);
  const late=monitorNodes(env,peer,async p=>{start();await gate;return {verified:true,peer:p,peers:[]};},Date.now());
  await started;
- await db.prepare("UPDATE public_state SET observed=observed+1 WHERE name='node_census_lease'").run();
+ await db.prepare("UPDATE mainnet_public_state SET observed=observed+1 WHERE name='node_census_lease'").run();
  release();await late;
  census=await (await mf.dispatchFetch('http://localhost/api/nodes')).json();assert.equal(census.count,1);
  // The bundled Worker still ingests signed feeds and exposes both counters.
@@ -55,9 +55,9 @@ try{
  const panel=await (await mf.dispatchFetch('http://localhost/live/explorer/network.html')).text();
  assert.match(panel,/Detected reachable public nodes/);
  assert.equal((await mf.dispatchFetch('http://localhost/api/nodes',{method:'POST',body:'{}'})).status,404);
- const stored=JSON.parse((await db.prepare("SELECT data FROM public_state WHERE name='node_census'").first()).data);
+ const stored=JSON.parse((await db.prepare("SELECT data FROM mainnet_public_state WHERE name='node_census'").first()).data);
  stored.updated-=1800001;for(const n of stored.nodes)n.checked-=1800001;
- await db.prepare("UPDATE public_state SET data=? WHERE name='node_census'").bind(JSON.stringify(stored)).run();
+ await db.prepare("UPDATE mainnet_public_state SET data=? WHERE name='node_census'").bind(JSON.stringify(stored)).run();
  census=await (await mf.dispatchFetch('http://localhost/api/nodes')).json();assert.equal(census.count,0);assert.equal(census.fresh,false);
  assert.match(await (await mf.dispatchFetch('http://localhost/live/explorer/index.html')).text(),/STALE MONITOR/);
  console.log('Workerd/D1 passed: atomic lease, bounded probes, failure removal, lease takeover, read-only API, aggregate privacy, expiry, authenticated feed/replay and both rendered panels.');

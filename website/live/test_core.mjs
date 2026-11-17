@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {validate,render,amount,authorized} from './core.mjs';
-const fixture={height:0,hash:'9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98',previous:'0'.repeat(64),time:1794614400,bits:'207fffff',size:219,tx:[{txid:'a'.repeat(64),vin:[{coinbase:true}],vout:[{n:0,atoms:'0',address:'',type:'nulldata'}]}]}; const feed={network:'obsolete-test',genesis:fixture.hash,observed:Date.now(),height:1,first:0,tip:'1'.repeat(64),connections:1,mempool:0,peer:'83.45.159.127:19777',blocks:[fixture,{...structuredClone(fixture),height:1,hash:'1'.repeat(64),previous:fixture.hash}]};
+const fixture={height:0,hash:'39edafd04ad371911d1d17c38c40d16878b550489bc3df92530a7c813b0de133',previous:'0'.repeat(64),time:1794960000,bits:'1f014000',size:219,tx:[{txid:'a'.repeat(64),vin:[{coinbase:true}],vout:[{n:0,atoms:'0',address:'',type:'nulldata'}]}]}; const feed={network:'obsolete',genesis:fixture.hash,observed:Date.now(),height:1,first:0,tip:'1'.repeat(64),connections:1,mempool:0,peer:'83.45.159.127:19777',blocks:[fixture,{...structuredClone(fixture),height:1,hash:'1'.repeat(64),previous:fixture.hash}]};
 assert.equal(validate(feed).height,1);assert.equal(amount('100000000000000000'),'1,000,000,000.00000000');
 for(const mutate of [s=>s.genesis='0'.repeat(64),s=>s.blocks[1].previous='0'.repeat(64),s=>s.tip='0'.repeat(64),s=>s.height++,s=>s.observed-=121000,s=>s.peer='127.0.0.1:19777',s=>s.blocks[0].tx[0].vout[0].atoms='1e10',s=>s.blocks[0].tx[0].vout[0].address='<script>']){
  const bad=structuredClone(feed);mutate(bad);assert.throws(()=>validate(bad));
 }
 const extra=structuredClone(feed);extra.rpcpassword='private';extra.blocks[0].tx[0].privateKey='private';assert.ok(!JSON.stringify(validate(extra)).includes('private'));
-assert.match(render(feed,'/live/recent').html,/LIVE TESTNET DATA/);assert.match(render(feed,'/live/recent',feed.observed+61000).html,/STALE DATA/);
+assert.match(render(feed,'/live/recent').html,/LIVE MAINNET DATA/);assert.match(render(feed,'/live/recent',feed.observed+61000).html,/STALE DATA/);
 assert.match(render(null,'/live/recent').html,/UNAVAILABLE/);assert.equal(render(feed,'/live/explorer/blocks/99999.html').status,404);
 const shorter=structuredClone(feed);shorter.blocks.pop();shorter.height--;shorter.tip=shorter.blocks.at(-1).hash;assert.equal(validate(shorter).height,0);
 const key='test-only-key';const body=new TextEncoder().encode(JSON.stringify(feed));const stamp=String(Math.floor(Date.now()/1000));

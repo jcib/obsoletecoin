@@ -39,6 +39,19 @@ RELEASE_URL=GITHUB+'/releases/tag/'+WINDOWS['tag']
 ASSET_URL=GITHUB+'/releases/download/'+WINDOWS['tag']+'/'
 
 NEWS='Windows & Linux 0.4.0 now available: CPU mining with selectable threads & activity / live hash rate and block counters / automatic wallet refresh / encrypted backup recovery checks / network and storage security fixes.'
+MAIN = RELEASES.get('mainnet')
+mainnet_panel = ''
+if MAIN:
+    genesis = json.loads((ROOT/'docs/genesis.json').read_text())['MAIN']['hash']
+    seed = MAIN.get('bootstrap')
+    status = 'Public peer verification is pending.'
+    if seed:
+        if seed['chain'] != 'obsolete' or seed['genesis'] != genesis:
+            raise ValueError('Mainnet bootstrap identity mismatch')
+        (OUT/'mainnet-peer.json').write_text(json.dumps(seed),encoding='utf-8')
+        status = f'Public bootstrap peer: {E(seed["peer"])}. Verified {E(seed["verified_utc"])}.'
+    NEWS = ('Experimental mainnet is live.' if seed else 'Experimental mainnet wallets are available. Public connectivity is pending.') + ' Windows and Linux downloads are on the mainnet page. Testnet balances stay on testnet.'
+    mainnet_panel = f'<section class="paper"><h2>Experimental mainnet</h2><p>{status}</p><a class="button" href="@ROOT@mainnet.html">Mainnet wallets and connection guide</a></section>'
 
 for folder in ('assets','downloads','explorer/blocks','explorer/transactions','explorer/addresses'):(OUT/folder).mkdir(parents=True,exist_ok=True)
 
@@ -49,6 +62,8 @@ DOWNLOADS=[('source.tar.gz',ROOT/'.local/release/ObsoleteCoin-Review-Source.tar.
 DOWNLOADS.append((WINDOWS['web_installer'],ROOT/WINDOWS['directory']/WINDOWS['installer']))
 DOWNLOADS.append((LINUX['web_archive'],ROOT/LINUX['directory']/LINUX['archive']))
 
+if MAIN:
+    DOWNLOADS = [(pkg['file'], ROOT/MAIN['directory']/pkg['file']) for pkg in MAIN['packages'] if pkg['web']]
 if a.public_web_only:DOWNLOADS=[(name,path) for name,path in DOWNLOADS if name!='source.tar.gz']
 CHECKSUMS={}
 
@@ -59,17 +74,22 @@ for name,path in DOWNLOADS:
         raise ValueError('Windows installer does not match release/downloads.json')
     if name in ('linux-x64.tar.gz',LINUX['web_archive']) and CHECKSUMS[name]!=LINUX['archive_sha256']:
         raise ValueError('Linux archive does not match release/downloads.json')
+    if MAIN and CHECKSUMS[name] != next(p['sha256'] for p in MAIN['packages'] if p['file']==name):
+        raise ValueError('Mainnet asset checksum mismatch: '+name)
     (OUT/'downloads'/name).write_bytes(data)
 
 (OUT/'downloads/SHA256SUMS.txt').write_text(''.join(f'{v}  {k}\n' for k,v in CHECKSUMS.items()),encoding='utf-8')
 
-(OUT/'explorer/snapshot.json').write_text(json.dumps(S,indent=2),encoding='utf-8')
+if not MAIN: (OUT/'explorer/snapshot.json').write_text(json.dumps(S,indent=2),encoding='utf-8')
 
 
 
 def write_page(path,title,content,active='home'):
 
     depth=len(Path(path).parts)-1;r='../'*depth
+    notice = f'Experimental testnet v0.2 &mdash; <a href="{r}faq.html#mainnet">Mainnet is not live.</a><br>Test coins have no monetary value.'
+    if MAIN:
+        notice = f'<a href="{r}mainnet.html">Experimental mainnet</a> &middot; <a href="{r}join.html">Connect a wallet</a><br>Receive addresses begin with obs1.'
 
     nav=[('downloads','downloads.html','Downloads','download.gif'),('explorer','explorer/index.html','Block explorer','terminal.gif'),('coin','coin.html','The coin','computer.gif'),('mining','mining.html','How to mine','mining.gif'),('forum','forum','Forum','forum.gif')]
 
@@ -79,7 +99,7 @@ def write_page(path,title,content,active='home'):
 
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>{E(title)} | Obsolete Coin</title><meta name="description" content="Obsolete Coin (OBSC). CPU mining, testnet downloads and blockchain data.">
+<title>{E(title)} | Obsolete Coin</title><meta name="description" content="Obsolete Coin (OBSC). CPU mining, wallet downloads and blockchain data.">
 
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><meta name="theme-color" content="#000033">
 
@@ -106,7 +126,7 @@ def write_page(path,title,content,active='home'):
 
 
 
-<p class="notice">Experimental testnet v0.2 &mdash; <a href="{r}faq.html#mainnet">Mainnet is not live.</a><br>Test coins have no monetary value.</p></header>
+<p class="notice">{notice}</p></header>
 
 <nav class="nav" aria-label="Main navigation">{links}</nav>
 
@@ -116,7 +136,9 @@ def write_page(path,title,content,active='home'):
 
 <footer class="footer"><img class="redline" src="{r}assets/roughredline.gif" alt="" width="550" height="20"><div class="footer-links"><a href="{r}index.html">Home</a> | <a href="{r}downloads.html">Downloads</a> | <a href="{r}explorer/index.html">Explorer</a> | <a href="{r}roadmap.html">Mainnet status</a> | <a href="{r}nodes.html">Run a node</a> | <a href="{r}forum">Forum</a> | <a href="{GITHUB}">GitHub</a></div><p>Page archive: {E(CAPTURE)}</p><div class="credits"><p>Visual inspiration: <a href="https://geocities.restorativland.org/SiliconValley/1000/">GeoCities &mdash; SiliconValley/1000</a>, archived by Restorativland.</p></div></footer></div></body></html>"""
 
-    if path=='index.html':
+    if path=='index.html' and MAIN:
+        doc=doc.replace('</header>', '</header><div class="discord-banner"><a href="https://discord.gg/e6meVDjhyn">JOIN THE OBSOLETE COIN DISCORD &raquo;</a><a href="join.html">JOIN MAINNET &raquo;</a></div>',1)
+    elif path=='index.html':
         doc=doc.replace('</header>', '</header><div class="discord-banner"><a href="https://discord.gg/e6meVDjhyn">JOIN THE OBSOLETE COIN DISCORD &raquo;</a><a href="join.html">JOIN THE TESTNET &raquo;</a></div>', 1)
 
     if a.live:
@@ -129,7 +151,8 @@ def write_page(path,title,content,active='home'):
 
         doc=re.sub(r'(href|src)="([^"]+)"',lambda m:m[1]+'="'+urljoin('/'+path,m[2])+'"',doc)
 
-        doc=doc.replace('<p>Page archive: '+E(CAPTURE)+'</p>', '<p>Experimental testnet. No monetary value. Chain resets are possible.</p>')
+        footer = 'Experimental mainnet. The retired testnet has a separate transaction history.' if MAIN else 'Experimental testnet. No monetary value. Chain resets are possible.'
+        doc=doc.replace('<p>Page archive: '+E(CAPTURE)+'</p>', f'<p>{footer}</p>')
 
     if a.public_web_only:
         import re
@@ -138,6 +161,35 @@ def write_page(path,title,content,active='home'):
         doc=re.sub(r'<a href="(?:/)?downloads/source.tar.gz">Download the review source</a>', '<a href="https://github.com/jcib/obsoletecoin">Source code on GitHub</a>',doc)
     (OUT/path).write_text(doc,encoding='utf-8')
 
+if MAIN:
+    release_root = GITHUB+'/releases/download/'+MAIN['tag']+'/'
+    package_url = lambda pkg: ('/downloads/' if pkg['web'] else release_root) + E(pkg['file'])
+    package_rows = ''.join(f'<li><a href="{package_url(pkg)}">{E(pkg["label"])}</a><br><code class="hash">{E(pkg["sha256"])}</code></li>' for pkg in MAIN['packages'])
+    write_page('mainnet.html','Mainnet wallets',f"""<h1 class="page-title">Experimental mainnet wallets</h1>
+<p class="lede">{status}</p><div class="paper"><h2>Downloads &middot; {E(MAIN['version'])}</h2><ul>{package_rows}</ul>
+<p><a href="{GITHUB}/releases/tag/{MAIN['tag']}">Release notes, provenance and SHA-256 checksums</a></p>
+<h2>Connect</h2><p>On Windows, run the installer or extract the full ZIP and open ObsoleteCoin.exe. On Debian 13 x86-64 with Python 3 and Tk, extract the archive and run Start-Wallet.sh. The wallet checks for a bootstrap peer at startup. To enter a peer manually, choose Network  >  Connect peer.</p>
+<p>Mainnet receive addresses begin with <strong>obs1</strong>. The node uses TCP 19777 for peers and loopback RPC 9778 by default. Check the genesis with <code>bitcoin-cli -chain=obsolete getblockhash 0</code>.</p>
+<p><code class="hash">{genesis}</code></p><p>Legacy testnet addresses begin with tobs1. Their balances cannot be used on mainnet.</p>
+<p>The packages are unsigned. Independent security review and independent matching builds are pending. A dominant miner can reorganize the chain.</p></div>""",'downloads')
+
+
+
+    write_page('index.html','Home','<h1 class="home-title">Obsolete Coin (OBSC)</h1>' + mainnet_panel +
+               '<section class="block-section"><h2>Recent mainnet blocks</h2><iframe class="live-frame compact" title="Recent mainnet blocks" src="/live/recent"></iframe></section>'+
+               '<section class="node-section"><h2>First public node</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 node"></section>')
+    write_page('downloads.html','Downloads', f'<h1 class="page-title">Mainnet downloads</h1><div class="paper"><h2>Windows and Linux &middot; {E(MAIN["version"])}</h2><ul>{package_rows}</ul><p><a href="{release_root}SHA256SUMS.txt">SHA-256 checksums</a> &middot; <a href="{release_root}Windows-PROVENANCE.json">Windows provenance</a> &middot; <a href="{release_root}Linux-PROVENANCE.json">Linux provenance</a></p><p>Unsigned experimental packages. <a href="mainnet.html">Setup and release notes</a></p></div>', 'downloads')
+    write_page('join.html','Join mainnet', '<h1 class="page-title">Join mainnet</h1>'+mainnet_panel+'<iframe class="live-frame compact" title="Current public peer" src="/live/peer"></iframe>')
+    write_page('nodes.html','Run a node','<h1 class="page-title">Run a mainnet node</h1><div class="paper"><p>Start bitcoind with <code>-chain=obsolete</code> and a dedicated data directory. Allow incoming TCP 19777 for peers. Keep RPC on loopback.</p><p>Check block zero using <code>bitcoin-cli -chain=obsolete getblockhash 0</code>. The <a href="mainnet.html">mainnet guide</a> lists the expected hash.</p></div>')
+    write_page('mining.html','How to mine','<h1 class="page-title">Mine on mainnet</h1><div class="paper"><p>Open the <a href="downloads.html">Windows or Linux wallet</a> and wait for a mainnet peer and synchronization. Select threads and CPU activity, then choose Mine / Stop. Keep a private backup of the wallet receiving rewards.</p><p>Rewards mature after 100 blocks. RandomX targets a 15-minute block interval. Time to find a block varies with hash rate and difficulty.</p></div>','mining')
+    write_page('coin.html','The coin','<h1 class="page-title">Obsolete Coin</h1><div class="paper"><p>CPU-mined OBSC uses RandomX and adjusts difficulty every block with ASERT. The initial subsidy is 5,000 OBSC, halves every 100,000 blocks and totals at most one billion OBSC. The genesis pays zero.</p></div>')
+    write_page('roadmap.html','Mainnet status', '<h1 class="page-title">Mainnet status</h1>'+mainnet_panel+'<div class="paper"><p>Independent consensus review, signed builds and independent operator testing remain outstanding.</p></div>')
+    write_page('faq.html','Questions and answers','<h1 class="page-title">Questions and answers</h1><div class="paper"><h2 id="mainnet">Can I use my test coins?</h2><p>Mainnet begins at a new genesis. Legacy test balances and tobs1 addresses remain on the separate test chain.</p><h2>Can the site recover my wallet?</h2><p>Recovery uses your own private backup.</p></div>')
+    write_page('explorer/index.html','Mainnet block explorer','<h1 class="page-title">Mainnet block explorer</h1><p><a href="/explorer/network.html">Network statistics</a></p><iframe class="live-frame" title="Mainnet blockchain" src="/live/explorer/index.html"></iframe>', 'explorer')
+    write_page('forum-template.html','Forum','<!--FORUM_CONTENT-->','forum')
+    write_page('404.html','Page not found','<h1 class="page-title">Page not found</h1><a href="/index.html">Home</a>')
+    (OUT/'robots.txt').write_text('User-agent: *\nDisallow: /\n',encoding='utf-8')
+    raise SystemExit(0)
 
 
 def download_cards():
@@ -160,7 +212,7 @@ home=f"""<h1 class="home-title">Obsolete Coin (OBSC)</h1>
 
 <section class="node-section"><h2>First node: Dell Micro 7040 (2016)</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 used as the first Obsolete Coin testnet node"><p>Experimental testnet node. Old, underpowered, and potentially disastrous.</p></section>
 
-<section class="block-section"><h2>Recent blocks</h2><ul class="block-mini">{latest}</ul><p>Captured {E(CAPTURE)}. This is an archive, not a live feed.</p><p><a href="explorer/index.html">Open the block explorer</a></p></section>
+<section class="block-section"><h2>Recent testnet blocks</h2><ul class="block-mini">{latest}</ul><p>Captured {E(CAPTURE)}. This is an archive, not a live feed.</p><p><a href="explorer/index.html">Open the block explorer</a></p></section>
 
 <p class="network-note">The 15-minute interval is a target, not a fixed delay. Initial testnet difficulty is intentionally easy.<br><a href="coin.html">Technical specifications</a> | <a href="{GITHUB}">Source code</a> (private during testing).</p>"""
 
@@ -168,7 +220,7 @@ if a.live:
 
     start=home.index('<section class="block-section">');end=home.index('</section>',start)+len('</section>')
 
-    home=home[:start]+'<section class="block-section"><h2>Recent blocks</h2><iframe class="live-frame compact" title="Live recent blocks" src="/live/recent"></iframe></section>'+home[end:]
+    home=home[:start]+'<section class="block-section"><h2>Recent testnet blocks</h2><iframe class="live-frame compact" title="Live recent blocks" src="/live/recent"></iframe></section>'+home[end:]
 
 write_page('index.html','Home',home)
 
@@ -180,7 +232,7 @@ write_page('downloads.html','Downloads',f"""<h1 class="page-title">Downloads</h1
 <p class="lede">Windows and Linux {E(WINDOWS['version'])}.</p>
 <p><a href="{RELEASE_URL}">GitHub Release: Windows installer, portable ZIP, Linux archive and release notes</a></p>
 {download_cards()}
-<div class="under-construction">These are experimental testnet packages. Mainnet remains disabled.</div>
+<div class="under-construction">The packages in this section run on the experimental testnet.</div>
 <h2 class="section-head">Package contents</h2><div class="paper"><ul>
 <li>A full testnet node and a local wallet with send, receive, encryption and backup.</li>
 <li>Windows and Linux 0.4.0: selectable mining threads and activity, measured hash rate and block counters.</li>
@@ -201,7 +253,7 @@ write_page('downloads.html','Downloads',f"""<h1 class="page-title">Downloads</h1
 
 
 
-facts=[('Name / working ticker','Obsolete Coin / OBSC'),('Mining','RandomX proof of work, CPU'),('Maximum authorized issuance','1,000,000,000 OBSC'),('Decimal places','8'),('Target block interval','900 seconds / 15 minutes'),('Difficulty adjustment','ASERT, every block; six-hour half-life'),('Initial block reward','5,000 OBSC'),('Halving interval','100,000 blocks, counted from block 1'),('Genesis reward / premine','Zero / none'),('Mining reward maturity','100 blocks'),('End of subsidy','Block 3,900,000; transaction fees thereafter'),('Current network','Experimental testnet v0.2; mainnet disabled')]
+facts=[('Name / working ticker','Obsolete Coin / OBSC'),('Mining','RandomX proof of work, CPU'),('Maximum authorized issuance','1,000,000,000 OBSC'),('Decimal places','8'),('Target block interval','900 seconds / 15 minutes'),('Difficulty adjustment','ASERT, every block; six-hour half-life'),('Initial block reward','5,000 OBSC'),('Halving interval','100,000 blocks, counted from block 1'),('Genesis reward / premine','Zero / none'),('Mining reward maturity','100 blocks'),('End of subsidy','Block 3,900,000; transaction fees thereafter'),('Networks','Experimental mainnet and separate testnet v0.2' if MAIN else 'Experimental testnet v0.2; mainnet disabled')]
 
 write_page('coin.html','The coin',f"""<h1 class="page-title">Technical specifications</h1><p class="lede">Obsolete Coin network parameters.</p><table class="facts"><tbody>{''.join(f'<tr><th scope="row">{E(k)}</th><td>{E(v)}</td></tr>' for k,v in facts)}</tbody></table><h2 class="section-head">Slow is the target</h2><div class="paper"><p>The software does not delay your payment with a timer. Miners produce blocks, and the difficulty adjusts toward an average interval of 15 minutes. Real waits vary. Initial testnet difficulty is deliberately easy.</p><p>More hash power raises difficulty over time; it does not guarantee an exact calendar schedule. The Windows and Linux 0.4.0 wallets support configurable CPU mining threads and activity.</p></div><h2 class="section-head">A finite supply</h2><div class="paper"><p>The integer reward schedule authorizes exactly one billion OBSC. A one-off 0.013 OBSC rounding remainder is included at the final rewarded block. Unclaimed rewards and lost keys reduce the circulating amount.</p><p>At the target interval, halvings are roughly 2.85 years apart. The inherited timestamp format needs an upgrade before 2106, earlier than the theoretical end of the subsidy schedule.</p></div><h2 class="section-head">Where it comes from</h2><div class="paper"><p>This is a fork of Brisvia and Bitcoin Core, with pinned upstream RandomX. Original licenses are preserved. Obsolete Coin is developed with assistance from OpenAI Codex in writing and modifying its code. A Bitcoin-derived codebase does not give a new chain Bitcoin's hash power or security.</p><p><a href="{GITHUB}/blob/main/docs/SPEC.md">Read the full specification on GitHub &raquo;</a></p></div>""",'coin')
 
@@ -228,7 +280,7 @@ sudo apt-get install --no-install-recommends python3 python3-tk libevent-2.1-7t6
 <li>Use <strong>Protect / check recovery</strong> to encrypt, save a private backup and verify it offline.</li>
 <li>Keep backups and passphrases separately. Do not delete your data directory without a verified backup.</li>
 <li>The application closes only a node it started. Application upgrades do not replace wallet data.</li>
-<li>The current network is experimental testnet v0.2. Mainnet is disabled.</li></ul></div>""",'mining')
+<li>These instructions apply to experimental testnet v0.2.</li></ul></div>""",'mining')
 
 
 questions=[('mainnet','Is this the real mainnet?','No. This is experimental testnet v0.2. The mainnet is disabled. Test coins have no monetary value and do not automatically carry over to a future mainnet.'),('native','Where is the native Windows wallet?','A native x86-64 test candidate is available on Downloads. It includes the local node and miner and runs directly on Windows. The current package passed local wallet/mining checks on Windows 11. Broader supported-system validation remains pending.'),('speed','Why did my block arrive so quickly?','Initial testnet difficulty is intentionally easy. Fifteen minutes is the target average, not a fixed delay for each transaction or a promise for early test blocks.'),('maturity','I mined coins. Why can I not spend them?','Block rewards must satisfy the 100-block maturity rule. The wallet lists them as immature until they become spendable.'),('security','Do four confirmations make a payment safe?','Not against a miner that dominates a small proof-of-work network. Such a miner can reorganize valid blocks and reverse its own payments. Confirmations are not absolute finality.'),('explorer','Is the explorer live?','No. It is a genuine HTML archive of public blocks and transactions, exported at the time shown on every explorer page. It does not poll a node. New blocks appear only after a new export is published.'),('github','Where is the source code?','The public GitHub repository includes the source, build instructions, test evidence and issue tracker. GitHub may require an account to report an issue.'),('keys','Can the website recover my wallet?','No. It does not request seed phrases, private keys, wallet files or RPC passwords. Protect your local wallet and keep secure backups.'),('return','Is there a promised return?','No. This is experimental software and a test network, not a promise of income, exchange listing or investment performance.')]
@@ -237,9 +289,17 @@ if a.live:
 
     questions=[(k,q,('Yes. Public data from the Dell node is refreshed every 15 seconds. A visible warning appears when observations are older than 60 seconds. This explorer covers at most 1024 recent blocks and only confirmed transactions; it is not a wallet balance service.' if k=='explorer' else answer)) for k,q,answer in questions]
 
+if MAIN:
+    questions = [(key, 'Where can I find mainnet?' if key == 'mainnet' else q,
+                  'Open the Mainnet wallets page for connection status, downloads and the expected genesis. The testnet explorer and its balances remain separate.' if key == 'mainnet' else answer)
+                 for key,q,answer in questions]
+
 write_page('faq.html','Questions & answers','<h1 class="page-title">Frequently asked questions</h1><p class="lede">Testnet operation and limitations.</p><div class="paper">'+''.join(f'<details id="{key}"'+(' open' if i==0 else '')+f'><summary>{E(q)}</summary><p>{E(answer)}</p></details>' for i,(key,q,answer) in enumerate(questions))+'</div>','faq')
 
-write_page('roadmap.html','Road to mainnet',"""<h1 class="page-title">Mainnet requirements</h1><p class="lede">Mainnet activation is blocked pending security and operational validation.</p><div class="paper"><ul class="status-list"><li><b>AVAILABLE</b> Experimental CPU-mined testnet, Linux package, native Windows test installer and native Linux desktop launcher.</li><li><b>REQUIRED</b> Native Windows releases, independently reproduced and tested on every supported Windows version.</li><li><b>REQUIRED</b> Independent consensus/security review, sustained public testnet and hostile-traffic testing. Local/CI adversarial and recovery regressions have passed.</li><li><b>REQUIRED</b> A public launch plan, independent miners, peer infrastructure and initial-difficulty calibration.</li><li><b>UNSCHEDULED</b> Mainnet. There is no announced release date and no automatic conversion of test coins.</li></ul><p><a href="https://github.com/jcib/obsoletecoin/blob/main/docs/MAINNET-READINESS.md">Read the current security and launch notes &raquo;</a></p></div>""",'coin')
+if MAIN:
+    write_page('roadmap.html','Mainnet status',mainnet_panel + '<div class="paper"><h2>Outstanding work</h2><p>Independent review, independent matching builds, signing and sustained multi-operator testing remain outstanding.</p></div>')
+else:
+    write_page('roadmap.html','Road to mainnet',"""<h1 class="page-title">Mainnet requirements</h1><p class="lede">Mainnet activation is blocked pending security and operational validation.</p><div class="paper"><ul class="status-list"><li><b>AVAILABLE</b> Experimental CPU-mined testnet, Linux package, native Windows test installer and native Linux desktop launcher.</li><li><b>REQUIRED</b> Native Windows releases, independently reproduced and tested on every supported Windows version.</li><li><b>REQUIRED</b> Independent consensus/security review, sustained public testnet and hostile-traffic testing. Local/CI adversarial and recovery regressions have passed.</li><li><b>REQUIRED</b> A public launch plan, independent miners, peer infrastructure and initial-difficulty calibration.</li><li><b>UNSCHEDULED</b> Mainnet. There is no announced release date and no automatic conversion of test coins.</li></ul><p><a href="https://github.com/jcib/obsoletecoin/blob/main/docs/MAINNET-READINESS.md">Read the current security and launch notes &raquo;</a></p></div>""",'coin')
 
 
 
@@ -307,7 +367,7 @@ else:
 
 # In a second terminal:
 
-python3 tools/wallet.py</pre><h2>What to test</h2><ul><li>Fresh synchronization, mining and confirmation of rewards.</li><li>Transfers between two independently created wallets, including exact fees and timestamps.</li><li>Restarting your own wallet, reconnecting and making an encrypted backup.</li><li>Report reproducible errors with operating system, package version, block height and redacted logs in <a href="https://github.com/jcib/obsoletecoin/issues/new/choose">GitHub Issues</a> or the announcement thread.</li></ul><p>Mining rewards require 100-block maturity. Fifteen minutes is an average target; initial test difficulty is easy and real waits vary. Do not interpret a mined reward as immediately spendable.</p><p>The first node is a Dell Micro 7040 from 2016 on a home connection. Availability is best effort; independent node operators are welcome. A dominant miner can reorganize this small network.</p><p>Never post a wallet file, seed, private key, passphrase or RPC cookie. Do not open RPC ports to the Internet. Outbound-only mining computers do not need router port forwarding.</p><p><a href="downloads/source.tar.gz">Download the review source</a> ? <a href="explorer/index.html">Explorer</a> ? <a href="downloads.html">Downloads and checksums</a></p>""")
+python3 tools/wallet.py</pre><h2>What to test</h2><ul><li>Fresh synchronization, mining and confirmation of rewards.</li><li>Transfers between two independently created wallets, including exact fees and timestamps.</li><li>Restarting your own wallet, reconnecting and making an encrypted backup.</li><li>Report reproducible errors with operating system, package version, block height and redacted logs in <a href="https://github.com/jcib/obsoletecoin/issues/new/choose">GitHub Issues</a> or the announcement thread.</li></ul><p>Mining rewards require 100-block maturity. Fifteen minutes is an average target; initial test difficulty is easy and real waits vary. Do not interpret a mined reward as immediately spendable.</p><p>The first node is a Dell Micro 7040 from 2016 on a home connection. Availability is best effort; independent node operators are welcome. A dominant miner can reorganize this small network.</p><p>Never post a wallet file, seed, private key, passphrase or RPC cookie. Do not open RPC ports to the Internet. Outbound-only mining computers do not need router port forwarding.</p><p><a href="downloads/source.tar.gz">Download the review source</a> &middot; <a href="explorer/index.html">Explorer</a> &middot; <a href="downloads.html">Downloads and checksums</a></p>""")
 
 write_page('404.html','Page not found','<h1 class="page-title">Page not found</h1><div class="paper"><p>The page you are looking for is not in this archive.</p><p><a href="index.html">Return to the homepage &raquo;</a></p></div>')
 

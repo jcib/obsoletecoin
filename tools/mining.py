@@ -7,8 +7,9 @@ import threading
 import time
 from pathlib import Path
 from rx import RandomX
+from coin_network import TESTNET
 
-GENESIS = '9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98'
+GENESIS = TESTNET.genesis
 MAX_THREADS = min(4, os.cpu_count() or 1)
 
 
@@ -98,7 +99,7 @@ class MiningStats:
                         threads=self.threads, duty=self.duty, state=self.state)
 
 
-def mine(rpc, address, stop=None, max_blocks=None, maxtries=256, *, threads=1, duty=100, library=None, stats=None):
+def mine(rpc, address, stop=None, max_blocks=None, maxtries=256, *, threads=1, duty=100, library=None, stats=None, network=TESTNET):
     """ctypes releases the GIL. Duty is an active/wait ratio, not an OS CPU cap."""
     if not 1 <= threads <= MAX_THREADS: raise ValueError(f'Use 1..{MAX_THREADS} mining threads')
     if not 1 <= duty <= 100: raise ValueError('Activity must be 1..100 percent')
@@ -107,10 +108,9 @@ def mine(rpc, address, stop=None, max_blocks=None, maxtries=256, *, threads=1, d
     stop = stop or threading.Event()
     stats = stats or MiningStats(threads, duty)
     library = find_library(library)
-    if rpc.call('getblockchaininfo')['chain'] != 'obsolete-test' or rpc.call('getblockhash', 0) != GENESIS:
-        raise ValueError('This miner only supports Obsolete testnet v0.2')
+    network.verify(rpc)
     address_info = rpc.call('validateaddress', address)
-    if not address_info['isvalid']: raise ValueError('Invalid testnet payout address')
+    if not address_info['isvalid']: raise ValueError(f'Invalid {network.label} payout address')
     payout = bytes.fromhex(address_info['scriptPubKey'])
     errors = []
     submission = threading.Lock()
@@ -122,8 +122,8 @@ def mine(rpc, address, stop=None, max_blocks=None, maxtries=256, *, threads=1, d
         try:
             while not stop.is_set():
                 info = rpc.call('getblockchaininfo')
-                if info['chain'] != 'obsolete-test' or info['initialblockdownload'] or rpc.call('getconnectioncount') < 1:
-                    raise ValueError('Connect a testnet peer and finish synchronization before mining')
+                if info['chain'] != network.chain or info['initialblockdownload'] or rpc.call('getconnectioncount') < 1:
+                    raise ValueError(f'Connect a {network.label} peer and finish synchronization before mining')
                 template = rpc.call('getblocktemplate', {'rules': ['segwit']})
                 header, body, seed, target = make_work(template, payout, os.urandom(16))
                 if seed != current_seed:

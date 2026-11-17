@@ -22,12 +22,12 @@ for source in ['src/secp256k1/COPYING','src/leveldb/LICENSE','src/leveldb/AUTHOR
  path=Path(source);shutil.copy2(path,licenses/(path.parent.name+'-'+path.name))
 bootloader=Path('.local/build-venv314/Lib/site-packages/pyinstaller-6.22.0.dist-info/licenses/COPYING.txt')
 if bootloader.is_file():shutil.copy2(bootloader,licenses/'PyInstaller.txt')
-shutil.copy2('docs/WINDOWS-NATIVE.md',a.output/'READ-ME.txt')
+shutil.copy2('docs/MAINNET-WALLET.md',a.output/'READ-ME.txt')
 head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
-source_files=['tools/native_wallet.py','tools/wallet.py','tools/rpc.py','tools/mine.py','release/build-wallet.ps1','release/requirements-build.txt','release/requirements-build.lock','release/prepare-tk.py']
+source_files=['tools/coin_network.py','tools/native_wallet.py','tools/wallet.py','tools/rpc.py','tools/mine.py','release/build-wallet.ps1','release/requirements-build.txt','release/requirements-build.lock','release/prepare-tk.py']
 source_files += ['tools/mining.py','tools/rx.py','tools/wallet_recovery.py']
 source_files += [str(x).replace('\\','/') for x in Path('tools/assets').rglob('*') if x.is_file()]
-manifest={'network':'obsolete-test','unsigned':True,'mainnet_enabled':False,'gui_base_commit':head,'gui_sources':{x:hashlib.sha256(Path(x).read_bytes()).hexdigest() for x in source_files},'node':json.loads((a.node/'node-provenance.json').read_text()),'runtime':'CPython 3.14.10','files':{}}
+manifest={'version':'0.5.0-mainnet','network':'obsolete','unsigned':True,'mainnet_enabled':True,'gui_base_commit':head,'gui_sources':{x:hashlib.sha256(Path(x).read_bytes()).hexdigest() for x in source_files},'node':json.loads((a.node/'node-provenance.json').read_text()),'runtime':'CPython 3.14.10','files':{}}
 for item in sorted(a.output.rglob('*')):
  if item.is_file():manifest['files'][item.relative_to(a.output).as_posix()]=hashlib.sha256(item.read_bytes()).hexdigest()
 (a.output/'PROVENANCE.json').write_text(json.dumps(manifest,indent=2))

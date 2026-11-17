@@ -5,7 +5,7 @@ import tempfile
 import time
 from pathlib import Path
 from rpc import RPC, RPCError
-from mining import GENESIS
+from coin_network import TESTNET
 
 
 def descriptor_identity(rpc):
@@ -19,11 +19,10 @@ def check_wallet_capabilities(source, restored):
             raise ValueError('Backup signing capabilities do not match the open wallet')
 
 
-def verify_backup(source_rpc, backup, binary, passphrase=None):
+def verify_backup(source_rpc, backup, binary, passphrase=None, *, network=TESTNET):
     backup, binary = Path(backup).resolve(), Path(binary).resolve()
     if not backup.is_file() or not binary.is_file(): raise ValueError('Backup or node executable is missing')
-    if source_rpc.call('getblockchaininfo')['chain'] != 'obsolete-test' or source_rpc.call('getblockhash', 0) != GENESIS:
-        raise ValueError('Wrong source network')
+    network.verify(source_rpc)
     identity = descriptor_identity(source_rpc)
     source_info = source_rpc.call('getwalletinfo')
     if not identity: raise ValueError('Source wallet has no descriptors to compare')
@@ -31,9 +30,9 @@ def verify_backup(source_rpc, backup, binary, passphrase=None):
         sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
     with tempfile.TemporaryDirectory(prefix='obsolete-backup-check-') as folder:
         data = Path(folder)
-        rpc = RPC(data/'obsolete-testnet-v2/.cookie', port, timeout=30)
+        rpc = RPC(data/network.directory/'.cookie', port, timeout=30)
         with (data/'check.log').open('w') as log:
-            process = subprocess.Popen([str(binary), '-chain=obsolete-test', f'-datadir={data}',
+            process = subprocess.Popen([str(binary), f'-chain={network.chain}', f'-datadir={data}',
                 f'-rpcport={port}', '-rpcbind=127.0.0.1', '-rpcallowip=127.0.0.1', '-server=1',
                 '-listen=0', '-connect=0', '-dnsseed=0', '-fixedseeds=0', '-discover=0',
                 '-networkactive=0', '-dbcache=32', '-printtoconsole=0'], stdout=log, stderr=subprocess.STDOUT,
@@ -43,8 +42,7 @@ def verify_backup(source_rpc, backup, binary, passphrase=None):
                 while True:
                     if process.poll() is not None: raise RuntimeError('Temporary verification node failed to start')
                     try:
-                        if rpc.call('getblockchaininfo')['chain'] != 'obsolete-test' or rpc.call('getblockhash', 0) != GENESIS:
-                            raise ValueError('Wrong verification network')
+                        network.verify(rpc)
                         break
                     except (OSError, RPCError):
                         if time.monotonic() >= deadline: raise RuntimeError('Verification startup timed out')

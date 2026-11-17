@@ -1,4 +1,4 @@
-// Only literal public IPv4 testnet endpoints; no DNS, redirects or arbitrary ports.
+// Only literal public IPv4 mainnet endpoints; no DNS, redirects or arbitrary ports.
 export function publicPeer(value) {
  if (typeof value !== 'string' || !/^(\d{1,3}\.){3}\d{1,3}:19777$/.test(value)) return null;
  const [host] = value.split(':'), p = host.split('.').map(Number);

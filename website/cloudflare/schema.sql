@@ -1,5 +1,6 @@
 ﻿PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS public_state (name TEXT PRIMARY KEY, observed INTEGER NOT NULL, data TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS mainnet_public_state (name TEXT PRIMARY KEY, observed INTEGER NOT NULL, data TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS forum_threads (id TEXT PRIMARY KEY, title TEXT NOT NULL CHECK(length(title) BETWEEN 3 AND 120), created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, replies INTEGER NOT NULL DEFAULT 0, locked INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0);
 CREATE INDEX IF NOT EXISTS forum_threads_recent ON forum_threads(hidden, updated_at DESC, id);
 CREATE TABLE IF NOT EXISTS forum_posts (id TEXT PRIMARY KEY, thread_id TEXT NOT NULL REFERENCES forum_threads(id) ON DELETE CASCADE, alias TEXT NOT NULL CHECK(length(alias) BETWEEN 1 AND 32), body TEXT NOT NULL CHECK(length(body) BETWEEN 1 AND 5000), created_at INTEGER NOT NULL);

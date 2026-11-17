@@ -1,8 +1,9 @@
 """Build the public Pages asset directory and portable Worker sources."""
 import argparse,json,shutil
 from pathlib import Path
-p=argparse.ArgumentParser();p.add_argument('--static',type=Path,required=True);a=p.parse_args()
-root=Path(__file__).resolve().parents[2];out=root/'.local/pages-dist';src=root/'.local/pages-src'
+p=argparse.ArgumentParser();p.add_argument('--static',type=Path,required=True)
+p.add_argument('--work',type=Path,default=Path(__file__).resolve().parents[2]/'.local');a=p.parse_args()
+root=Path(__file__).resolve().parents[2];out=a.work/'pages-dist';src=a.work/'pages-src'
 out.mkdir(exist_ok=True);src.mkdir(exist_ok=True)
 pages={}
 for f in a.static.rglob('*'):

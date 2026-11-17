@@ -61,7 +61,7 @@ def run(binary,library):
             addr=wa.call('getnewaddress','','bech32');other=wb.call('getnewaddress','','bech32')
             assert addr.startswith('tobs1') and other.startswith('tobs1')
             # Actual RandomX mining crosses the initial-seed/genesis-seed boundary at 64.
-            miner=subprocess.run([sys.executable,str(ROOT/'tools/mine.py'),'--address',addr,
+            miner=subprocess.run([sys.executable,str(ROOT/'tools/mine.py'),'--chain','obsolete-test','--address',addr,
                                   '--cookie',str(a.rpc.cookie),'--rpcport',str(a.rpcport),'--blocks','1','--library',str(library)],
                                  capture_output=True,text=True,timeout=120)
             assert miner.returncode==0 and 'Found block' in miner.stdout,miner.stderr

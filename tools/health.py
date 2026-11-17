@@ -1,19 +1,24 @@
-"""Read-only local testnet health snapshot; emits no wallet or peer identities."""
+"""Read-only local node health snapshot; emits no wallet or peer identities."""
 import argparse,json,shutil,time
 from pathlib import Path
+from coin_network import MAINNET, TESTNET
 from rpc import RPC,default_data_dir
 p=argparse.ArgumentParser()
-p.add_argument('--datadir',type=Path,default=default_data_dir())
-p.add_argument('--rpcport',type=int,default=19778)
+p.add_argument('--chain',choices=['obsolete','obsolete-test'],default='obsolete')
+p.add_argument('--datadir',type=Path)
+p.add_argument('--rpcport',type=int)
 p.add_argument('--max-tip-age',type=int,default=14400)
 p.add_argument('--min-free-mib',type=int,default=1024)
 a=p.parse_args()
+network = MAINNET if a.chain == MAINNET.chain else TESTNET
+if a.datadir is None: a.datadir = Path.home()/'.obsoletecoin-mainnet' if network == MAINNET else default_data_dir()
+if a.rpcport is None: a.rpcport = network.rpc
 try:
- rpc=RPC(a.datadir/'obsolete-testnet-v2/.cookie',a.rpcport,timeout=10)
+ rpc=RPC(a.datadir/network.directory/'.cookie',a.rpcport,timeout=10)
  chain=rpc.call('getblockchaininfo');net=rpc.call('getnetworkinfo')
  free=shutil.disk_usage(a.datadir).free//(1024*1024)
  age=max(0,int(time.time())-chain['time']);issues=[]
- if chain['chain']!='obsolete-test':issues.append('wrong-network')
+ if chain['chain']!=network.chain or rpc.call('getblockhash',0)!=network.genesis:issues.append('wrong-network')
  if chain['initialblockdownload'] or chain['headers']!=chain['blocks']:issues.append('sync-incomplete')
  if net['connections']==0:issues.append('no-peers')
  if age>a.max_tip_age:issues.append('old-tip-check-miners')

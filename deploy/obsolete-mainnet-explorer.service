@@ -1,0 +1,21 @@
+[Unit]
+Description=Obsolete Coin mainnet public explorer feed
+After=obsolete-mainnet.service network-online.target
+Requires=obsolete-mainnet.service
+
+[Service]
+User=obsoletecoin
+ExecStart=/usr/bin/python3 -B /opt/obsolete-mainnet/website/live/publisher.py --config /etc/obsoletecoin/explorer.json
+Restart=on-failure
+RestartSec=10
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

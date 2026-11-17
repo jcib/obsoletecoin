@@ -36,7 +36,7 @@ export function publicCensus(record,now=Date.now()){
   checked:record.updated,oldestVerification:verified.length?Math.min(...verified.map(r=>r.checked)):null,
   known:record.nodes.length,checkedRecently:record.nodes.filter(recent).length,
   windowMinutes:RECENT/60000,intervalMinutes:INTERVAL/60000,limit:LIMIT,capped:record.capped===true,
-  scope:'Public IPv4 endpoints on TCP 19777; testnet handshake and genesis verified'};
+  scope:'Public IPv4 endpoints on TCP 19777; mainnet handshake and genesis verified'};
 }
 const utc=n=>new Date(n).toISOString().replace('T',' ').replace(/\.\d{3}Z$/,' UTC');
 export function renderCensus(c){
@@ -47,6 +47,6 @@ export function renderCensus(c){
   body+='<p>'+(c.fresh?'Monitor active.':'STALE MONITOR - results may be incomplete.')+' Last check: '+utc(c.checked)+'. Checks run approximately every 5 minutes while the node feed is active.</p>';
   body+='<details><summary>What this count includes</summary><p>Discovery coverage: '+c.known+' known candidates; '+c.checkedRecently+' checked within the last 30 minutes. '+(c.capped?'Candidate limit reached. ':'')+'Up to 256 candidates retained.</p>';
  }
- body+='<p>Counts public IPv4 endpoints on TCP 19777 that answer an external testnet handshake and genesis check. Addresses are discovered from peers; discovery is gradual and incomplete. Private nodes, IPv6, Tor and other ports are outside this count. One operator may run several nodes; this is neither a total network census nor a miner count. Failed rechecks remove an endpoint immediately; unchecked results expire after 30 minutes.</p></details></section>';
+ body+='<p>Counts public IPv4 endpoints on TCP 19777 that answer an external mainnet handshake and genesis check. Addresses are discovered from peers; discovery is gradual and incomplete. Private nodes, IPv6, Tor and other ports are outside this count. One operator may run several nodes; this is neither a total network census nor a miner count. Failed rechecks remove an endpoint immediately; unchecked results expire after 30 minutes.</p></details></section>';
  return body;
 }

@@ -10,9 +10,9 @@
   "MAIN": {
     "phrase": "Obsolete Coin main: A new beginning.",
     "seed": "8073fa65b79bd602da35c7e950f78273a1b742f6bc6ed7c2842e054327f78c42",
-    "nonce": 0,
+    "nonce": 210938,
     "merkle": "b202e155d7e727bda52e5e6f04bf6a5d750da0d9204f72f00daa679ef3b53a5f",
-    "hash": "4525a456b4b753cd8fee9052d3f33df3dd8b3f31296714d58c7bce03c14ed216",
-    "randomx_hash": "687eeb713f7a53a413a5aacf553db990455fe6693856b09fb7d9dca79c722ab0"
+    "hash": "39edafd04ad371911d1d17c38c40d16878b550489bc3df92530a7c813b0de133",
+    "randomx_hash": "00001901b30fba198575aaf482000d4103dd96ab51a02e3fa45f427e34d73096"
   }
 }

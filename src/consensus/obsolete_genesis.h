@@ -9,11 +9,11 @@ constexpr const char* OBSOLETE_TEST_SEED = "3e50aa22e9d8fd7a89c93596cae39bfa6b86
 constexpr uint32_t OBSOLETE_TEST_NONCE = 2;
 constexpr const char* OBSOLETE_TEST_MERKLE = "b38882d6af68a402b1a665b9b4ba542b7c13750120b1401705181027329c57f3";
 constexpr const char* OBSOLETE_TEST_HASH = "9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98";
-constexpr uint32_t OBSOLETE_MAIN_TIME = 1794614400;
-constexpr uint32_t OBSOLETE_MAIN_BITS = 0x207fffff;
+constexpr uint32_t OBSOLETE_MAIN_TIME = 1794960000;
+constexpr uint32_t OBSOLETE_MAIN_BITS = 0x1f014000;
 constexpr const char* OBSOLETE_MAIN_PHRASE = "Obsolete Coin main: A new beginning.";
 constexpr const char* OBSOLETE_MAIN_SEED = "8073fa65b79bd602da35c7e950f78273a1b742f6bc6ed7c2842e054327f78c42";
-constexpr uint32_t OBSOLETE_MAIN_NONCE = 0;
+constexpr uint32_t OBSOLETE_MAIN_NONCE = 210938;
 constexpr const char* OBSOLETE_MAIN_MERKLE = "b202e155d7e727bda52e5e6f04bf6a5d750da0d9204f72f00daa679ef3b53a5f";
-constexpr const char* OBSOLETE_MAIN_HASH = "4525a456b4b753cd8fee9052d3f33df3dd8b3f31296714d58c7bce03c14ed216";
+constexpr const char* OBSOLETE_MAIN_HASH = "39edafd04ad371911d1d17c38c40d16878b550489bc3df92530a7c813b0de133";
 #endif

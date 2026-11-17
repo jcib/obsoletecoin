@@ -14,11 +14,11 @@ assert.deepEqual(parseAddresses(addr(),now),[other]);
 for(const b of [addr('127.0.0.1'),addr('8.8.8.8',19778),addr('8.8.8.8',19777,1),addr('8.8.8.8',19777,Math.floor(now/1000)+601),addr('8.8.8.8',19777,Math.floor(now/1000),0n)])assert.deepEqual(parseAddresses(b,now),[]);
 for(const b of [new Uint8Array(),new Uint8Array([254]),new Uint8Array([253,1,0]),new Uint8Array([253,233,3]),new Uint8Array([1])])assert.throws(()=>parseAddresses(b,now));
 const header=new Uint8Array(80),hv=new DataView(header.buffer);hv.setInt32(0,1,true);
-header.set(Buffer.from('b38882d6af68a402b1a665b9b4ba542b7c13750120b1401705181027329c57f3','hex').reverse(),36);
-hv.setUint32(68,1794614400,true);hv.setUint32(72,0x207fffff,true);hv.setUint32(76,2,true);
+header.set(Buffer.from('b202e155d7e727bda52e5e6f04bf6a5d750da0d9204f72f00daa679ef3b53a5f','hex').reverse(),36);
+hv.setUint32(68,1794960000,true);hv.setUint32(72,0x1f014000,true);hv.setUint32(76,210938,true);
 assert.equal(Buffer.from(await hash(header)).reverse().toString('hex'),GENESIS);
 async function message(name,payload=new Uint8Array()){
- const out=new Uint8Array(24+payload.length);out.set([79,66,84,50]);out.set(new TextEncoder().encode(name),4);new DataView(out.buffer).setUint32(16,payload.length,true);out.set((await hash(payload)).slice(0,4),20);out.set(payload,24);return out;
+ const out=new Uint8Array(24+payload.length);out.set([79,66,83,50]);out.set(new TextEncoder().encode(name),4);new DataView(out.buffer).setUint32(16,payload.length,true);out.set((await hash(payload)).slice(0,4),20);out.set(payload,24);return out;
 }
 const version=new Uint8Array(86);new DataView(version.buffer).setInt32(0,70016,true);new DataView(version.buffer).setBigUint64(4,1n,true);
 const headers=new Uint8Array(82);headers[0]=1;headers.set(header,1);

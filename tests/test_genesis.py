@@ -1,3 +1,4 @@
+import json
 import struct
 import sys
 import unittest
@@ -9,6 +10,14 @@ from genesis import GENESIS_PARAMETERS, POW_LIMIT, genesis_parts, target_from_bi
 
 
 class GenesisTests(unittest.TestCase):
+    def test_wallet_genesis_matches_each_committed_proof(self):
+        from coin_network import MAINNET, TESTNET
+        records = json.loads((Path(__file__).resolve().parents[1]/'docs/genesis.json').read_text())
+        self.assertEqual(MAINNET.genesis, records['MAIN']['hash'])
+        self.assertEqual(TESTNET.genesis, records['TEST']['hash'])
+        self.assertNotEqual(MAINNET.genesis, TESTNET.genesis)
+        self.assertNotEqual(MAINNET.directory, TESTNET.directory)
+
     def test_candidate_parameters_only_affect_candidate_header(self):
         testnet = genesis_parts('TEST')
         candidate = genesis_parts('MAIN')

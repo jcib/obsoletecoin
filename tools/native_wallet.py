@@ -1,15 +1,34 @@
-"""Native desktop entry point. Starts only the packaged TESTNET node, with loopback RPC."""
-import argparse, json, os, socket, subprocess, sys, tempfile, threading, time
+"""Native desktop entry point. Verify the selected chain before opening a wallet."""
+import argparse, ipaddress, json, os, socket, subprocess, sys, tempfile, threading, time
+from urllib.request import Request, urlopen
 from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox
-from wallet import Wallet, verify_testnet
+from wallet import Wallet
+from coin_network import MAINNET, TESTNET
 from mining import GENESIS
 from rpc import RPC, RPCError, default_data_dir
 
 def valid_peer(value):
     import re
     return bool(re.fullmatch(r'[A-Za-z0-9.-]+:[0-9]{1,5}',value)) and 1<=int(value.rsplit(':',1)[1])<=65535
+
+def mainnet_peer():
+    """Read the operator's public bootstrap address; manual peers also work offline."""
+    try:
+        req = Request('https://obsoletecoin.pages.dev/api/bootstrap',
+                      headers={'User-Agent':'ObsoleteCoin/0.5.0'})
+        with urlopen(req, timeout=4) as response:
+            record = json.loads(response.read(2049))
+        if record['chain'] != MAINNET.chain or record['genesis'] != MAINNET.genesis:
+            return None
+        host, port = record['peer'].rsplit(':', 1)
+        ip = ipaddress.IPv4Address(host)
+        if ip.is_global and not ip.is_multicast and port == str(MAINNET.p2p):
+            return f'{ip}:{port}'
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        pass
+    return None
 
 def free_port():
     with socket.socket() as sock:
@@ -78,32 +97,44 @@ def smoke_test(app, root, rpc, binary, data):
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument('--datadir',type=Path,default=default_data_dir())
-    p.add_argument('--rpcport',type=int,default=29778)
+    p.add_argument('--chain',choices=[MAINNET.chain, TESTNET.chain])
+    p.add_argument('--datadir',type=Path)
+    p.add_argument('--rpcport',type=int)
     p.add_argument('--peer',action='append',default=[])
     p.add_argument('--self-test',type=Path,help='Write smoke-test result; always uses a disposable directory')
     a=p.parse_args()
+    network = TESTNET if a.chain == TESTNET.chain or (a.self_test and not a.chain) else MAINNET
+    windows = os.name == 'nt'
+    if a.rpcport is None:
+        a.rpcport = 29778 if windows and network == TESTNET else network.rpc
+    if a.datadir is None:
+        a.datadir = default_data_dir() if network == TESTNET else Path.home()/'.obsoletecoin-mainnet'
     if not 1<=a.rpcport<=65535:p.error('Invalid RPC port')
     if a.self_test:a.rpcport=free_port()
     base=Path(sys.executable).resolve().parent if getattr(sys,'frozen',False) else Path(__file__).resolve().parents[1]
-    binary=base/'bitcoind.exe'
-    if not binary.is_file():raise SystemExit('Packaged bitcoind.exe is missing')
+    binary=base/('bitcoind.exe' if windows else 'bitcoind')
+    if not binary.is_file():raise SystemExit(f'Packaged {binary.name} is missing')
     temporary=tempfile.TemporaryDirectory(prefix='obsolete-native-test-') if a.self_test else None
     data=Path(temporary.name) if temporary else a.datadir.resolve()
     data.mkdir(parents=True,exist_ok=True)
-    peers_file=data/'native-testnet-peers.json'
+    platform = 'native' if windows else 'linux'
+    peers_file=data/f'{platform}-{network.label.lower()}-peers.json'
     peers=json.loads(peers_file.read_text()) if peers_file.exists() and not temporary else []
     if not isinstance(peers,list) or len(peers)>32 or not all(isinstance(x,str) and valid_peer(x) for x in peers):
-        raise ValueError('Invalid native-testnet-peers.json')
+        raise ValueError(f'Invalid {peers_file.name}')
     if not all(valid_peer(x) for x in a.peer):p.error('Use peer hostname:port or IPv4:port')
     peers=[] if temporary else list(dict.fromkeys(peers+a.peer))[:32]
-    rpc=RPC(data/'obsolete-testnet-v2/.cookie',a.rpcport,timeout=5)
+    if not temporary and network == MAINNET and not a.peer:
+        seed = mainnet_peer()
+        if seed and seed not in peers:
+            peers = [seed, *peers][:32]
+    rpc=RPC(data/network.directory/'.cookie',a.rpcport,timeout=5)
     proc=None;log=None
     try:
-        try:verify_testnet(rpc)
+        try:network.verify(rpc)
         except (OSError,RuntimeError):
             log=(data/'native-startup.log').open('a')
-            cmd=[str(binary),'-chain=obsolete-test',f'-datadir={data}',f'-rpcport={a.rpcport}',
+            cmd=[str(binary),f'-chain={network.chain}',f'-datadir={data}',f'-rpcport={a.rpcport}',
                  '-server=1','-rpcbind=127.0.0.1','-rpcallowip=127.0.0.1','-listen=0','-dnsseed=0','-fixedseeds=0',
                  '-discover=0','-dbcache=128','-maxconnections=16','-fallbackfee=0.00001000',
                  '-prune=0' if temporary else '-prune=1000','-printtoconsole=0']
@@ -112,15 +143,15 @@ def main():
             deadline=time.monotonic()+90
             while True:
                 if proc.poll() is not None:raise RuntimeError('Node exited. See native-startup.log in the data directory.')
-                try:verify_testnet(rpc);break
+                try:network.verify(rpc);break
                 except (OSError,RPCError):
                     if time.monotonic()>deadline:raise RuntimeError('Node startup timed out')
                     time.sleep(.25)
         if 'obsolete' not in rpc.call('listwallets'):
             known=[w['name'] for w in rpc.call('listwalletdir')['wallets']]
             rpc.call('loadwallet' if 'obsolete' in known else 'createwallet','obsolete')
-        wrpc=rpc.for_wallet('obsolete');root=tk.Tk();app=Wallet(root,wrpc)
-        app.node_binary=binary;app.mining_library=base/'librandomx.dll'
+        wrpc=rpc.for_wallet('obsolete');root=tk.Tk();app=Wallet(root,wrpc,network=network)
+        app.node_binary=binary;app.mining_library=base/('librandomx.dll' if windows else 'librandomx.so')
         def save_peer(peer):
             if peer not in peers:peers.append(peer)
             pending=peers_file.with_suffix('.tmp')
@@ -128,7 +159,14 @@ def main():
             pending.replace(peers_file)
         app.peer_added=save_peer
         if a.self_test:
-            result=smoke_test(app,root,rpc,binary,data)
+            if network == MAINNET:
+                address = wrpc.call('getnewaddress')
+                if not address.startswith(network.address_prefix) or not wrpc.call('validateaddress', address)['isvalid']:
+                    raise ValueError('Invalid mainnet receive address')
+                result = {'native':True,'chain':network.chain,'genesis':rpc.call('getblockhash',0),
+                          'mainnet_enabled':True,'address_verified':True,'height':rpc.call('getblockcount')}
+            else:
+                result=smoke_test(app,root,rpc,binary,data)
             a.self_test.resolve().write_text(json.dumps(result,indent=2))
             app.closing=True
             root.destroy()

@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
 from integration import Node,free_port
 p=argparse.ArgumentParser();p.add_argument('installer',type=Path);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
-key=r'Software\Microsoft\Windows\CurrentVersion\Uninstall\ObsoleteCoinTestnet_is1'
+key=r'Software\Microsoft\Windows\CurrentVersion\Uninstall\ObsoleteCoinMainnet_is1'
 try:
  with winreg.OpenKey(winreg.HKEY_CURRENT_USER,key):raise SystemExit('A real installation exists; use a clean Windows test account')
 except FileNotFoundError:pass
@@ -30,6 +30,8 @@ with tempfile.TemporaryDirectory(prefix='obsolete-installer-') as tmp:
   smoke=base/'smoke.json'
   subprocess.run([str(app/'ObsoleteCoin.exe'),'--self-test',str(smoke),'--rpcport',str(free_port())],check=True,timeout=180)
   assert json.loads(smoke.read_text())['native'];checks.append('installed frozen GUI + node + RandomX mining')
+  subprocess.run([str(app/'ObsoleteCoin.exe'),'--chain','obsolete','--self-test',str(smoke)],check=True,timeout=180)
+  assert json.loads(smoke.read_text())['address_verified'];checks.append('installed mainnet genesis and receive address')
   address=verify_wallet(True)
   install();verify_wallet();checks.append('reinstallation opens same wallet')
   files={str(x.relative_to(data)):hashlib.sha256(x.read_bytes()).hexdigest() for x in data.rglob('wallet.dat')}

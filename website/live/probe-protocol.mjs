@@ -1,5 +1,5 @@
 import {publicPeer,parseAddresses} from './peers.mjs';
-const magic=new Uint8Array([0x4f,0x42,0x54,0x32]), enc=new TextEncoder();
+const magic=new Uint8Array([0x4f,0x42,0x53,0x32]), enc=new TextEncoder();
 export async function hash(b){return new Uint8Array(await crypto.subtle.digest('SHA-256',await crypto.subtle.digest('SHA-256',b)));}
 export async function probeWith(connect,peer,genesis,{discover=false,timeout=10000}={}) {
  if(!publicPeer(peer) || !/^[0-9a-f]{64}$/.test(genesis))throw Error('endpoint');

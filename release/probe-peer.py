@@ -4,8 +4,13 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'test/functional'))
 from test_framework.messages import msg_version,msg_verack,msg_getheaders,msg_headers,hash256
-p=argparse.ArgumentParser();p.add_argument('--peer',required=True);a=p.parse_args();host,port=a.peer.rsplit(':',1);assert port=='19777';magic=bytes.fromhex('4f425432')
-genesis=json.loads((ROOT/'docs/genesis.json').read_text(encoding='utf-8'))['TEST']['hash']
+p=argparse.ArgumentParser();p.add_argument('--peer',required=True)
+p.add_argument('--chain',choices=['obsolete','obsolete-test'],default='obsolete-test')
+a=p.parse_args();host,port=a.peer.rsplit(':',1)
+mainnet = a.chain == 'obsolete'
+if port != '19777': p.error('Invalid P2P port for the selected network')
+magic=bytes.fromhex('4f425332' if mainnet else '4f425432')
+genesis=json.loads((ROOT/'docs/genesis.json').read_text(encoding='utf-8'))['MAIN' if mainnet else 'TEST']['hash']
 def recv_exact(sock,count):
     data=b''
     while len(data)<count:
@@ -15,9 +20,9 @@ def recv_exact(sock,count):
     return data
 def send(sock,name,payload):
     sock.sendall(magic+name.ljust(12,b'\x00')+struct.pack('<I',len(payload))+hash256(payload)[:4]+payload)
-with socket.create_connection((host,19777),timeout=15) as sock:
+with socket.create_connection((host,int(port)),timeout=15) as sock:
     version=msg_version();version.nVersion=70016;version.strSubVer='/ObsoleteLanProbe:0.2/'
-    version.addrTo.ip=host;version.addrTo.port=19777
+    version.addrTo.ip=host;version.addrTo.port=int(port)
     send(sock,b'version',version.serialize());requested=False;remote=None
     for _ in range(30):
         header=recv_exact(sock,24);assert header[:4]==magic

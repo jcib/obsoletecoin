@@ -1,0 +1,30 @@
+[Unit]
+Description=Obsolete Coin experimental mainnet node
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=obsoletecoin
+StateDirectory=obsolete-mainnet
+StateDirectoryMode=0700
+UMask=0077
+ExecStart=/opt/obsolete-mainnet/bin/bitcoind -chain=obsolete -datadir=/var/lib/obsolete-mainnet -server=1 -disablewallet=1 -rpcbind=127.0.0.1 -rpcallowip=127.0.0.1 -rpcport=19778 -listen=1 -bind=0.0.0.0:19777 -onlynet=ipv4 -listenonion=0 -natpmp=0 -discover=0 -dbcache=96 -maxconnections=24 -prune=0 -printtoconsole=1
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=180
+Nice=10
+CPUQuota=50%
+MemoryMax=1536M
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target
