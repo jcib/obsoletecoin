@@ -2,7 +2,7 @@ name: Public mainnet synchronization
 on:
   push:
     branches: [release/mainnet-0.5.0]
-    paths: [release/mainnet-peer.json]
+    paths: [release/mainnet-peer.json, release/public-sync.py, release/probe-peer.py, .github/workflows/mainnet-sync.yml]
   workflow_dispatch:
     inputs:
       peer:
@@ -24,7 +24,7 @@ jobs:
     steps:
       - run: |
           apt-get update -qq
-          apt-get install -y --no-install-recommends ca-certificates curl git python3 libevent-2.1-7t64 libevent-pthreads-2.1-7t64 libsqlite3-0
+          apt-get install -y --no-install-recommends ca-certificates curl git python3 libevent-core-2.1-7t64 libevent-extra-2.1-7t64 libevent-pthreads-2.1-7t64 libsqlite3-0
       - uses: actions/checkout@v4
       - name: Obtain the published Linux node
         run: |
@@ -40,6 +40,7 @@ jobs:
           with tarfile.open(path) as archive:
               archive.extractall('/tmp/mainnet-check',filter='data')
           PY
+          /tmp/mainnet-check/obsoletecoin-linux/bitcoind -version
       - name: Verify genesis over P2P and synchronize a clean node
         env:
           PEER: ${{ inputs.peer }}
