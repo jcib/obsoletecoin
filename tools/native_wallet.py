@@ -3,9 +3,9 @@ import argparse, json, os, socket, subprocess, sys, tempfile, threading, time
 from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox
-from wallet import Wallet
+from wallet import Wallet, verify_testnet
+from mining import GENESIS
 from rpc import RPC, RPCError, default_data_dir
-GENESIS='9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98'
 
 def valid_peer(value):
     import re
@@ -99,11 +99,8 @@ def main():
     peers=[] if temporary else list(dict.fromkeys(peers+a.peer))[:32]
     rpc=RPC(data/'obsolete-testnet-v2/.cookie',a.rpcport,timeout=5)
     proc=None;log=None
-    def verify():
-        assert rpc.call('getblockchaininfo')['chain']=='obsolete-test','Wrong network'
-        assert rpc.call('getblockhash',0)==GENESIS,'Wrong genesis'
     try:
-        try:verify()
+        try:verify_testnet(rpc)
         except (OSError,RuntimeError):
             log=(data/'native-startup.log').open('a')
             cmd=[str(binary),'-chain=obsolete-test',f'-datadir={data}',f'-rpcport={a.rpcport}',
@@ -115,7 +112,7 @@ def main():
             deadline=time.monotonic()+90
             while True:
                 if proc.poll() is not None:raise RuntimeError('Node exited. See native-startup.log in the data directory.')
-                try:verify();break
+                try:verify_testnet(rpc);break
                 except (OSError,RPCError):
                     if time.monotonic()>deadline:raise RuntimeError('Node startup timed out')
                     time.sleep(.25)

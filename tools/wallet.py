@@ -20,6 +20,14 @@ def user_action(method):
         finally:self.interacting=False
     return wrapped
 
+def verify_testnet(rpc):
+    chain = rpc.call('getblockchaininfo')
+    if chain['chain'] != 'obsolete-test':
+        raise ValueError('Only Obsolete testnet is supported')
+    if rpc.call('getblockhash', 0) != GENESIS:
+        raise ValueError('Wrong testnet genesis')
+    return chain
+
 def network_state(chain, peers):
     blocks, headers = chain['blocks'], chain['headers']
     if not peers: return f'Offline - 0 peers | Local height {blocks:,}; network tip unknown'
@@ -163,9 +171,7 @@ class Wallet:
     def wallet_call(self,method,*params):
         # Guard every operation, including backup/encryption, if a user selects
         # the wrong local port or a different node restarts on the same port.
-        chain=self.rpc.call('getblockchaininfo')
-        if chain['chain']!='obsolete-test':raise ValueError('Only Obsolete testnet is supported')
-        if self.rpc.call('getblockhash',0)!=GENESIS:raise ValueError('Wrong testnet genesis')
+        chain=verify_testnet(self.rpc)
         if method=='getblockchaininfo':return chain
         return self.rpc.call(method,*params)
     def work(self,job,done,on_error=None):
@@ -242,7 +248,7 @@ class Wallet:
     def open_wallet(self):
         def job():
             base=RPC(self.rpc.cookie,self.rpc.port)
-            if base.call('getblockchaininfo')['chain']!='obsolete-test':raise ValueError('Wrong network')
+            verify_testnet(base)
             name=self.rpc.wallet
             if name not in base.call('listwallets'):
                 known=[w['name'] for w in base.call('listwalletdir')['wallets']]

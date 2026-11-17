@@ -779,7 +779,7 @@ public:
 
 
         unsigned char anchor[32]; std::memset(anchor, 0x54, sizeof(anchor));
-        const uint32_t genesisTime = OBSOLETE_GENESIS_TIME, genesisNonce = OBSOLETE_TEST_NONCE, genesisBits = OBSOLETE_GENESIS_BITS;
+        const uint32_t genesisTime = OBSOLETE_TEST_TIME, genesisNonce = OBSOLETE_TEST_NONCE, genesisBits = OBSOLETE_TEST_BITS;
         genesis = CreateBrisviaGenesisBlock(OBSOLETE_TEST_PHRASE, anchor,
                                             genesisTime, genesisNonce, genesisBits, 1);
         consensus.hashGenesisBlock = genesis.GetHash();
@@ -871,7 +871,7 @@ public:
 
 
         unsigned char anchor[32]; std::memset(anchor, 0x4d, sizeof(anchor));
-        const uint32_t genesisTime = OBSOLETE_GENESIS_TIME, genesisNonce = OBSOLETE_MAIN_NONCE, genesisBits = OBSOLETE_GENESIS_BITS;
+        const uint32_t genesisTime = OBSOLETE_MAIN_TIME, genesisNonce = OBSOLETE_MAIN_NONCE, genesisBits = OBSOLETE_MAIN_BITS;
         genesis = CreateBrisviaGenesisBlock(OBSOLETE_MAIN_PHRASE, anchor,
                                             genesisTime, genesisNonce, genesisBits, 1);
         consensus.hashGenesisBlock = genesis.GetHash();

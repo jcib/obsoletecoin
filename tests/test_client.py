@@ -56,6 +56,18 @@ class RPCTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'Only Obsolete testnet'):
             app.wallet_call('encryptwallet','not-a-real-passphrase')
         self.assertEqual(self.last_method,'getblockchaininfo')
+    def test_open_wallet_rejects_node_with_another_genesis(self):
+        from wallet import Wallet
+        app = Wallet.__new__(Wallet)
+        app.rpc = self.rpc
+        app.work = lambda job, done: job()
+        with patch('wallet.RPC') as connect:
+            node = connect.return_value
+            node.call.side_effect = [{'chain': 'obsolete-test'}, '00' * 32]
+            with self.assertRaisesRegex(ValueError, 'Wrong testnet genesis'):
+                app.open_wallet()
+            self.assertEqual([call.args for call in node.call.call_args_list],
+                             [('getblockchaininfo',), ('getblockhash', 0)])
     def test_structured_rpc_error(self):
         with self.assertRaises(RPCError) as cm:self.rpc.call('fail')
         self.assertEqual(cm.exception.code,-6)

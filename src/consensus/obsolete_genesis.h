@@ -2,13 +2,15 @@
 #ifndef OBSOLETE_GENESIS_H
 #define OBSOLETE_GENESIS_H
 #include <cstdint>
-constexpr uint32_t OBSOLETE_GENESIS_TIME = 1794614400;
-constexpr uint32_t OBSOLETE_GENESIS_BITS = 0x207fffff;
+constexpr uint32_t OBSOLETE_TEST_TIME = 1794614400;
+constexpr uint32_t OBSOLETE_TEST_BITS = 0x207fffff;
 constexpr const char* OBSOLETE_TEST_PHRASE = "Obsolete Coin test: A new beginning.";
 constexpr const char* OBSOLETE_TEST_SEED = "3e50aa22e9d8fd7a89c93596cae39bfa6b86e0b2e45a997393f51a3ca84393e6";
 constexpr uint32_t OBSOLETE_TEST_NONCE = 2;
 constexpr const char* OBSOLETE_TEST_MERKLE = "b38882d6af68a402b1a665b9b4ba542b7c13750120b1401705181027329c57f3";
 constexpr const char* OBSOLETE_TEST_HASH = "9576894f8fffa098a9b1c04c3a3edb774d9dc7f58413e0906e781ecd8f0ede98";
+constexpr uint32_t OBSOLETE_MAIN_TIME = 1794614400;
+constexpr uint32_t OBSOLETE_MAIN_BITS = 0x207fffff;
 constexpr const char* OBSOLETE_MAIN_PHRASE = "Obsolete Coin main: A new beginning.";
 constexpr const char* OBSOLETE_MAIN_SEED = "8073fa65b79bd602da35c7e950f78273a1b742f6bc6ed7c2842e054327f78c42";
 constexpr uint32_t OBSOLETE_MAIN_NONCE = 0;

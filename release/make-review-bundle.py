@@ -1,7 +1,11 @@
 """Export only committed sources plus pinned RandomX; no working-tree secrets."""
-import gzip,hashlib,io,json,subprocess,tarfile
+import argparse,gzip,hashlib,io,json,subprocess,tarfile
 from pathlib import Path
-base=Path(__file__).resolve().parents[1];out=base/'.local/release';out.mkdir(parents=True,exist_ok=True)
+base=Path(__file__).resolve().parents[1]
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--output-dir',type=Path,default=base/'.local/release')
+out=parser.parse_args().output_dir
+out.mkdir(parents=True,exist_ok=True)
 def git(*args,cwd=base):return subprocess.check_output(['git',*args],cwd=cwd)
 head=git('rev-parse','HEAD').decode().strip();rx=git('rev-parse','HEAD',cwd=base/'src/randomx').decode().strip()
 assert git('ls-tree','HEAD','src/randomx').decode().split()[2]==rx
