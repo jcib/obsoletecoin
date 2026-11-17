@@ -41,6 +41,13 @@
         "web": true,
         "sha256": "df3766e6ad37d80801d2a25b6dc44424797d61b88dbb13a990b105fb84024675"
       }
-    ]
+    ],
+    "bootstrap": {
+      "chain": "obsolete",
+      "genesis": "39edafd04ad371911d1d17c38c40d16878b550489bc3df92530a7c813b0de133",
+      "peer": "83.45.159.127:19777",
+      "height": 0,
+      "verified_utc": "2026-11-17T23:54:51+00:00"
+    }
   }
 }
