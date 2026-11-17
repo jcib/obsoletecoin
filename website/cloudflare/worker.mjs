@@ -63,7 +63,14 @@ export default {async fetch(req,env,ctx){
    return path==='/api/network'?response(JSON.stringify({available:!!metrics,...metrics}),metrics?200:503,'application/json'):response(req.method==='HEAD'?null:renderNetwork(metrics));
   }
   if(path==='/explorer/network.html')return response(req.method==='HEAD'?null:PAGES['/explorer/index.html'].replace('src="/live/explorer/index.html"','src="/live/explorer/network.html"'));
-  if(path.startsWith('/live/')){const s=await state(env,'feed'),probe=path==='/live/peer'?await state(env,'probe'):null;const census=path==='/live/explorer/index.html'?publicCensus(await state(env,'node_census')):null;const r=render(s,path,Date.now(),probe,census);return response(req.method==='HEAD'?null:r.html,r.status);}
+  if(path.startsWith('/live/')){
+   const s=await state(env,'feed');
+   const withPeers=path==='/live/peer'||path==='/live/explorer/index.html';
+   const record=withPeers?await state(env,'node_census'):null;
+   const peer=path==='/live/peer'?record?.nodes.find(n=>n.peer===s?.peer):null;
+   const r=render(s,path,Date.now(),peer,withPeers?publicCensus(record):null);
+   return response(req.method==='HEAD'?null:r.html,r.status);
+  }
   if(path==='/explorer/search'){
    const q=(url.searchParams.get('q')||'').trim();let to;
    if(/^\d{1,10}$/.test(q))to='/explorer/blocks/'+Number(q)+'.html';else if(/^[0-9a-f]{64}$/.test(q))to='/explorer/transactions/'+q+'.html';else if(/^[a-zA-Z0-9]{20,100}$/.test(q))to='/explorer/addresses/'+q+'.html';else return response('Enter a block height, transaction ID or address.',400,'text/plain');

@@ -1,0 +1,59 @@
+name: Public mainnet synchronization
+on:
+  push:
+    branches: [release/mainnet-0.5.0]
+    paths: [release/mainnet-peer.json]
+  workflow_dispatch:
+    inputs:
+      peer:
+        description: Public mainnet IPv4 address with port 19777
+        required: true
+        type: string
+      minimum_height:
+        description: Minimum advertised height
+        required: true
+        default: "0"
+        type: string
+permissions:
+  contents: read
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    container: debian:13-slim
+    timeout-minutes: 15
+    steps:
+      - run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates curl git python3 libevent-2.1-7t64 libevent-pthreads-2.1-7t64 libsqlite3-0
+      - uses: actions/checkout@v4
+      - name: Obtain the published Linux node
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, subprocess, tarfile
+          from pathlib import Path
+          release = json.loads(Path('release/downloads.json').read_text())['mainnet']
+          pkg, = [p for p in release['packages'] if p['file'].endswith('Linux-x64.tar.gz')]
+          path = Path('/tmp/mainnet.tar.gz')
+          url = 'https://github.com/jcib/obsoletecoin/releases/download/'+release['tag']+'/'+pkg['file']
+          subprocess.run(['curl','--fail','--location','--retry','3','--output',str(path),url],check=True)
+          if hashlib.sha256(path.read_bytes()).hexdigest() != pkg['sha256']: raise SystemExit('Wrong package checksum')
+          with tarfile.open(path) as archive:
+              archive.extractall('/tmp/mainnet-check',filter='data')
+          PY
+      - name: Verify genesis over P2P and synchronize a clean node
+        env:
+          PEER: ${{ inputs.peer }}
+          HEIGHT: ${{ inputs.minimum_height }}
+        run: |
+          if [ -z "$PEER" ]; then
+            PEER=$(python3 -c "import json; print(json.load(open('release/mainnet-peer.json'))['peer'])")
+            HEIGHT=$(python3 -c "import json; print(json.load(open('release/mainnet-peer.json'))['height'])")
+          fi
+          python3 -B release/probe-peer.py --chain obsolete --peer "$PEER"
+          python3 -B release/public-sync.py --chain obsolete --binary /tmp/mainnet-check/obsoletecoin-linux/bitcoind --peer "$PEER" --minimum-height "$HEIGHT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mainnet-external-sync
+          path: |
+            public-sync-result.json
+            public-p2p-result.json

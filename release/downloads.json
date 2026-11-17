@@ -16,5 +16,31 @@
     "archive": "ObsoleteCoin-0.4.0-Testnet-Linux-x64.tar.gz",
     "archive_sha256": "c539c352383d2adf8ad272f2f968c56175ca3b026e56411621312a9b9c5fabd9",
     "web_archive": "linux-0.4.0-testnet-rc1-x64.tar.gz"
+  },
+  "mainnet": {
+    "version": "0.5.0-mainnet",
+    "tag": "v0.5.0-mainnet",
+    "source_commit": "5f5321034c9a123b59887d267f8db232fdce2ce1",
+    "directory": "artifacts/mainnet-0.5.0",
+    "packages": [
+      {
+        "file": "ObsoleteCoin-Mainnet-Setup.exe",
+        "label": "Windows x64 installer",
+        "web": true,
+        "sha256": "96a21fba2f30c74b78db85060d4a9ed78d4e16d26c518d3dcb6da09d169a13b8"
+      },
+      {
+        "file": "ObsoleteCoin-0.5.0-Mainnet-Windows-x64.zip",
+        "label": "Windows x64 portable ZIP",
+        "web": false,
+        "sha256": "8d56328ba44fb88675414ef6c53a8b29033a95bea0b16cdde5328730c399810d"
+      },
+      {
+        "file": "ObsoleteCoin-0.5.0-Mainnet-Linux-x64.tar.gz",
+        "label": "Linux x86-64 archive",
+        "web": true,
+        "sha256": "df3766e6ad37d80801d2a25b6dc44424797d61b88dbb13a990b105fb84024675"
+      }
+    ]
   }
 }

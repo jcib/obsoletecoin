@@ -6,7 +6,7 @@ import {digest,sealed,formTicket} from './admin-auth.mjs';
 const require=createRequire(resolve(process.argv[2],'package.json'));
 const {Miniflare,convertV4MiniflareOptions}=require('miniflare');
 const password='A'.repeat(43),secret=await digest(password),base='http://localhost';
-const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:resolve('.local/pages-dist/_worker.js'),compatibilityDate:'2026-11-10',d1Databases:['DB'],
+const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:resolve(process.argv[3]||'.local/pages-dist/_worker.js'),compatibilityDate:'2026-11-10',d1Databases:['DB'],
  bindings:{SITE_ORIGIN:base,FORUM_SECRET:'test-forum-only',FORUM_ADMIN_AUTH:secret,NODE_CENSUS_ENABLED:'false'},port:0,host:'127.0.0.1'}));
 const req=(path,options)=>mf.dispatchFetch(base+path,{redirect:'manual',...options});
 const cookies=r=>r.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');

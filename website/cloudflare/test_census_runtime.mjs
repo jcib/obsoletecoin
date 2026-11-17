@@ -7,7 +7,7 @@ import {monitorNodes} from './node-monitor.mjs';
 import {publicCensus,INTERVAL} from '../live/census.mjs';
 const require=createRequire(resolve(process.argv[2],'package.json'));
 const {Miniflare,convertV4MiniflareOptions}=require('miniflare');
-const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:resolve('.local/pages-dist/_worker.js'),
+const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:resolve(process.argv[3]||'.local/pages-dist/_worker.js'),
  compatibilityDate:'2026-11-10',d1Databases:['DB'],bindings:{NODE_CENSUS_ENABLED:'false',OBSOLETE_FEED_KEY:'local-test-only',FORUM_SECRET:'local-forum-only',SITE_ORIGIN:'http://localhost'},port:0,host:'127.0.0.1'}));
 const peer='8.8.8.8:19777',other='9.9.9.9:19777';
 try{
@@ -41,7 +41,10 @@ try{
  release();await late;
  census=await (await mf.dispatchFetch('http://localhost/api/nodes')).json();assert.equal(census.count,1);
  // The bundled Worker still ingests signed feeds and exposes both counters.
- const feed=JSON.parse(await readFile('.local/preview-feed.json'));feed.observed=Date.now();
+ const {MAIN:g}=JSON.parse(await readFile('docs/genesis.json'));
+ const genesisBlock={height:0,hash:g.hash,previous:'0'.repeat(64),time:1794960000,bits:'1f014000',size:219,
+  tx:[{txid:g.merkle,vin:[{coinbase:true}],vout:[{n:0,atoms:'0',address:'',type:'nulldata'}]}]};
+ const feed={network:'obsolete',genesis:g.hash,observed:Date.now(),height:0,tip:g.hash,first:0,blocks:[genesisBlock],peer,connections:0,mempool:0};
  const body=JSON.stringify(feed),stamp=String(Math.floor(Date.now()/1000));
  const signed={'X-Obsolete-Time':stamp,'X-Obsolete-Signature':createHmac('sha256','local-test-only').update(stamp+'\n/api/feed\n'+body).digest('hex')};
  assert.equal((await mf.dispatchFetch('http://localhost/api/feed',{method:'POST',body})).status,401);
