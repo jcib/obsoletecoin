@@ -50,8 +50,8 @@ if MAIN:
             raise ValueError('Mainnet bootstrap identity mismatch')
         (OUT/'mainnet-peer.json').write_text(json.dumps(seed),encoding='utf-8')
         status = f'Public bootstrap peer: {E(seed["peer"])}. Verified {E(seed["verified_utc"])}.'
-    NEWS = ('Experimental mainnet is live.' if seed else 'Experimental mainnet wallets are available. Public connectivity is pending.') + ' Windows and Linux downloads are on the mainnet page. Testnet balances stay on testnet.'
-    mainnet_panel = f'<section class="paper"><h2>Experimental mainnet</h2><p>{status}</p><a class="button" href="@ROOT@mainnet.html">Mainnet wallets and connection guide</a></section>'
+    NEWS = ('Mainnet is live.' if seed else 'Mainnet wallets are available. Public connectivity is pending.') + ' Windows and Linux downloads are on the mainnet page. Testnet balances stay on testnet.'
+    mainnet_panel = f'<section class="paper"><h2>Mainnet</h2><p>{status}</p><a class="button" href="@ROOT@mainnet.html">Mainnet wallets and connection guide</a></section>'
 
 for folder in ('assets','downloads','explorer/blocks','explorer/transactions','explorer/addresses'):(OUT/folder).mkdir(parents=True,exist_ok=True)
 
@@ -89,7 +89,7 @@ def write_page(path,title,content,active='home'):
     depth=len(Path(path).parts)-1;r='../'*depth
     notice = f'Experimental testnet v0.2 &mdash; <a href="{r}faq.html#mainnet">Mainnet is not live.</a><br>Test coins have no monetary value.'
     if MAIN:
-        notice = f'<a href="{r}mainnet.html">Experimental mainnet</a> &middot; <a href="{r}join.html">Connect a wallet</a><br>Receive addresses begin with obs1.'
+        notice = f'<a href="{r}mainnet.html">Mainnet</a> &middot; <a href="{r}join.html">Connect a wallet</a><br>Receive addresses begin with obs1.'
 
     nav=[('downloads','downloads.html','Downloads','download.gif'),('explorer','explorer/index.html','Block explorer','terminal.gif'),('coin','coin.html','The coin','computer.gif'),('mining','mining.html','How to mine','mining.gif'),('forum','forum','Forum','forum.gif')]
 
@@ -151,7 +151,7 @@ def write_page(path,title,content,active='home'):
 
         doc=re.sub(r'(href|src)="([^"]+)"',lambda m:m[1]+'="'+urljoin('/'+path,m[2])+'"',doc)
 
-        footer = 'Experimental mainnet. The retired testnet has a separate transaction history.' if MAIN else 'Experimental testnet. No monetary value. Chain resets are possible.'
+        footer = 'Mainnet. The retired testnet has a separate transaction history.' if MAIN else 'Experimental testnet. No monetary value. Chain resets are possible.'
         doc=doc.replace('<p>Page archive: '+E(CAPTURE)+'</p>', f'<p>{footer}</p>')
 
     if a.public_web_only:
@@ -165,7 +165,7 @@ if MAIN:
     release_root = GITHUB+'/releases/download/'+MAIN['tag']+'/'
     package_url = lambda pkg: ('/downloads/' if pkg['web'] else release_root) + E(pkg['file'])
     package_rows = ''.join(f'<li><a href="{package_url(pkg)}">{E(pkg["label"])}</a><br><code class="hash">{E(pkg["sha256"])}</code></li>' for pkg in MAIN['packages'])
-    write_page('mainnet.html','Mainnet wallets',f"""<h1 class="page-title">Experimental mainnet wallets</h1>
+    write_page('mainnet.html','Mainnet wallets',f"""<h1 class="page-title">Mainnet wallets</h1>
 <p class="lede">{status}</p><div class="paper"><h2>Downloads &middot; {E(MAIN['version'])}</h2><ul>{package_rows}</ul>
 <p><a href="{GITHUB}/releases/tag/{MAIN['tag']}">Release notes, provenance and SHA-256 checksums</a></p>
 <h2>Connect</h2><p>On Windows, run the installer or extract the full ZIP and open ObsoleteCoin.exe. On Debian 13 x86-64 with Python 3 and Tk, extract the archive and run Start-Wallet.sh. The wallet checks for a bootstrap peer at startup. To enter a peer manually, choose Network  >  Connect peer.</p>
@@ -178,7 +178,7 @@ if MAIN:
     write_page('index.html','Home','<h1 class="home-title">Obsolete Coin (OBSC)</h1>' + mainnet_panel +
                '<section class="block-section"><h2>Recent mainnet blocks</h2><iframe class="live-frame compact" title="Recent mainnet blocks" src="/live/recent"></iframe></section>'+
                '<section class="node-section"><h2>First public node</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 node"></section>')
-    write_page('downloads.html','Downloads', f'<h1 class="page-title">Mainnet downloads</h1><div class="paper"><h2>Windows and Linux &middot; {E(MAIN["version"])}</h2><ul>{package_rows}</ul><p><a href="{release_root}SHA256SUMS.txt">SHA-256 checksums</a> &middot; <a href="{release_root}Windows-PROVENANCE.json">Windows provenance</a> &middot; <a href="{release_root}Linux-PROVENANCE.json">Linux provenance</a></p><p>Unsigned experimental packages. <a href="mainnet.html">Setup and release notes</a></p></div>', 'downloads')
+    write_page('downloads.html','Downloads', f'<h1 class="page-title">Mainnet downloads</h1><div class="paper"><h2>Windows and Linux &middot; {E(MAIN["version"])}</h2><ul>{package_rows}</ul><p><a href="{release_root}SHA256SUMS.txt">SHA-256 checksums</a> &middot; <a href="{release_root}Windows-PROVENANCE.json">Windows provenance</a> &middot; <a href="{release_root}Linux-PROVENANCE.json">Linux provenance</a></p><p>Unsigned packages. <a href="mainnet.html">Setup and release notes</a></p></div>', 'downloads')
     write_page('join.html','Join mainnet', '<h1 class="page-title">Join mainnet</h1>'+mainnet_panel+'<iframe class="live-frame compact" title="Current public peer" src="/live/peer"></iframe>')
     write_page('nodes.html','Run a node','<h1 class="page-title">Run a mainnet node</h1><div class="paper"><p>Start bitcoind with <code>-chain=obsolete</code> and a dedicated data directory. Allow incoming TCP 19777 for peers. Keep RPC on loopback.</p><p>Check block zero using <code>bitcoin-cli -chain=obsolete getblockhash 0</code>. The <a href="mainnet.html">mainnet guide</a> lists the expected hash.</p></div>')
     write_page('mining.html','How to mine','<h1 class="page-title">Mine on mainnet</h1><div class="paper"><p>Open the <a href="downloads.html">Windows or Linux wallet</a> and wait for a mainnet peer and synchronization. Select threads and CPU activity, then choose Mine / Stop. Keep a private backup of the wallet receiving rewards.</p><p>Rewards mature after 100 blocks. RandomX targets a 15-minute block interval. Time to find a block varies with hash rate and difficulty.</p></div>','mining')
@@ -253,7 +253,7 @@ write_page('downloads.html','Downloads',f"""<h1 class="page-title">Downloads</h1
 
 
 
-facts=[('Name / working ticker','Obsolete Coin / OBSC'),('Mining','RandomX proof of work, CPU'),('Maximum authorized issuance','1,000,000,000 OBSC'),('Decimal places','8'),('Target block interval','900 seconds / 15 minutes'),('Difficulty adjustment','ASERT, every block; six-hour half-life'),('Initial block reward','5,000 OBSC'),('Halving interval','100,000 blocks, counted from block 1'),('Genesis reward / premine','Zero / none'),('Mining reward maturity','100 blocks'),('End of subsidy','Block 3,900,000; transaction fees thereafter'),('Networks','Experimental mainnet and separate testnet v0.2' if MAIN else 'Experimental testnet v0.2; mainnet disabled')]
+facts=[('Name / working ticker','Obsolete Coin / OBSC'),('Mining','RandomX proof of work, CPU'),('Maximum authorized issuance','1,000,000,000 OBSC'),('Decimal places','8'),('Target block interval','900 seconds / 15 minutes'),('Difficulty adjustment','ASERT, every block; six-hour half-life'),('Initial block reward','5,000 OBSC'),('Halving interval','100,000 blocks, counted from block 1'),('Genesis reward / premine','Zero / none'),('Mining reward maturity','100 blocks'),('End of subsidy','Block 3,900,000; transaction fees thereafter'),('Networks','Mainnet and separate testnet v0.2' if MAIN else 'Experimental testnet v0.2; mainnet disabled')]
 
 write_page('coin.html','The coin',f"""<h1 class="page-title">Technical specifications</h1><p class="lede">Obsolete Coin network parameters.</p><table class="facts"><tbody>{''.join(f'<tr><th scope="row">{E(k)}</th><td>{E(v)}</td></tr>' for k,v in facts)}</tbody></table><h2 class="section-head">Slow is the target</h2><div class="paper"><p>The software does not delay your payment with a timer. Miners produce blocks, and the difficulty adjusts toward an average interval of 15 minutes. Real waits vary. Initial testnet difficulty is deliberately easy.</p><p>More hash power raises difficulty over time; it does not guarantee an exact calendar schedule. The Windows and Linux 0.4.0 wallets support configurable CPU mining threads and activity.</p></div><h2 class="section-head">A finite supply</h2><div class="paper"><p>The integer reward schedule authorizes exactly one billion OBSC. A one-off 0.013 OBSC rounding remainder is included at the final rewarded block. Unclaimed rewards and lost keys reduce the circulating amount.</p><p>At the target interval, halvings are roughly 2.85 years apart. The inherited timestamp format needs an upgrade before 2106, earlier than the theoretical end of the subsidy schedule.</p></div><h2 class="section-head">Where it comes from</h2><div class="paper"><p>This is a fork of Brisvia and Bitcoin Core, with pinned upstream RandomX. Original licenses are preserved. Obsolete Coin is developed with assistance from OpenAI Codex in writing and modifying its code. A Bitcoin-derived codebase does not give a new chain Bitcoin's hash power or security.</p><p><a href="{GITHUB}/blob/main/docs/SPEC.md">Read the full specification on GitHub &raquo;</a></p></div>""",'coin')
 
