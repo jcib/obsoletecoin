@@ -1,0 +1,32 @@
+name: Verify published mainnet installer
+on:
+  push:
+    branches: ['release/mainnet-*']
+    paths: ['release/downloads.json']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  installer:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download and verify the released installer
+        shell: pwsh
+        run: |
+          $release = (Get-Content release/downloads.json -Raw | ConvertFrom-Json).mainnet
+          $installer = $release.packages | Where-Object { $_.file -like '*.exe' }
+          $url = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$($release.tag)/$($installer.file)"
+          curl.exe --fail --location --retry 4 --output "$env:RUNNER_TEMP/setup.exe" $url
+          if ($LASTEXITCODE -ne 0) { throw "Installer download failed" }
+          if ((Get-FileHash "$env:RUNNER_TEMP/setup.exe").Hash -ne $installer.sha256) { throw "Installer checksum mismatch" }
+      - name: Install, verify wallet operation and test data preservation
+        shell: pwsh
+        run: python -B release/test-installer.py "$env:RUNNER_TEMP/setup.exe" --output installer-result.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-result
+          path: installer-result.json
