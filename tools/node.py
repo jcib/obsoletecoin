@@ -5,7 +5,7 @@ from coin_network import MAINNET, TESTNET
 from rpc import default_data_dir
 
 def main():
-    p=argparse.ArgumentParser(description='Obsolete Coin experimental full node')
+    p=argparse.ArgumentParser(description='Obsolete Coin full node')
     base=Path(__file__).resolve().parents[1]
     binary=base/'build/bin/bitcoind'
     if not binary.exists(): binary=base/'bitcoind'

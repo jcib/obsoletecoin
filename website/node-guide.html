@@ -1,0 +1,83 @@
+<h1 class="page-title">Run a public mainnet node</h1>
+<p class="lede">Help other Obsolete Coin nodes find peers, verify blocks and catch up. You can run a node without a wallet or a miner.</p>
+<nav aria-label="Node setup"><a href="/nodes#windows">Windows</a> &middot; <a href="/nodes#linux">Linux</a> &middot; <a href="/nodes#internet">Router setup</a> &middot; <a href="/nodes#verify">Check your node</a></nav>
+
+<section class="paper" id="settings"><h2>1. Prepare the mainnet settings</h2>
+<p>Use a computer that can stay awake and online, with disk space for the growing blockchain. The desktop wallet opens outbound connections. To accept other nodes, run the <code>bitcoind</code> program included in the same Obsolete Coin download. The steps below give it a separate data folder.</p>
+<p>Open the <a href="/live/peer">current mainnet peer</a> and copy the full address shown after “Current peer”, including <code>:19777</code>. In the configuration below, replace <code>CURRENT_PEER</code> with that address. Save the file in the Windows or Linux step below.</p>
+<pre class="code" id="node-config">[obsolete]
+listen=1
+bind=0.0.0.0:19777
+onlynet=ipv4
+listenonion=0
+server=1
+disablewallet=1
+rpcbind=127.0.0.1
+rpcallowip=127.0.0.1
+rpcport=29779
+addnode=CURRENT_PEER</pre>
+<p>Peers use TCP <strong>19777</strong>. The local administration commands below use TCP <strong>29779</strong> so that the desktop wallet can keep its default RPC port, 9778. Keep both RPC ports local.</p></section>
+
+<section class="paper" id="windows"><h2>2A. Windows x64</h2>
+<ol><li>Download the Windows portable ZIP from <a href="/downloads">Downloads</a>. In PowerShell, run <code>Get-FileHash -Algorithm SHA256 .\FILE.zip</code> in the download folder, substituting the ZIP filename. Compare the full hash with the one on the download page. Extract the whole ZIP to a permanent location and open PowerShell in the folder containing <code>bitcoind.exe</code> and its DLLs.</li>
+<li>Create the node folder and open its configuration file:
+<pre class="code">$nodeDir = Join-Path $env:LOCALAPPDATA 'ObsoleteCoin-PublicNode'
+New-Item -ItemType Directory -Force -Path $nodeDir | Out-Null
+notepad.exe (Join-Path $nodeDir 'obsolete.conf')</pre>
+Paste the settings from step 1. Save as <code>obsolete.conf</code> using “All files” if prompted. Check that the name does not end in <code>.txt</code>.</li>
+<li>On your trusted home network, use <code>Get-NetConnectionProfile</code> to check that the connection profile is <strong>Private</strong>. Open a separate PowerShell window as administrator in the same executable folder and add this <a href="https://learn.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule">Windows Firewall rule</a> once:
+<pre class="code">New-NetFirewallRule -DisplayName "Obsolete Coin mainnet P2P" -Direction Inbound -Action Allow -Profile Private -Protocol TCP -LocalPort 19777 -Program (Resolve-Path .\bitcoind.exe).Path</pre></li>
+<li>Start the node in the original, non-administrator PowerShell window and leave it open:
+<pre class="code">.\bitcoind.exe -chain=obsolete "-datadir=$nodeDir"</pre>
+In a second PowerShell window in the executable folder, define this shortcut for step 4:
+<pre class="code">function nodecli { &amp; .\bitcoin-cli.exe -chain=obsolete "-datadir=$env:LOCALAPPDATA\ObsoleteCoin-PublicNode" @args }</pre></li></ol>
+<details><summary>Start automatically when you sign in</summary><p>Stop the manually started node with <code>nodecli stop</code>. In Task Scheduler create a task for your Windows account with an “At log on” trigger. For “Start a program”, browse to the extracted <code>bitcoind.exe</code>. Set the arguments to <code>-chain=obsolete -datadir="FULL_DATA_FOLDER"</code>, replacing <code>FULL_DATA_FOLDER</code> with the path printed by <code>Write-Output $nodeDir</code> in the original window. Run the task and check it with <code>nodecli getnetworkinfo</code>.</p></details></section>
+
+<section class="paper" id="linux"><h2>2B. Linux (Debian 13 x86-64)</h2>
+<ol><li>Download the Linux x86-64 archive from <a href="/downloads">Downloads</a>. From the directory containing the archive, run the commands below. Compare the checksum with the download page before extracting.
+<pre class="code">sha256sum @LINUX_ARCHIVE@
+sudo apt-get update
+sudo apt-get install nano libevent-core-2.1-7t64 libevent-extra-2.1-7t64 libevent-pthreads-2.1-7t64 libsqlite3-0 libstdc++6 libgcc-s1
+mkdir -p "$HOME/obsolete-node-app"
+tar -xzf @LINUX_ARCHIVE@ -C "$HOME/obsolete-node-app"
+cd "$HOME/obsolete-node-app/obsoletecoin-linux"</pre></li>
+<li>Create a private data folder and edit the configuration as your normal user:
+<pre class="code">install -d -m 700 "$HOME/.obsoletecoin-public-node"
+nano "$HOME/.obsoletecoin-public-node/obsolete.conf"</pre>
+Paste the settings from step 1. Press Ctrl+O, Enter, then Ctrl+X. If your machine uses an active UFW firewall, allow incoming P2P with <code>sudo ufw allow 19777/tcp</code>. With another firewall, add the equivalent inbound TCP rule. <a href="https://manpages.debian.org/trixie/ufw/ufw.8.en.html">Debian firewall reference</a>.</li>
+<li>Start the node and define the command shortcut for step 4 in the same shell:
+<pre class="code">./bitcoind -chain=obsolete -datadir="$HOME/.obsoletecoin-public-node" -daemonwait
+nodecli() { "$HOME/obsolete-node-app/obsoletecoin-linux/bitcoin-cli" -chain=obsolete -datadir="$HOME/.obsoletecoin-public-node" "$@"; }</pre></li></ol>
+<details><summary>Start automatically at boot with systemd</summary><p>Stop the manual instance with <code>nodecli stop</code> and wait for it to exit. Create <code>~/.config/systemd/user/</code> with <code>mkdir -p ~/.config/systemd/user</code>. Save the following as <code>~/.config/systemd/user/obsolete-public-node.service</code>.</p>
+<pre class="code">[Unit]
+Description=Obsolete Coin public mainnet node
+
+[Service]
+ExecStart=%h/obsolete-node-app/obsoletecoin-linux/bitcoind -chain=obsolete -datadir=%h/.obsoletecoin-public-node
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=180
+
+[Install]
+WantedBy=default.target</pre>
+<pre class="code">systemctl --user daemon-reload
+systemctl --user enable --now obsolete-public-node.service
+sudo loginctl enable-linger "$(id -un)"
+systemctl --user status obsolete-public-node.service</pre>
+<p>Lingering lets the user service start at boot and continue after logout. Stop it with <code>systemctl --user stop obsolete-public-node.service</code>.</p></details></section>
+
+<section class="paper" id="internet"><h2>3. Forward the public port</h2>
+<ol><li>Find the node computer’s LAN IPv4 address using <code>ipconfig</code> on Windows or <code>ip -4 addr</code> on Linux. Reserve that address for the computer in your router’s DHCP settings.</li>
+<li>In the router’s “Port forwarding”, “NAT” or “Virtual server” menu, forward external <strong>TCP 19777</strong> to <strong>TCP 19777</strong> at the reserved LAN address. Leave RPC out of the rule. On a VPS with a public IPv4 address, allow TCP 19777 in the provider firewall as well as the host firewall.</li>
+<li>If two routers perform NAT, forward through both. If your ISP uses carrier-grade NAT (CGNAT), ask for a public IPv4 address or use a host with one. Your node can still make outbound connections while you arrange inbound access.</li></ol></section>
+
+<section class="paper" id="verify"><h2>4. Verify synchronization and inbound connections</h2>
+<p>Use the <code>nodecli</code> shortcut from your platform section. In a new shell, define the shortcut again.</p>
+<pre class="code">nodecli getblockhash 0
+nodecli getblockchaininfo
+nodecli getnetworkinfo</pre>
+<ol><li>The block-zero hash must match the Obsolete Coin mainnet genesis: <code class="hash">@GENESIS@</code>.</li>
+<li>In <code>getblockchaininfo</code>, check that <code>chain</code> is <code>obsolete</code>. Once synchronized, <code>initialblockdownload</code> is <code>false</code> and <code>blocks</code> matches <code>headers</code>. Compare your height and best block hash with the <a href="/explorer/">live explorer</a>.</li>
+<li>Test from a different internet connection. Ask someone running a mainnet wallet to open <strong>Network → Connect peer</strong> and enter <code>YOUR_PUBLIC_IPV4:19777</code>. While connected, run <code>nodecli getpeerinfo</code> on your node and look for their connection with <code>"inbound": true</code>. A nonzero <code>connections_in</code> in <code>getnetworkinfo</code> also confirms an incoming peer.</li></ol>
+<details><summary>My node has no peers, or only outbound peers</summary><p>If there are zero peers, compare <code>addnode</code> in your config with the <a href="/live/peer">current peer</a>. If the address has changed, update the file and restart the node. If outbound connections work but the external test fails, check that the node is listening with <code>Get-NetTCPConnection -LocalPort 19777 -State Listen</code> on Windows or <code>ss -ltn 'sport = :19777'</code> on Linux. Then check the firewall profile, router forwarding target and ISP connection. A successful test from the same Wi-Fi only confirms local access.</p></details>
+<p>To shut down a manually started node, run <code>nodecli stop</code> and let it finish writing the chain data. For service-managed nodes, stop the task or service after a clean shutdown. If your public IP changes, give peers the new address.</p></section>

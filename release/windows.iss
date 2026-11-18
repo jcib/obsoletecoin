@@ -5,7 +5,7 @@
   #define ReleaseDir "..\.local\release"
 #endif
 #ifndef ReleaseVersion
-  #define ReleaseVersion "0.5.0"
+  #define ReleaseVersion "0.5.1"
 #endif
 [Setup]
 AppId=ObsoleteCoinMainnet

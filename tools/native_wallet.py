@@ -17,7 +17,7 @@ def mainnet_peer():
     """Read the operator's public bootstrap address; manual peers also work offline."""
     try:
         req = Request('https://obsoletecoin.pages.dev/api/bootstrap',
-                      headers={'User-Agent':'ObsoleteCoin/0.5.0'})
+                      headers={'User-Agent':'ObsoleteCoin/0.5.1'})
         with urlopen(req, timeout=4) as response:
             record = json.loads(response.read(2049))
         if record['chain'] != MAINNET.chain or record['genesis'] != MAINNET.genesis:
@@ -159,6 +159,10 @@ def main():
             pending.replace(peers_file)
         app.peer_added=save_peer
         if a.self_test:
+            for control in (app.thread_control, app.activity_control):
+                for option in ('foreground', 'disabledforeground', 'selectforeground'):
+                    if root.winfo_rgb(control.cget(option)) != (0, 0, 0):
+                        raise ValueError('Mining control values must be black')
             if network == MAINNET:
                 address = wrpc.call('getnewaddress')
                 if not address.startswith(network.address_prefix) or not wrpc.call('validateaddress', address)['isvalid']:

@@ -28,7 +28,7 @@ shutil.copytree('tools/assets',a.output/'tools/assets')
 shutil.copy2('release/Start-Wallet.sh',a.output/'Start-Wallet.sh');(a.output/'Start-Wallet.sh').chmod(0o755)
 shutil.copy2('docs/MAINNET-WALLET.md',a.output/'README.md')
 shutil.copy2('COPYING',a.output/'COPYING')
-(a.output/'VERSION').write_text('0.5.0-mainnet\n')
+(a.output/'VERSION').write_text('0.5.1-mainnet\n')
 licenses=a.output/'licenses';licenses.mkdir()
 for source in ['src/randomx/LICENSE','src/secp256k1/COPYING','src/leveldb/LICENSE','src/leveldb/AUTHORS',
                'src/crc32c/LICENSE','src/crc32c/AUTHORS','src/minisketch/LICENSE','src/crypto/ctaes/COPYING','docs/THIRD_PARTY.md']:
@@ -39,7 +39,7 @@ for name in ('bitcoind','bitcoin-cli','bitcoin-wallet','librandomx.so'):
     if 'not found' in output:raise SystemExit('Missing runtime dependency: '+name)
     dependencies+=name+'\n'+output+'\n'
 (a.output/'dependencies.txt').write_text(dependencies)
-manifest={'version':'0.5.0-mainnet','network':'obsolete','mainnet_enabled':True,
+manifest={'version':'0.5.1-mainnet','network':'obsolete','mainnet_enabled':True,
           'unsigned':True,'platform':'Debian 13 x86-64','build_inputs':inputs,
           'compiler':subprocess.check_output(['c++','--version'],text=True).splitlines()[0],
           'runtime':subprocess.check_output(['python3','--version'],text=True).strip(),

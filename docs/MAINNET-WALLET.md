@@ -1,4 +1,4 @@
-# Obsolete Coin 0.5.0 experimental mainnet
+# Obsolete Coin 0.5.1 mainnet
 
 The Windows x64 desktop application and the Debian 13 x86-64 archive start a local full node on the Obsolete Coin network named `obsolete`. New receive addresses begin with `obs1`. Testnet balances and transaction history belong to a separate blockchain.
 

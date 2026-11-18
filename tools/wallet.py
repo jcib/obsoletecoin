@@ -108,14 +108,13 @@ class Wallet:
                                ('Wallet',[('Open / Create',self.open_wallet),('Receive',self.receive),('Send',self.send),('Backup',self.backup),('Protect / check recovery',self.recovery_guide)]),
                                ('Network',[('Connect peer...',self.connect_peer)]),
                                ('Mining',[('Start / Stop',self.toggle_mine)]),
-                               ('Help',[('About',lambda:messagebox.showinfo('Obsolete Coin',f'Experimental {network.label}\nBlocks target 15 minutes.\nA dominant miner can reorganize this network.'))])]:
+                               ('Help',[('About',lambda:messagebox.showinfo('Obsolete Coin',f'{network.label}\nBlocks target 15 minutes.\nA dominant miner can reorganize this network.'))])]:
             button=tk.Menubutton(menus,text=label,relief='flat');button.pack(side='left')
             menu=tk.Menu(button,tearoff=0)
             for title,command in commands:menu.add_command(label=title,command=command)
             button.configure(menu=menu)
         tk.Frame(shell,height=3,bg='#ff0000').pack(fill='x',padx=22,pady=(12,10))
-        banner = ('EXPERIMENTAL TESTNET - test coins have no monetary value' if network == TESTNET
-                  else 'EXPERIMENTAL MAINNET - OBSC transactions are irreversible')
+        banner = 'TESTNET - test coins have no monetary value' if network == TESTNET else network.label
         tk.Label(shell,text='DEMO PREVIEW - no blockchain connection' if demo else banner,fg=YELLOW,anchor='w').pack(fill='x',padx=22)
         self.network=tk.StringVar(value='Connecting to local node...')
         tk.Label(shell,textvariable=self.network,fg=CYAN,anchor='w',wraplength=850).pack(fill='x',padx=22,pady=(6,0))
@@ -137,9 +136,11 @@ class Wallet:
         settings=tk.Frame(mining_panel);settings.pack(fill='x',padx=8)
         self.threads=tk.IntVar(value=1);self.activity=tk.IntVar(value=50)
         tk.Label(settings,text='Threads').pack(side='left')
-        self.thread_control=tk.Spinbox(settings,from_=1,to=MAX_THREADS,textvariable=self.threads,width=3,state='readonly');self.thread_control.pack(side='left',padx=8)
+        spin_colors = dict(fg=BLACK, readonlybackground='white', disabledforeground=BLACK,
+                           disabledbackground='#e6e6e6', selectforeground=BLACK, selectbackground='#b8d6ff')
+        self.thread_control=tk.Spinbox(settings,from_=1,to=MAX_THREADS,textvariable=self.threads,width=3,state='readonly',**spin_colors);self.thread_control.pack(side='left',padx=8)
         tk.Label(settings,text='Activity per thread (%)').pack(side='left')
-        self.activity_control=tk.Spinbox(settings,values=(25,50,75,100),textvariable=self.activity,width=4,state='readonly');self.activity_control.pack(side='left',padx=8)
+        self.activity_control=tk.Spinbox(settings,values=(25,50,75,100),textvariable=self.activity,width=4,state='readonly',**spin_colors);self.activity_control.pack(side='left',padx=8)
         self.activity.set(50)
         tk.Label(settings,text='~256 MiB per thread; activity is approximate',fg=CYAN).pack(side='left')
         self.mining_detail=tk.StringVar(value='Stopped | 0 hashes | 0 accepted blocks')

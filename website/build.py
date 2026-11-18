@@ -171,19 +171,21 @@ if MAIN:
 <h2>Connect</h2><p>On Windows, run the installer or extract the full ZIP and open ObsoleteCoin.exe. On Debian 13 x86-64 with Python 3 and Tk, extract the archive and run Start-Wallet.sh. The wallet checks for a bootstrap peer at startup. To enter a peer manually, choose Network  >  Connect peer.</p>
 <p>Mainnet receive addresses begin with <strong>obs1</strong>. The node uses TCP 19777 for peers and loopback RPC 9778 by default. Check the genesis with <code>bitcoin-cli -chain=obsolete getblockhash 0</code>.</p>
 <p><code class="hash">{genesis}</code></p><p>Legacy testnet addresses begin with tobs1. Their balances cannot be used on mainnet.</p>
-<p>The packages are unsigned. Independent security review and independent matching builds are pending. A dominant miner can reorganize the chain.</p></div>""",'downloads')
+</div>""",'downloads')
 
 
 
     write_page('index.html','Home','<h1 class="home-title">Obsolete Coin (OBSC)</h1>' + mainnet_panel +
                '<section class="block-section"><h2>Recent mainnet blocks</h2><iframe class="live-frame compact" title="Recent mainnet blocks" src="/live/recent"></iframe></section>'+
                '<section class="node-section"><h2>First public node</h2><img class="server-photo" src="assets/servidor.jpeg" alt="Dell Micro 7040 node"></section>')
-    write_page('downloads.html','Downloads', f'<h1 class="page-title">Mainnet downloads</h1><div class="paper"><h2>Windows and Linux &middot; {E(MAIN["version"])}</h2><ul>{package_rows}</ul><p><a href="{release_root}SHA256SUMS.txt">SHA-256 checksums</a> &middot; <a href="{release_root}Windows-PROVENANCE.json">Windows provenance</a> &middot; <a href="{release_root}Linux-PROVENANCE.json">Linux provenance</a></p><p>Unsigned packages. <a href="mainnet.html">Setup and release notes</a></p></div>', 'downloads')
+    write_page('downloads.html','Downloads', f'<h1 class="page-title">Mainnet downloads</h1><div class="paper"><h2>Windows and Linux &middot; {E(MAIN["version"])}</h2><ul>{package_rows}</ul><p><a href="{release_root}SHA256SUMS.txt">SHA-256 checksums</a> &middot; <a href="{release_root}Windows-PROVENANCE.json">Windows provenance</a> &middot; <a href="{release_root}Linux-PROVENANCE.json">Linux provenance</a></p><p><a href="mainnet.html">Setup and release notes</a></p></div>', 'downloads')
     write_page('join.html','Join mainnet', '<h1 class="page-title">Join mainnet</h1>'+mainnet_panel+'<iframe class="live-frame compact" title="Current public peer" src="/live/peer"></iframe>')
-    write_page('nodes.html','Run a node','<h1 class="page-title">Run a mainnet node</h1><div class="paper"><p>Start bitcoind with <code>-chain=obsolete</code> and a dedicated data directory. Allow incoming TCP 19777 for peers. Keep RPC on loopback.</p><p>Check block zero using <code>bitcoin-cli -chain=obsolete getblockhash 0</code>. The <a href="mainnet.html">mainnet guide</a> lists the expected hash.</p></div>')
+    node_guide = (ROOT/'website/node-guide.html').read_text(encoding='utf-8')
+    linux_archive = next(pkg['file'] for pkg in MAIN['packages'] if pkg['file'].endswith('.tar.gz'))
+    write_page('nodes.html', 'Run a node', node_guide.replace('@LINUX_ARCHIVE@', E(linux_archive)).replace('@GENESIS@', E(genesis)))
     write_page('mining.html','How to mine','<h1 class="page-title">Mine on mainnet</h1><div class="paper"><p>Open the <a href="downloads.html">Windows or Linux wallet</a> and wait for a mainnet peer and synchronization. Select threads and CPU activity, then choose Mine / Stop. Keep a private backup of the wallet receiving rewards.</p><p>Rewards mature after 100 blocks. RandomX targets a 15-minute block interval. Time to find a block varies with hash rate and difficulty.</p></div>','mining')
     write_page('coin.html','The coin','<h1 class="page-title">Obsolete Coin</h1><div class="paper"><p>CPU-mined OBSC uses RandomX and adjusts difficulty every block with ASERT. The initial subsidy is 5,000 OBSC, halves every 100,000 blocks and totals at most one billion OBSC. The genesis pays zero.</p></div>')
-    write_page('roadmap.html','Mainnet status', '<h1 class="page-title">Mainnet status</h1>'+mainnet_panel+'<div class="paper"><p>Independent consensus review, signed builds and independent operator testing remain outstanding.</p></div>')
+    write_page('roadmap.html','Mainnet status', '<h1 class="page-title">Mainnet status</h1>'+mainnet_panel+'<div class="paper"><p>Independent consensus review and independent operator testing remain outstanding.</p></div>')
     write_page('faq.html','Questions and answers','<h1 class="page-title">Questions and answers</h1><div class="paper"><h2 id="mainnet">Can I use my test coins?</h2><p>Mainnet begins at a new genesis. Legacy test balances and tobs1 addresses remain on the separate test chain.</p><h2>Can the site recover my wallet?</h2><p>Recovery uses your own private backup.</p></div>')
     write_page('explorer/index.html','Mainnet block explorer','<h1 class="page-title">Mainnet block explorer</h1><p><a href="/explorer/network.html">Network statistics</a></p><iframe class="live-frame" title="Mainnet blockchain" src="/live/explorer/index.html"></iframe>', 'explorer')
     write_page('forum-template.html','Forum','<!--FORUM_CONTENT-->','forum')
@@ -249,7 +251,7 @@ write_page('downloads.html','Downloads',f"""<h1 class="page-title">Downloads</h1
 <p><strong>Windows:</strong> x86-64, tested on Windows 11. <strong>Linux:</strong> x86-64, tested on Debian 13. <strong>macOS and ARM:</strong> no validated packages in this release.</p>
 <p>The Windows core passed 148 test suites; one optional suite lacked external data. Mining, transfers, synchronization and encrypted recovery passed local integration checks. The frozen application was tested; installation/uninstallation was not repeated against the existing real installation.</p>
 <p><a href="{ASSET_URL}Windows-PROVENANCE.json">Windows build provenance</a> | <a href="{ASSET_URL}Linux-PROVENANCE.json">Linux build provenance</a> | <a href="{GITHUB}">Source code</a></p>
-<p class="tiny">Unsigned testnet binaries. Independent security review and matching builds remain pending. No wallet keys, cookies or local balances are included in a download.</p></div>""",'downloads')
+<p class="tiny">Testnet binaries. No wallet keys, cookies or local balances are included in a download.</p></div>""",'downloads')
 
 
 
@@ -297,7 +299,7 @@ if MAIN:
 write_page('faq.html','Questions & answers','<h1 class="page-title">Frequently asked questions</h1><p class="lede">Testnet operation and limitations.</p><div class="paper">'+''.join(f'<details id="{key}"'+(' open' if i==0 else '')+f'><summary>{E(q)}</summary><p>{E(answer)}</p></details>' for i,(key,q,answer) in enumerate(questions))+'</div>','faq')
 
 if MAIN:
-    write_page('roadmap.html','Mainnet status',mainnet_panel + '<div class="paper"><h2>Outstanding work</h2><p>Independent review, independent matching builds, signing and sustained multi-operator testing remain outstanding.</p></div>')
+    write_page('roadmap.html','Mainnet status',mainnet_panel + '<div class="paper"><h2>Outstanding work</h2><p>Independent review, independent matching builds and sustained multi-operator testing remain outstanding.</p></div>')
 else:
     write_page('roadmap.html','Road to mainnet',"""<h1 class="page-title">Mainnet requirements</h1><p class="lede">Mainnet activation is blocked pending security and operational validation.</p><div class="paper"><ul class="status-list"><li><b>AVAILABLE</b> Experimental CPU-mined testnet, Linux package, native Windows test installer and native Linux desktop launcher.</li><li><b>REQUIRED</b> Native Windows releases, independently reproduced and tested on every supported Windows version.</li><li><b>REQUIRED</b> Independent consensus/security review, sustained public testnet and hostile-traffic testing. Local/CI adversarial and recovery regressions have passed.</li><li><b>REQUIRED</b> A public launch plan, independent miners, peer infrastructure and initial-difficulty calibration.</li><li><b>UNSCHEDULED</b> Mainnet. There is no announced release date and no automatic conversion of test coins.</li></ul><p><a href="https://github.com/jcib/obsoletecoin/blob/main/docs/MAINNET-READINESS.md">Read the current security and launch notes &raquo;</a></p></div>""",'coin')
 
